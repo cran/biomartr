@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 #  Drerio.OrganSpecificExpression <- read_excel("MBE_2015a_Drerio_PhyloMap.xlsx", sheet = 2, skip = 3)
 #  
 #  # select only brain specific genes
-#  Drerio.Brain.Genes <- unique(na.omit(Drerio.OrganSpecificExpression[ , "brain"]))
+#  Drerio.Brain.Genes <- unlist(unique(na.omit(Drerio.OrganSpecificExpression[ , "brain"])))
 #  
 #  # visualize enriched Phylostrata of genes annotated as brain specific
 #  PlotEnrichment(Drerio.PhyloMap,
@@ -49,8 +49,8 @@ knitr::opts_chunk$set(
 
 ## ---- eval=FALSE------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #  # retrieve GO terms of D. rerio brain genes originating in PS5
-#  GO_tbl.BrainGenes <- biomart(genes      = BrainGenes.PS5[ , "ZFIN_ID"]),
-#                               mart       = "ensembl",
+#  GO_tbl.BrainGenes <- biomart(genes      = unlist(BrainGenes.PS5[ , "ZFIN_ID"]),
+#                               mart       = "ENSEMBL_MART_ENSEMBL",
 #                               dataset    = "drerio_gene_ensembl",
 #                               attributes = "go_id",
 #                               filters    = "zfin_id")

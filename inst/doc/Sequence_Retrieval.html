@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="date" content="2015-08-07" />
+<meta name="date" content="2016-03-02" />
 
 <title>Sequence Retrieval</title>
 
@@ -17,23 +17,41 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
+div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
 table.sourceCode { width: 100%; line-height: 100%; }
 td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
 td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; }
-code > span.dt { color: #902000; }
-code > span.dv { color: #40a070; }
-code > span.bn { color: #40a070; }
-code > span.fl { color: #40a070; }
-code > span.ch { color: #4070a0; }
-code > span.st { color: #4070a0; }
-code > span.co { color: #60a0b0; font-style: italic; }
-code > span.ot { color: #007020; }
-code > span.al { color: #ff0000; font-weight: bold; }
-code > span.fu { color: #06287e; }
-code > span.er { color: #ff0000; font-weight: bold; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 </style>
 <style type="text/css">
   pre:not([class]) {
@@ -42,7 +60,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 </style>
 
 
-<link href="data:text/css,body%20%7B%0A%20%20background%2Dcolor%3A%20%23fff%3B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20max%2Dwidth%3A%20700px%3B%0A%20%20overflow%3A%20visible%3B%0A%20%20padding%2Dleft%3A%202em%3B%0A%20%20padding%2Dright%3A%202em%3B%0A%20%20font%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0A%20%20font%2Dsize%3A%2014px%3B%0A%20%20line%2Dheight%3A%201%2E35%3B%0A%7D%0A%0A%23header%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0A%0A%23TOC%20%7B%0A%20%20clear%3A%20both%3B%0A%20%20margin%3A%200%200%2010px%2010px%3B%0A%20%20padding%3A%204px%3B%0A%20%20width%3A%20400px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20border%2Dradius%3A%205px%3B%0A%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20font%2Dsize%3A%2013px%3B%0A%20%20line%2Dheight%3A%201%2E3%3B%0A%7D%0A%20%20%23TOC%20%2Etoctitle%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%20%20font%2Dsize%3A%2015px%3B%0A%20%20%20%20margin%2Dleft%3A%205px%3B%0A%20%20%7D%0A%0A%20%20%23TOC%20ul%20%7B%0A%20%20%20%20padding%2Dleft%3A%2040px%3B%0A%20%20%20%20margin%2Dleft%3A%20%2D1%2E5em%3B%0A%20%20%20%20margin%2Dtop%3A%205px%3B%0A%20%20%20%20margin%2Dbottom%3A%205px%3B%0A%20%20%7D%0A%20%20%23TOC%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dleft%3A%20%2D2em%3B%0A%20%20%7D%0A%20%20%23TOC%20li%20%7B%0A%20%20%20%20line%2Dheight%3A%2016px%3B%0A%20%20%7D%0A%0Atable%20%7B%0A%20%20margin%3A%201em%20auto%3B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dcolor%3A%20%23DDDDDD%3B%0A%20%20border%2Dstyle%3A%20outset%3B%0A%20%20border%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0A%20%20border%2Dwidth%3A%202px%3B%0A%20%20padding%3A%205px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0A%20%20border%2Dwidth%3A%201px%3B%0A%20%20border%2Dstyle%3A%20inset%3B%0A%20%20line%2Dheight%3A%2018px%3B%0A%20%20padding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0A%20%20border%2Dleft%2Dstyle%3A%20none%3B%0A%20%20border%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Ap%20%7B%0A%20%20margin%3A%200%2E5em%200%3B%0A%7D%0A%0Ablockquote%20%7B%0A%20%20background%2Dcolor%3A%20%23f6f6f6%3B%0A%20%20padding%3A%200%2E25em%200%2E75em%3B%0A%7D%0A%0Ahr%20%7B%0A%20%20border%2Dstyle%3A%20solid%3B%0A%20%20border%3A%20none%3B%0A%20%20border%2Dtop%3A%201px%20solid%20%23777%3B%0A%20%20margin%3A%2028px%200%3B%0A%7D%0A%0Adl%20%7B%0A%20%20margin%2Dleft%3A%200%3B%0A%7D%0A%20%20dl%20dd%20%7B%0A%20%20%20%20margin%2Dbottom%3A%2013px%3B%0A%20%20%20%20margin%2Dleft%3A%2013px%3B%0A%20%20%7D%0A%20%20dl%20dt%20%7B%0A%20%20%20%20font%2Dweight%3A%20bold%3B%0A%20%20%7D%0A%0Aul%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%7D%0A%20%20ul%20li%20%7B%0A%20%20%20%20list%2Dstyle%3A%20circle%20outside%3B%0A%20%20%7D%0A%20%20ul%20ul%20%7B%0A%20%20%20%20margin%2Dbottom%3A%200%3B%0A%20%20%7D%0A%0Apre%2C%20code%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20color%3A%20%23333%3B%0A%7D%0Apre%20%7B%0A%20%20white%2Dspace%3A%20pre%2Dwrap%3B%20%20%20%20%2F%2A%20Wrap%20long%20lines%20%2A%2F%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20margin%3A%205px%200px%2010px%200px%3B%0A%20%20padding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0A%20%20background%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0A%0Acode%20%7B%0A%20%20font%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0A%20%20font%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0A%20%20padding%3A%202px%200px%3B%0A%7D%0A%0Adiv%2Efigure%20%7B%0A%20%20text%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0A%20%20background%2Dcolor%3A%20%23FFFFFF%3B%0A%20%20padding%3A%202px%3B%0A%20%20border%3A%201px%20solid%20%23DDDDDD%3B%0A%20%20border%2Dradius%3A%203px%3B%0A%20%20border%3A%201px%20solid%20%23CCCCCC%3B%0A%20%20margin%3A%200%205px%3B%0A%7D%0A%0Ah1%20%7B%0A%20%20margin%2Dtop%3A%200%3B%0A%20%20font%2Dsize%3A%2035px%3B%0A%20%20line%2Dheight%3A%2040px%3B%0A%7D%0A%0Ah2%20%7B%0A%20%20border%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20padding%2Dbottom%3A%202px%3B%0A%20%20font%2Dsize%3A%20145%25%3B%0A%7D%0A%0Ah3%20%7B%0A%20%20border%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0A%20%20padding%2Dtop%3A%2010px%3B%0A%20%20font%2Dsize%3A%20120%25%3B%0A%7D%0A%0Ah4%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0A%20%20margin%2Dleft%3A%208px%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Ah5%2C%20h6%20%7B%0A%20%20border%2Dbottom%3A%201px%20solid%20%23ccc%3B%0A%20%20font%2Dsize%3A%20105%25%3B%0A%7D%0A%0Aa%20%7B%0A%20%20color%3A%20%230033dd%3B%0A%20%20text%2Ddecoration%3A%20none%3B%0A%7D%0A%20%20a%3Ahover%20%7B%0A%20%20%20%20color%3A%20%236666ff%3B%20%7D%0A%20%20a%3Avisited%20%7B%0A%20%20%20%20color%3A%20%23800080%3B%20%7D%0A%20%20a%3Avisited%3Ahover%20%7B%0A%20%20%20%20color%3A%20%23BB00BB%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%20%20a%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0A%20%20%20%20text%2Ddecoration%3A%20underline%3B%20%7D%0A%0A%2F%2A%20Class%20described%20in%20https%3A%2F%2Fbenjeffrey%2Ecom%2Fposts%2Fpandoc%2Dsyntax%2Dhighlighting%2Dcss%0A%20%20%20Colours%20from%20https%3A%2F%2Fgist%2Egithub%2Ecom%2Frobsimmons%2F1172277%20%2A%2F%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Keyword%20%2A%2F%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%2F%2A%20DataType%20%2A%2F%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%2F%2A%20DecVal%20%28decimal%20values%29%20%2A%2F%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20BaseN%20%2A%2F%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Float%20%2A%2F%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20Char%20%2A%2F%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%2F%2A%20String%20%2A%2F%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%2F%2A%20Comment%20%2A%2F%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%2F%2A%20OtherToken%20%2A%2F%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20AlertToken%20%2A%2F%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%2F%2A%20Function%20calls%20%2A%2F%20%0Acode%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%2F%2A%20ErrorTok%20%2A%2F%0A%0A" rel="stylesheet" type="text/css" />
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0A%7D%0Apre%20%7B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
 
 </head>
 
@@ -52,7 +70,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 
 <div id="header">
 <h1 class="title">Sequence Retrieval</h1>
-<h4 class="date"><em>2015-08-07</em></h4>
+<h4 class="date"><em>2016-03-02</em></h4>
 </div>
 
 
@@ -68,178 +86,175 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h2>Getting Started with Sequence Retrieval</h2>
 <p>First users can check whether or not the genome, proteome, or CDS of their interest is available for download.</p>
 <p>Using the scientific name of the organism of interest, users can check whether the corresponding genome is available via the <code>is.genome.available()</code> function.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># checking whether or not the Arabidopsis thaliana </span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># checking whether or not the Arabidopsis thaliana </span>
 <span class="co"># genome is avaialable for download</span>
-<span class="kw">is.genome.available</span>(<span class="st">&quot;Arabidopsis thaliana&quot;</span>)</code></pre>
+<span class="kw">is.genome.available</span>(<span class="st">&quot;Arabidopsis thaliana&quot;</span>)</code></pre></div>
 <pre><code>[1] TRUE</code></pre>
 <p>By specifying the <code>details = TRUE</code> argument, the genome file size as well as additional information can be printed to the console.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># printing details to the console</span>
-<span class="kw">is.genome.available</span>(<span class="st">&quot;Arabidopsis thaliana&quot;</span>, <span class="dt">details =</span> <span class="ot">TRUE</span>)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># printing details to the console</span>
+<span class="kw">is.genome.available</span>(<span class="st">&quot;Arabidopsis thaliana&quot;</span>, <span class="dt">details =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>           organism_name  kingdoms  group    subgroup file_size_MB chrs organelles plasmids bio_projects
 682 Arabidopsis thaliana Eukaryota Plants Land Plants      119.668    6          2       NA            6</code></pre>
 <p>Users will observe that the <code>Arabidopsis thaliana</code> genome file has a size of <code>119.668 MB</code>.</p>
 <p><strong>Note:</strong> The availability of genomes has been taken from <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt">NCBI</a>.</p>
 <p>Users can determine the total number of available genomes using the <code>listGenomes()</code> function.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(<span class="kw">listGenomes</span>())</code></pre>
-<pre><code>[1] 13074</code></pre>
-<p>Hence, currently 13074 genomes (including all kingdoms of life) are stored on <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt">NCBI</a> servers.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(<span class="kw">listGenomes</span>())</code></pre></div>
+<pre><code>[1] 15512</code></pre>
+<p>Hence, currently 15512 genomes (including all kingdoms of life) are stored on <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt">NCBI</a> servers.</p>
 <p>Optionally, users can also specify the database for which the availability of organisms shall be checked.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># cheking whether A. thaliana is available in the refseq database</span>
-<span class="kw">is.genome.available</span>(<span class="st">&quot;Arabidopsis thaliana&quot;</span>, <span class="dt">database =</span> <span class="st">&quot;refseq&quot;</span>)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># cheking whether A. thaliana is available in the refseq database</span>
+<span class="kw">is.genome.available</span>(<span class="st">&quot;Arabidopsis thaliana&quot;</span>, <span class="dt">database =</span> <span class="st">&quot;refseq&quot;</span>)</code></pre></div>
 <pre><code>[1] TRUE</code></pre>
 <p>Users can also determine the total number of genomes stored in refseq.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(<span class="kw">listGenomes</span>(<span class="dt">database =</span> <span class="st">&quot;refseq&quot;</span>))</code></pre>
-<pre><code>[1] 4896</code></pre>
-<p>This result shows that so far (year 2015) 4896 genomes are stored in refseq.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">length</span>(<span class="kw">listGenomes</span>(<span class="dt">database =</span> <span class="st">&quot;refseq&quot;</span>))</code></pre></div>
+<pre><code>[1] 5519</code></pre>
+<p>This result shows that so far (year 2016) 5519 genomes are stored in refseq.</p>
 <p>The simplest way to work with <code>listGenomes()</code> is to print available genomes to the console.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># the simplest way to retrieve names of available genomes stored within NCBI databases</span>
-<span class="kw">head</span>(<span class="kw">listGenomes</span>() , <span class="dv">5</span>)</code></pre>
-<pre><code>[1] &quot;'Chrysanthemum coronarium' phytoplasma&quot;      
-[2] &quot;'Deinococcus soli' Cha et al. 2014&quot;          
-[3] &quot;Abaca bunchy top virus&quot;                      
-[4] &quot;Abalone herpesvirus Victoria/AUS/2009&quot;       
-[5] &quot;Abalone shriveling syndrome-associated virus&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># the simplest way to retrieve names of available genomes stored within NCBI databases</span>
+<span class="kw">head</span>(<span class="kw">listGenomes</span>() , <span class="dv">5</span>)</code></pre></div>
+<pre><code>[1] &quot;'Chrysanthemum coronarium' phytoplasma&quot;         
+[2] &quot;'Deinococcus soli' Cha et al. 2014&quot;             
+[3] &quot;'Echinacea purpurea' witches'-broom phytoplasma&quot;
+[4] &quot;Abaca bunchy top virus&quot;                         
+[5] &quot;Abalone herpesvirus Victoria/AUS/2009&quot;</code></pre>
 <p>In case users are interested in a detailed output of the corresponding organism file stored on NCBI, again they can specify the <code>details = TRUE</code> argument.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all details</span>
-<span class="kw">head</span>(<span class="kw">listGenomes</span>(<span class="dt">details =</span> <span class="ot">TRUE</span>) , <span class="dv">5</span>)</code></pre>
-<pre><code>                                 organism_name kingdoms                       group
-1       'Chrysanthemum coronarium' phytoplasma Bacteria                 Tenericutes
-2           'Deinococcus soli' Cha et al. 2014 Bacteria         Deinococcus-Thermus
-3                       Abaca bunchy top virus  Viruses               ssDNA viruses
-4        Abalone herpesvirus Victoria/AUS/2009  Viruses dsDNA viruses, no RNA stage
-5 Abalone shriveling syndrome-associated virus  Viruses dsDNA viruses, no RNA stage
-      subgroup file_size_MB chrs organelles plasmids bio_projects
-1   Mollicutes     0.739592   NA         NA       NA            1
-2   Deinococci     3.236980    1         NA       NA            1
-3  Nanoviridae     0.006422    6         NA       NA            1
-4 unclassified     0.211518    1         NA       NA            1
-5 unclassified     0.034952    1         NA       NA            1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all details</span>
+<span class="kw">head</span>(<span class="kw">listGenomes</span>(<span class="dt">details =</span> <span class="ot">TRUE</span>) , <span class="dv">5</span>)</code></pre></div>
+<pre><code>                                    organism_name kingdoms                       group
+1          'Chrysanthemum coronarium' phytoplasma Bacteria         Terrabacteria group
+2              'Deinococcus soli' Cha et al. 2014 Bacteria         Terrabacteria group
+3 'Echinacea purpurea' witches'-broom phytoplasma Bacteria         Terrabacteria group
+4                          Abaca bunchy top virus  Viruses               ssDNA viruses
+5           Abalone herpesvirus Victoria/AUS/2009  Viruses dsDNA viruses, no RNA stage
+             subgroup file_size_MB chrs organelles plasmids bio_projects
+1         Tenericutes     0.739592   NA         NA       NA            1
+2 Deinococcus-Thermus     3.236980    1         NA       NA            1
+3         Tenericutes     0.545427   NA         NA       NA            1
+4         Nanoviridae     0.006422    6         NA       NA            1
+5        unclassified     0.211518    1         NA       NA            1</code></pre>
 <p>Users will observe that the detailed information output includes the <code>organism_name</code>, <code>kingdom</code>, <code>group</code>, <code>subgroup</code>, <code>file_size_MB</code>, <code>chrs</code>, <code>organelles</code>, <code>plasmids</code>, and <code>bio_projects</code>.</p>
 <p>In case users are interested in organisms classified into a specific kingdom of life, they can use the <code>kingdom</code> argument to filter for organisms that are classified into the corresponding kingdom.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all details only for Bacteria</span>
-<span class="kw">head</span>(<span class="kw">listGenomes</span>(<span class="dt">kingdom =</span> <span class="st">&quot;Bacteria&quot;</span>, <span class="dt">details =</span> <span class="ot">TRUE</span>) , <span class="dv">5</span>)</code></pre>
-<pre><code>                           organism_name kingdoms               group              subgroup
-1 'Chrysanthemum coronarium' phytoplasma Bacteria         Tenericutes            Mollicutes
-2     'Deinococcus soli' Cha et al. 2014 Bacteria Deinococcus-Thermus            Deinococci
-3                  Abiotrophia defectiva Bacteria          Firmicutes               Bacilli
-4                 Acaricomes phytoseiuli Bacteria      Actinobacteria        Actinobacteria
-5                          Acaryochloris Bacteria       Cyanobacteria Oscillatoriophycideae
-  file_size_MB chrs organelles plasmids bio_projects
-1     0.739592   NA         NA       NA            1
-2     3.236980    1         NA       NA            1
-3     2.043440   NA         NA       NA            1
-4     2.419520   NA         NA       NA            1
-5     7.875480   NA         NA       NA            1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all details only for Bacteria</span>
+<span class="kw">head</span>(<span class="kw">listGenomes</span>(<span class="dt">kingdom =</span> <span class="st">&quot;Bacteria&quot;</span>, <span class="dt">details =</span> <span class="ot">TRUE</span>) , <span class="dv">5</span>)</code></pre></div>
+<pre><code>                                    organism_name kingdoms               group
+1          'Chrysanthemum coronarium' phytoplasma Bacteria Terrabacteria group
+2              'Deinococcus soli' Cha et al. 2014 Bacteria Terrabacteria group
+3 'Echinacea purpurea' witches'-broom phytoplasma Bacteria Terrabacteria group
+4                           Abiotrophia defectiva Bacteria Terrabacteria group
+5                          Acaricomes phytoseiuli Bacteria Terrabacteria group
+             subgroup file_size_MB chrs organelles plasmids bio_projects
+1         Tenericutes     0.739592   NA         NA       NA            1
+2 Deinococcus-Thermus     3.236980    1         NA       NA            1
+3         Tenericutes     0.545427   NA         NA       NA            1
+4          Firmicutes     2.043440   NA         NA       NA            1
+5      Actinobacteria     2.419520   NA         NA       NA            1</code></pre>
 <p>The following filters can be specified for the <code>kingdom</code> argument: <code>all</code>, <code>Archaea</code>, <code>Bacteria</code>, <code>Eukaryota</code>, <code>Viroids</code>, and <code>Viruses</code>.</p>
 <p>Furthermore, users can simply count the kingdom specific availability of genomes as following:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># the number of genomes available for each kingdom</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># the number of genomes available for each kingdom</span>
 ncbi_genomes &lt;-<span class="st"> </span><span class="kw">listGenomes</span>(<span class="dt">details =</span> <span class="ot">TRUE</span>)
-<span class="kw">table</span>(ncbi_genomes[ , <span class="st">&quot;kingdoms&quot;</span>])</code></pre>
-<pre><code>  Archaea  Bacteria Eukaryota   Viroids   Viruses 
-      386      6473      1454        45      4716</code></pre>
+<span class="kw">table</span>(ncbi_genomes[ , <span class="st">&quot;kingdoms&quot;</span>])</code></pre></div>
+<pre><code> Archaea  Bacteria Eukaryota   Viroids   Viruses 
+      516      7918      1660        48      5370 </code></pre>
 <p>Analogous computations can be performed for <code>group</code>, <code>subgroup</code>, etc.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># the number of genomes available for each group</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># the number of genomes available for each group</span>
 ncbi_genomes &lt;-<span class="st"> </span><span class="kw">listGenomes</span>(<span class="dt">details =</span> <span class="ot">TRUE</span>)
-<span class="kw">table</span>(ncbi_genomes[ , <span class="st">&quot;group&quot;</span>])</code></pre>
-<pre><code>                   Actinobacteria                   Aenigmarchaeota 
-                              934                                 3 
-                          Animals                         Aquificae 
-                              562                                16 
-                  Armatimonadetes                     Avsunviroidae 
-                                3                                 4 
-     Bacteroidetes/Chlorobi group                       Caldiserica 
-                              481                                 2 
- Chlamydiae/Verrucomicrobia group                       Chloroflexi 
-                               60                                32 
-                   Chrysiogenetes                     Crenarchaeota 
-                                2                                60 
-                    Cyanobacteria                   Deferribacteres 
-                              103                                 6 
-              Deinococcus-Thermus                        Deltavirus 
-                               43                                 1 
-                   Diapherotrites                       Dictyoglomi 
-                                3                                 2 
-      dsDNA viruses, no RNA stage                     dsRNA viruses 
-                             2008                               213 
-                    Elusimicrobia                     Euryarchaeota 
-                                3                               236 
-Fibrobacteres/Acidobacteria group                        Firmicutes 
-                               47                              1151 
-                            Fungi                      Fusobacteria 
-                              550                                25 
-                 Gemmatimonadetes                      Korarchaeota 
-                                5                                 1 
-                    Lokiarchaeota                     Nanoarchaeota 
-                                1                                10 
-                Nanohaloarchaeota                       Nitrospinae 
-                                4                                 2 
-                      Nitrospirae                             Other 
-                               10                                15 
-                    Parvarchaeota                    Planctomycetes 
-                                2                                22 
-                           Plants                     Pospiviroidae 
-                              162                                36 
-                   Proteobacteria                          Protists 
-                             2256                               167 
-       Retro-transcribing viruses                        Satellites 
-                              130                               214 
-                     Spirochaetes                     ssDNA viruses 
-                               81                               791 
-                    ssRNA viruses                     Synergistetes 
-                             1252                                18 
-                      Tenericutes                    Thaumarchaeota 
-                              132                                49 
-            Thermodesulfobacteria                       Thermotogae 
-                                7                                26 
-               unassigned viruses              unclassified Archaea 
-                               10                                17 
-    unclassified archaeal viruses             unclassified Bacteria 
-                                2                              1004 
-              unclassified phages              unclassified viroids 
-                               35                                 5 
-          unclassified virophages              unclassified viruses 
-                                5                                53</code></pre>
+<span class="kw">table</span>(ncbi_genomes[ , <span class="st">&quot;group&quot;</span>])</code></pre></div>
+<pre><code>                  Acidobacteria                         Animals 
+                             30                             617 
+                      Aquificae                   Avsunviroidae 
+                             17                               4 
+                    Caldiserica                  Chrysiogenetes 
+                              2                               2 
+                Deferribacteres                      Deltavirus 
+                              6                               1 
+                    Dictyoglomi                     DPANN group 
+                              2                              30 
+    dsDNA viruses, no RNA stage                   dsRNA viruses 
+                           2405                             244 
+                  Elusimicrobia           environmental samples 
+                              3                               7 
+                  Euryarchaeota                       FCB group 
+                            322                             690 
+                          Fungi                    Fusobacteria 
+                            662                              31 
+Nitrospinae/Tectomicrobia group                     Nitrospirae 
+                              3                              19 
+                          Other                          Plants 
+                             18                             179 
+                  Pospiviroidae                  Proteobacteria 
+                             36                            2718 
+                       Protists                       PVC group 
+                            190                             113 
+     Retro-transcribing viruses                      Satellites 
+                            134                             223 
+                   Spirochaetes                   ssDNA viruses 
+                             84                             848 
+                  ssRNA viruses                   Synergistetes 
+                           1389                              23 
+                     TACK group             Terrabacteria group 
+                            130                            3097 
+          Thermodesulfobacteria                     Thermotogae 
+                              9                              28 
+             unassigned viruses            unclassified Archaea 
+                             11                              29 
+  unclassified archaeal viruses           unclassified Bacteria 
+                              3                            1039 
+            unclassified phages            unclassified viroids 
+                             29                               8 
+        unclassified virophages            unclassified viruses 
+                              6                              71 </code></pre>
 <p>Users can also order organisms by their file size.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># order by file size</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># order by file size</span>
 <span class="kw">library</span>(dplyr)
 
 ncbi_genomes &lt;-<span class="st"> </span><span class="kw">listGenomes</span>(<span class="dt">details =</span> <span class="ot">TRUE</span>)
-<span class="kw">head</span>(<span class="kw">arrange</span>(ncbi_genomes, <span class="kw">desc</span>(file_size_MB)) , <span class="dv">10</span>)</code></pre>
-<pre><code>               organism_name  kingdoms   group      subgroup file_size_MB chrs organelles plasmids bio_projects
-1               Picea glauca Eukaryota  Plants   Land Plants     26936.20   NA         NA       NA            2
-2  Acanthoscurria geniculata Eukaryota Animals Other Animals      7178.40   NA         NA       NA            1
-3         Locusta migratoria Eukaryota Animals       Insects      5759.80   NA          1       NA            1
-4           Orycteropus afer Eukaryota Animals       Mammals      4444.08   NA          1       NA            1
-5     Chrysochloris asiatica Eukaryota Animals       Mammals      4210.11   NA          1       NA            1
-6      Elephantulus edwardii Eukaryota Animals       Mammals      3843.98   NA         NA       NA            1
-7          Triticum aestivum Eukaryota  Plants   Land Plants      3800.33    1          1       NA            6
-8            Triticum urartu Eukaryota  Plants   Land Plants      3747.05   NA          1       NA            1
-9       Dasypus novemcinctus Eukaryota Animals       Mammals      3631.52   NA          1       NA            1
-10         Nicotiana tabacum Eukaryota  Plants   Land Plants      3613.16   NA          1       NA            3</code></pre>
-<p>This analysis shows that <code>Picea glauca</code> has the largest genome available on the NCBI server.</p>
+<span class="kw">head</span>(<span class="kw">arrange</span>(ncbi_genomes, <span class="kw">desc</span>(file_size_MB)) , <span class="dv">10</span>)</code></pre></div>
+<pre><code>            organism_name  kingdoms   group    subgroup file_size_MB chrs organelles
+1       Pinus lambertiana Eukaryota  Plants Land Plants     27602.70   NA         NA
+2            Picea glauca Eukaryota  Plants Land Plants     24627.00   NA          1
+3             Pinus taeda Eukaryota  Plants Land Plants     22061.90   NA         NA
+4   Pseudotsuga menziesii Eukaryota  Plants Land Plants     14673.20   NA         NA
+5      Locusta migratoria Eukaryota Animals     Insects      5759.80   NA         NA
+6        Orycteropus afer Eukaryota Animals     Mammals      4444.08   NA          1
+7  Chrysochloris asiatica Eukaryota Animals     Mammals      4210.11   NA          1
+8   Elephantulus edwardii Eukaryota Animals     Mammals      3843.98   NA         NA
+9     Apodemus sylvaticus Eukaryota Animals     Mammals      3758.14   NA         NA
+10        Triticum urartu Eukaryota  Plants Land Plants      3747.05   NA         NA
+   plasmids bio_projects
+1        NA            1
+2        NA            2
+3        NA            1
+4        NA            1
+5        NA            1
+6        NA            1
+7        NA            1
+8        NA            1
+9        NA            1
+10       NA            1</code></pre>
+<p>This analysis shows that <code>Pinus lambertiana</code> has the largest genome available on the NCBI server.</p>
 <p>Internally, the <code>listGenomes()</code> function downloads the <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt">Genome Reports</a> file from NCBI and stores it in a <code>tempfile()</code> folder named <code>_ncbi_downloads/overview.txt</code>. It is only downloaded once and is then accessed from your hard drive. In case users would like to update the <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt">Genome Reports</a> file, they can specify the <code>update = TRUE</code> argument which allows them to reload the <a href="ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt">Genome Reports</a> file from the NCBI server.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># users can also update the organism table using the 'update' argument</span>
-<span class="kw">head</span>(<span class="kw">listGenomes</span>(<span class="dt">details =</span> <span class="ot">TRUE</span>, <span class="dt">update =</span> <span class="ot">TRUE</span>) , <span class="dv">5</span>)</code></pre>
-<pre><code>                                 organism_name kingdoms                       group     subgroup file_size_MB
-1       'Chrysanthemum coronarium' phytoplasma Bacteria                 Tenericutes   Mollicutes     0.739592
-2           'Deinococcus soli' Cha et al. 2014 Bacteria         Deinococcus-Thermus   Deinococci     3.236980
-3                       Abaca bunchy top virus  Viruses               ssDNA viruses  Nanoviridae     0.006422
-4        Abalone herpesvirus Victoria/AUS/2009  Viruses dsDNA viruses, no RNA stage unclassified     0.211518
-5 Abalone shriveling syndrome-associated virus  Viruses dsDNA viruses, no RNA stage unclassified     0.034952
-  chrs organelles plasmids bio_projects
-1   NA         NA       NA            1
-2    1         NA       NA            1
-3    6         NA       NA            1
-4    1         NA       NA            1
-5    1         NA       NA            1
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># users can also update the organism table using the 'update' argument</span>
+<span class="kw">head</span>(<span class="kw">listGenomes</span>(<span class="dt">details =</span> <span class="ot">TRUE</span>, <span class="dt">update =</span> <span class="ot">TRUE</span>) , <span class="dv">5</span>)</code></pre></div>
+<pre><code>                                    organism_name kingdoms                       group
+1          'Chrysanthemum coronarium' phytoplasma Bacteria         Terrabacteria group
+2              'Deinococcus soli' Cha et al. 2014 Bacteria         Terrabacteria group
+3 'Echinacea purpurea' witches'-broom phytoplasma Bacteria         Terrabacteria group
+4                          Abaca bunchy top virus  Viruses               ssDNA viruses
+5           Abalone herpesvirus Victoria/AUS/2009  Viruses dsDNA viruses, no RNA stage
+             subgroup file_size_MB chrs organelles plasmids bio_projects
+1         Tenericutes     0.739592   NA         NA       NA            1
+2 Deinococcus-Thermus     3.236980    1         NA       NA            1
+3         Tenericutes     0.545427   NA         NA       NA            1
+4         Nanoviridae     0.006422    6         NA       NA            1
+5        unclassified     0.211518    1         NA       NA            1
 </code></pre>
 <p>Again, the <code>listGenomes()</code> function can be users to filter for available genome information in refseq.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># list all Eukaryota that are stored in refseq</span>
-<span class="kw">head</span>(<span class="kw">listGenomes</span>(<span class="dt">kingdom =</span> <span class="st">&quot;Eukaryota&quot;</span>, <span class="dt">database =</span> <span class="st">&quot;refseq&quot;</span>) , <span class="dv">20</span>)</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># list all Eukaryota that are stored in refseq</span>
+<span class="kw">head</span>(<span class="kw">listGenomes</span>(<span class="dt">kingdom =</span> <span class="st">&quot;Eukaryota&quot;</span>, <span class="dt">database =</span> <span class="st">&quot;refseq&quot;</span>) , <span class="dv">20</span>)</code></pre></div>
 <pre><code>                    organism_name
 1               Agaricus bisporus
-2          Ajellomyces capsulatus
-3        Ajellomyces dermatitidis
+2           Auricularia subglabra
+3            Komagataella phaffii
 4           Arthroderma benhamiae
 5                Arthroderma otae
 6            Aspergillus clavatus
@@ -249,20 +264,20 @@ ncbi_genomes &lt;-<span class="st"> </span><span class="kw">listGenomes</span>(<
 10              Aspergillus niger
 11             Aspergillus oryzae
 12            Aspergillus terreus
-13           Auricularia delicata
+13        Phaeoacremonium minimum
 14 Batrachochytrium dendrobatidis
-15        Baudoinia compniacensis
+15            Ordospora colligata
 16               Bipolaris oryzae
 17          Bipolaris sorokiniana
 18              Bipolaris zeicola
 19               Botrytis cinerea
 20               Candida albicans</code></pre>
 <p>Or analogous:</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># the number of genomes available for each kingdom stored in refseq</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># the number of genomes available for each kingdom stored in refseq</span>
 ncbi_genomes &lt;-<span class="st"> </span><span class="kw">listGenomes</span>(<span class="dt">details =</span> <span class="ot">TRUE</span>, <span class="dt">database =</span> <span class="st">&quot;refseq&quot;</span>)
-<span class="kw">table</span>(ncbi_genomes[ , <span class="st">&quot;kingdoms&quot;</span>])</code></pre>
+<span class="kw">table</span>(ncbi_genomes[ , <span class="st">&quot;kingdoms&quot;</span>])</code></pre></div>
 <pre><code>  Archaea  Bacteria Eukaryota 
-      220      4167       509</code></pre>
+      258      4679       582 </code></pre>
 <p><strong>Note</strong> that when running the <code>listGenomes()</code> function for the first time, it might take a while until the function returns any results, because necessary information need to be downloaded from NCBI databases. All subsequent executions of <code>listGenomes()</code> will then respond very fast, because they will access the corresponding files stored on your hard drive.</p>
 </div>
 <div id="downloading-biological-sequences" class="section level2">
@@ -274,49 +289,49 @@ ncbi_genomes &lt;-<span class="st"> </span><span class="kw">listGenomes</span>(<
 <p>In this example we will download the genome of <code>A. thaliana</code>.</p>
 <p>The <code>getGenome()</code> function is an interface function to the <a href="http://www.ncbi.nlm.nih.gov/refseq/about/">NCBI refseq</a> database from which corresponding genomes are downloaded.</p>
 <p>For this purpose users need to specify the kingdom in which their organism of interest is classified into, e.g. <code>&quot;archaea&quot;</code>,<code>&quot;bacteria&quot;</code>, <code>&quot;fungi&quot;</code>, <code>&quot;invertebrate&quot;</code>, <code>&quot;plant&quot;</code>, <code>&quot;protozoa&quot;</code>, <code>&quot;vertebrate_mammalian&quot;</code>, or <code>&quot;vertebrate_other&quot;</code> and then the scientific name of the organism of interest.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Arabidopsis thaliana from refseq</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Arabidopsis thaliana from refseq</span>
 <span class="co"># and store the corresponding genome file in '_ncbi_downloads/genomes'</span>
 <span class="kw">getGenome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
            <span class="dt">kingdom  =</span> <span class="st">&quot;plant&quot;</span>,
            <span class="dt">organism =</span> <span class="st">&quot;Arabidopsis thaliana&quot;</span>,
-           <span class="dt">path     =</span> <span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;genomes&quot;</span>) )</code></pre>
-<p>The <code>getGenome()</code> function creates a directory named <code>'_ncbi_downloads/genomes'</code> into which the corresponding genome named <code>Arabidopsis_thaliana_genome.fna.gz</code> is downloaded. The <code>read_genome()</code> function enables users to work with the genome as <code>data.table</code> object.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># path to genome: '_ncbi_downloads/genomes/Arabidopsis_thaliana_genome.fna.gz'</span>
-file_path &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;genomes&quot;</span>,<span class="st">&quot;Arabidopsis_thaliana_genome.fna.gz&quot;</span>)
+           <span class="dt">path     =</span> <span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;genomes&quot;</span>) )</code></pre></div>
+<p>The <code>getGenome()</code> function creates a directory named <code>'_ncbi_downloads/genomes'</code> into which the corresponding genome named <code>Arabidopsis_thaliana_genomic.fna.gz</code> is downloaded. The <code>read_genome()</code> function enables users to work with the genome as <code>data.table</code> object.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># path to genome: '_ncbi_downloads/genomes/Arabidopsis_thaliana_genomic.fna.gz'</span>
+file_path &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;genomes&quot;</span>,<span class="st">&quot;Arabidopsis_thaliana_genomic.fna.gz&quot;</span>)
 <span class="co"># read genome as data.table object</span>
-Ath_genome &lt;-<span class="st"> </span><span class="kw">read_genome</span>(file_path, <span class="dt">format =</span> <span class="st">&quot;fasta&quot;</span>)</code></pre>
+Ath_genome &lt;-<span class="st"> </span><span class="kw">read_genome</span>(file_path, <span class="dt">format =</span> <span class="st">&quot;fasta&quot;</span>)</code></pre></div>
 <p>In case users would like to store the genome file at a different location, they can specify the <code>path = file.path(&quot;put&quot;,&quot;your&quot;,&quot;path&quot;,&quot;here&quot;)</code> argument.</p>
 </div>
 <div id="proteome-retrieval" class="section level3">
 <h3>Proteome Retrieval</h3>
 <p>The <code>getProteome()</code> function is also an interface function to the <a href="http://www.ncbi.nlm.nih.gov/refseq/about/">NCBI refseq</a> database from which corresponding proteomes are downloaded. It works analogous to the <code>getGenome()</code> function.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the proteome of Arabidopsis thaliana from refseq</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the proteome of Arabidopsis thaliana from refseq</span>
 <span class="co"># and store the corresponding proteome file in '_ncbi_downloads/proteomes'</span>
 <span class="kw">getProteome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
              <span class="dt">kingdom  =</span> <span class="st">&quot;plant&quot;</span>,
              <span class="dt">organism =</span> <span class="st">&quot;Arabidopsis thaliana&quot;</span>,
-             <span class="dt">path     =</span> <span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;proteomes&quot;</span>) )</code></pre>
+             <span class="dt">path     =</span> <span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;proteomes&quot;</span>) )</code></pre></div>
 <p>The <code>getProteome()</code> function creates a directory named <code>_ncbi_downloads/proteomes</code> into which the orresponding proteome named <code>Arabidopsis_thaliana_protein.faa.gz</code> is downloaded. The <code>read_proteome()</code> function enables users to work with the proteome as <code>data.table</code> object.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># path to proteome: '_ncbi_downloads/proteomes/Arabidopsis_thaliana_protein.faa.gz'</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># path to proteome: '_ncbi_downloads/proteomes/Arabidopsis_thaliana_protein.faa.gz'</span>
 file_path &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;proteomes&quot;</span>,<span class="st">&quot;Arabidopsis_thaliana_protein.faa.gz&quot;</span>)
 <span class="co"># read proteome as data.table object</span>
-Ath_proteome &lt;-<span class="st"> </span><span class="kw">read_proteome</span>(file_path, <span class="dt">format =</span> <span class="st">&quot;fasta&quot;</span>)</code></pre>
+Ath_proteome &lt;-<span class="st"> </span><span class="kw">read_proteome</span>(file_path, <span class="dt">format =</span> <span class="st">&quot;fasta&quot;</span>)</code></pre></div>
 <p>In case users would like to store the proteome file at a different location, they can specify the <code>path = file.path(&quot;put&quot;,&quot;your&quot;,&quot;path&quot;,&quot;here&quot;)</code> argument.</p>
 </div>
 <div id="cds-retrieval" class="section level3">
 <h3>CDS Retrieval</h3>
 <p>The <code>getCDS()</code> function is also an interface function to the <a href="http://www.ncbi.nlm.nih.gov/refseq/about/">NCBI refseq</a> database from which the corresponding CDS files are downloaded. It works analogous to the <code>getGenome()</code> and <code>getProteome()</code> functions but for CDS files.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Arabidopsis thaliana from refseq</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Arabidopsis thaliana from refseq</span>
 <span class="co"># and store the corresponding genome CDS file in '_ncbi_downloads/CDS'</span>
 <span class="kw">getCDS</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
         <span class="dt">kingdom  =</span> <span class="st">&quot;plant&quot;</span>,
         <span class="dt">organism =</span> <span class="st">&quot;Arabidopsis thaliana&quot;</span>,
-        <span class="dt">path     =</span> <span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;CDS&quot;</span>) )</code></pre>
+        <span class="dt">path     =</span> <span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;CDS&quot;</span>) )</code></pre></div>
 <p>The <code>getCDS()</code> function creates a directory named <code>_ncbi_downloads/CDS</code> into which corresponding CDS are loaded. The <code>read_cds()</code> function allows you to read the correspondning CDS as <code>data.table</code> object.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># path to CDS file: '_ncbi_downloads/CDS/Arabidopsis_thaliana_rna.fna.gz'</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># path to CDS file: '_ncbi_downloads/CDS/Arabidopsis_thaliana_rna.fna.gz'</span>
 file_path &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;CDS&quot;</span>,<span class="st">&quot;Arabidopsis_thaliana_rna.fna.gz&quot;</span>)
 <span class="co"># read CDS as data.table object</span>
-Ath_cds &lt;-<span class="st"> </span><span class="kw">read_cds</span>(file_path, <span class="dt">format =</span> <span class="st">&quot;fasta&quot;</span>)</code></pre>
+Ath_cds &lt;-<span class="st"> </span><span class="kw">read_cds</span>(file_path, <span class="dt">format =</span> <span class="st">&quot;fasta&quot;</span>)</code></pre></div>
 <p>In case users would like to store the CDS file at a different location, they can specify the <code>path = file.path(&quot;put&quot;,&quot;your&quot;,&quot;path&quot;,&quot;here&quot;)</code> argument.</p>
 <p>Furthermore, the <code>getCDS()</code> function checks whether all CDS sequences can be divided by 3 (codons). In case sequences of particualar genes cannot be divided by 3, a warning massage is returned to quantify the number of corresponding genes. In case users would like to extract these sequences from their data, they can specify the <code>delete_delete_corrupt = TRUE</code> argument, which will then delete all corrupt CDS sequences.</p>
 </div>
@@ -326,63 +341,14 @@ Ath_cds &lt;-<span class="st"> </span><span class="kw">read_cds</span>(file_path
 <div id="using-the-output-from-getproteome" class="section level4">
 <h4>Using the output from <code>getProteome()</code></h4>
 <p>As seen before, the <code>getProteome()</code> function allows users to download the entire proteome of a specific organism of interest that is stored in refseq.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the proteome of Arabidopsis thaliana from refseq</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the proteome of Arabidopsis thaliana from refseq</span>
 <span class="co"># and store the corresponding proteome file in '_ncbi_downloads/proteomes'</span>
 <span class="kw">getProteome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
              <span class="dt">kingdom  =</span> <span class="st">&quot;plant&quot;</span>,
              <span class="dt">organism =</span> <span class="st">&quot;Arabidopsis thaliana&quot;</span>,
-             <span class="dt">path     =</span> <span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;proteomes&quot;</span>) )</code></pre>
-<p>Again, first we download the <em>A. thaliana</em> proteome and furthermore are interested in the following two genes for subsequent analyses, <code>AT1G06090</code> and <code>AT1G06100</code>. Both genes are memebers of the fatty acid desaturase family and take over functions in oxidoreductase activity. To access the protein sequences of these genes in a proteome downloaded from refseq, first users need to map the <code>tair_locus</code> id to the corresponding <code>refseq</code> ids.</p>
+             <span class="dt">path     =</span> <span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;proteomes&quot;</span>) )</code></pre></div>
+<p>Again, first we download the <em>A. thaliana</em> proteome and furthermore are interested in the following two genes for subsequent analyses, <code>AT1G06090</code> and <code>AT1G06100</code>. Both genes are memebers of the fatty acid desaturase family and take over functions in oxidoreductase activity.</p>
 <p>For this purpose users can use the <code>biomart()</code> function [see <a href="https://github.com/HajkD/biomartr/blob/master/vignettes/Functional_Annotation.Rmd">Functional Annotation</a> for details].</p>
-<p>Here we can use the <code>organismFilter()</code> function to retrieve the filter argument for <code>tair gene ids</code>.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for filters related to tair</span>
-<span class="kw">organismFilters</span>(<span class="st">&quot;Arabidopsis thaliana&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;tair&quot;</span>)</code></pre>
-<pre><code>Source: local data frame [6 x 4]
-
-                   name                 description           mart           dataset
-1            tair_locus            TAIR locus ID(s) plants_mart_26 athaliana_eg_gene
-2      tair_locus_model      TAIR locus model ID(s) plants_mart_26 athaliana_eg_gene
-3           tair_symbol           TAIR symbol ID(s) plants_mart_26 athaliana_eg_gene
-4       with_tair_locus       with TAIR locus ID(s) plants_mart_26 athaliana_eg_gene
-5 with_tair_locus_model with TAIR locus model ID(s) plants_mart_26 athaliana_eg_gene
-6      with_tair_symbol      with TAIR symbol ID(s) plants_mart_26 athaliana_eg_gene</code></pre>
-<p>Users will observe that we need the filter argument <code>tair_locus</code> from <code>mart</code> <code>plants_mart_26</code> and <code>dataset</code> <code>athaliana_eg_gene</code>.</p>
-<p>To find the attribute argument for refseq ids we can use the <code>organismAttributes()</code> function.</p>
-<pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for attributes related to refseq</span>
-<span class="kw">organismAttributes</span>(<span class="st">&quot;Arabidopsis thaliana&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;refseq&quot;</span>)</code></pre>
-<pre><code>Source: local data frame [3 x 4]
-
-            name       description           mart           dataset
-1    refseq_mrna    RefSeq mRNA ID plants_mart_26 athaliana_eg_gene
-2   refseq_ncrna   RefSeq ncRNA ID plants_mart_26 athaliana_eg_gene
-3 refseq_peptide RefSeq protein ID plants_mart_26 athaliana_eg_gene</code></pre>
-<p>Now it is clear that we need the attribute argument <code>refseq_peptide</code> to get the refseq id of the corresponding filter <code>tair_locus</code> ids. <strong>Please notice that BioMart frequently updates their <code>mart</code> names, so in case of <code>plants_mart_26</code> a new mart version might have to be specified to receive a proper result from <code>biomart()</code></strong>.</p>
-<pre class="sourceCode r"><code class="sourceCode r">bm &lt;-<span class="st"> </span><span class="kw">biomart</span>(<span class="dt">genes      =</span> <span class="kw">c</span>(<span class="st">&quot;AT3G01360&quot;</span>, <span class="st">&quot;AT3G01540&quot;</span>),
-              <span class="dt">mart       =</span> <span class="st">&quot;plants_mart_26&quot;</span>, 
-              <span class="dt">dataset    =</span> <span class="st">&quot;athaliana_eg_gene&quot;</span>,
-              <span class="dt">attributes =</span> <span class="st">&quot;refseq_peptide&quot;</span>,
-              <span class="dt">filters    =</span> <span class="st">&quot;tair_locus&quot;</span>)
-
-bm</code></pre>
-<pre><code>  tair_locus refseq_peptide
-1  AT3G01360   NP_001030617
-2  AT3G01360      NP_186785
-3  AT3G01540      NP_850492
-4  AT3G01540      NP_974206
-5  AT3G01540      NP_566141
-6  AT3G01540   NP_001030619</code></pre>
-<pre class="sourceCode r"><code class="sourceCode r">genes_of_interest &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="kw">sapply</span>(<span class="kw">paste0</span>(bm[ , <span class="st">&quot;refseq_peptide&quot;</span>],<span class="st">&quot;.1&quot;</span>),
-                                  function(gene) stringr::<span class="kw">str_detect</span>(gene,Ath_proteome[ , geneids])))
-
-<span class="kw">na.omit</span>(Ath_proteome[genes_of_interest , <span class="kw">list</span>(geneids, seqs)])</code></pre>
-<pre><code>          geneids
-1: NP_001030617.1
-
-seqs
-1: mgilsyavagggfavigawesldssnldpnsssgtadssspmaqirasppksvgsssipvallsslfiansffsffs
-sigsrdrvgsmiqlqivavavlflyyailtylvnsknavfvalpssittllllfgfieeflmfylqkkdvsgienryydl
-mlvpiaicvfstvfelksdssthrfaklgrgiglilqgtwflqmgvsfftglitnnctfheksrgnftikckghgdyhra
-kaiatlqfnchlalmvvvatglfsviankngylrqdhskyrplgaelenlstftldsdeedevreesnvakevglngnsshd</code></pre>
 </div>
 </div>
 </div>

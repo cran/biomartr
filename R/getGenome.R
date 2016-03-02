@@ -30,7 +30,7 @@
 #'            organism = "Arabidopsis thaliana", 
 #'            path = file.path("_ncbi_downloads","genomes"))
 #' 
-#' file_path <- file.path("_ncbi_downloads","genomes","Arabidopsis_thaliana_genome.fna.gz")
+#' file_path <- file.path("_ncbi_downloads","genomes","Arabidopsis_thaliana_genomic.fna.gz")
 #' Ath_genome <- read_genome(file_path, format = "fasta")
 #' 
 #' }
@@ -50,14 +50,9 @@ getGenome <- function(db = "refseq", kingdom, organism, path = file.path("_ncbi_
         if(!is.genome.available(organism = organism))
                 stop(paste0("Unfortunately for '",organism,"' no genome is stored on NCBI."))
         
-        
         if(db == "refseq"){
-                
-                
                 if(!file.exists(path)){
-                        
                         dir.create(path, recursive = TRUE)
-                        
                 }
                 
                 subfolders <- c("archaea","bacteria", "fungi", "invertebrate", "plant",
@@ -72,54 +67,57 @@ getGenome <- function(db = "refseq", kingdom, organism, path = file.path("_ncbi_
                 # replace white space in scientific name with "_"
                 # to match the corresponding folder on the NCBI server
                 # e.g. "Arabodopsis thaliana" will become "Arabodopsis_thaliana"
-                organism <- stringr::str_replace(organism," ","_")
+                # organism <- stringr::str_replace(organism," ","_")
                 
                 check_organisms <- strsplit(url_organisms,"\n")
+                check_organisms <- stringr::str_replace(unlist(check_organisms),"_"," ")
+                check_organisms <- check_organisms[-which(is.element(check_organisms,c("assembly summary.txt", "check_organisms historical.txt")))]
                 
                 if(!is.element(organism,unlist(check_organisms)))
                         stop("Please choose a valid organism.")
                 
-                url_lates_version <- try(RCurl::getURL(paste0("ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/",kingdom,"/",
-                                                              organism,"/latest_assembly_versions/"), ftp.use.epsv = FALSE, dirlistonly = TRUE))
+                utils::download.file(paste0("ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/",kingdom,"/assembly_summary.txt"), 
+                                     destfile = file.path(tempdir(),"assembly_summary.txt"))
+                summary.file <- readr::read_tsv(file.path(tempdir(),"assembly_summary.txt"))
                 
-                url_lates_version <- unlist(strsplit(url_lates_version,"\n"))
-                
-                query_url_list_files <- paste0("ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/",kingdom,"/",
-                                               organism,"/latest_assembly_versions/",url_lates_version)
-                
-                query_url_list_files_raw <- try(RCurl::getURL(query_url_list_files, ftp.use.epsv = FALSE, dirlistonly = TRUE, crlf = TRUE))
-                
-                query_url_list_files <- unlist(strsplit(query_url_list_files_raw,"\n"))
-                
-#                 organism_file_match <- stringr::str_match(query_url_list_files, pattern = "*_genomic.fna.gz")
-#                 organism_file <- query_url_list_files[!is.na(organism_file_match)]
-                
-                file_path <- file.path(path,paste0(organism,"_genome.fna.gz"))
-                
-                if(!file.exists(file_path)){
-                        
-                        download_url <- paste0("ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/",kingdom,"/",
-                                               organism,"/latest_assembly_versions/",url_lates_version,"/",
-                                               paste0(query_url_list_files,"_genomic.fna.gz"))
-
-                        downloader::download(download_url, file.path(path,paste0(organism,"_genome.fna.gz")),
-                                             mode = "wb")
-                        
-                        docFile( file.name = paste0(organism,"_genome.fna.gz"),
-                                 organism  = organism, 
-                                 url       = download_url, 
-                                 database  = db,
-                                 path      = path)
-                        
-                        # NCBI limits requests to three per second
-                        Sys.sleep(0.33)
-
+                organism_name <- refseq_category <- version_status <- NULL
+                query <- dplyr::filter(summary.file, stringr::str_detect(organism_name,organism), 
+                                       ((refseq_category == "representative genome") || (refseq_category == "reference genome")), 
+                                       (version_status == "latest"))
+        
+                if (nrow(query) > 1){
+                        query <- query[1, ]
                 }
                 
-        }
-
-      print(paste0("The genome of '",organism,"' has been downloaded to '",path,"' and has been named '",paste0(organism,"_genome.fna.gz"),"' ."))
-
+                organism <- stringr::str_replace(organism," ","_")
+                
+                          download_url <- paste0("ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/",kingdom,"/",
+                                                 organism,"/latest_assembly_versions/",paste0(query$`# assembly_accession`,"_",query$asm_name),"/",paste0(query$`# assembly_accession`,"_",query$asm_name,"_genomic.fna.gz"))
+ 
+                # download_url <- paste0(query$ftp_path,query$`# assembly_accession`,"_",query$asm_name,"_genomic.fna.gz")
+                
+                         if (nrow(query) == 1){
+#                                  downloader::download(download_url, 
+#                                                       destfile = file.path(path,paste0(organism,"_genomic.fna.gz")), mode = "wb")
+                                 downloader::download(download_url, 
+                                                      destfile = file.path(path,paste0(organism,"_genomic.fna.gz")), mode = "wb")
+                                 
+                                 docFile( file.name = paste0(organism,"_genomic.fna.gz"),
+                                          organism  = organism, 
+                                          url       = download_url, 
+                                          database  = db,
+                                          path      = path)
+                                 
+                                 # NCBI limits requests to three per second
+                                 Sys.sleep(0.33)
+                                 
+                                 
+                                 print(paste0("The genome of '",organism,"' has been downloaded to '",path,"' and has been named '",paste0(organism,"_genomic.fna.gz"),"' ."))
+                         } else {
+                                 
+                                 warning ("File: ",download_url, " could not be loaded properly...")
+     }
+  }
 }
 
 

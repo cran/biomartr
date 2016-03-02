@@ -5,15 +5,17 @@
 #' @author Hajk-Georg Drost
 #' @examples
 #' 
+#' \dontrun{
 #' # get a table of all available databases from BioMart
-#' head(getMarts(), 10)
+#'  getMarts()
+#' }
 #' 
 #' @seealso \code{\link{getDatasets}}, \code{\link{getAttributes}}, \code{\link{getFilters}}, \code{\link{organismBM}}, \code{\link{organismFilters}}, \code{\link{organismAttributes}}
 #' @export
 getMarts <- function(){
         
         # connect to BioMart API
-        biomartPage <- httr::handle("http://www.biomart.org:80/biomart/martservice?type=registry&requestid=biomart")
+        biomartPage <- httr::handle("http://www.ensembl.org:80/biomart/martservice?type=registry&requestid=biomart")
         xmlContentMarts <- httr::GET(handle = biomartPage)
         
         # test whether or not a connection could be established
@@ -37,7 +39,6 @@ getMarts <- function(){
         return(dplyr::filter(dbBioMart, visible != "0")[ , c("mart","version")])
                
 }
-
 
 
 
