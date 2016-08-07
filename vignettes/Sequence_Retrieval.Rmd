@@ -24,8 +24,7 @@ Using `biomartr`, users can retrieve either genomes, proteomes, or CDS data usin
 * `getGenome()`
 * `getProteome()`
 * `getCDS()`
-* `geneSequence()`
-
+* `meta.retrieval()`
 
 ## Getting Started with Sequence Retrieval
 
@@ -362,11 +361,11 @@ The easiest way to download a genome is to use the `getGenome()` function.
 
 In this example we will download the genome of `A. thaliana`.
 
-The `getGenome()` function is an interface function to the [NCBI refseq](http://www.ncbi.nlm.nih.gov/refseq/about/) database from
-which corresponding genomes are downloaded.
+The `getGenome()` function is an interface function to the [NCBI refseq](http://www.ncbi.nlm.nih.gov/refseq/about/) or [NCBI genbank](http://www.ncbi.nlm.nih.gov/genbank/about/) databases from
+which corresponding genomes can be retrieved.
 
 For this purpose users need to specify the kingdom in which their organism of interest is classified into,
-e.g. `"archaea"`,`"bacteria"`, `"fungi"`, `"invertebrate"`, `"plant"`, `"protozoa"`, `"vertebrate_mammalian"`, or `"vertebrate_other"`
+e.g. `"archaea"`,`"bacteria"`, `"fungi"`, `"invertebrate"`, `"plant"`, `"protozoa"`, `"vertebrate_mammalian"`, or `"vertebrate_other"` (see also `?getKingdoms`)
 and then the scientific name of the organism of interest.
 
 ```{r,eval=FALSE}
@@ -391,10 +390,13 @@ Ath_genome <- read_genome(file_path, format = "fasta")
 In case users would like to store the genome file at a different location,
 they can specify the `path = file.path("put","your","path","here")` argument.
 
+In case, users wish to download genomes from [NCBI genbank](http://www.ncbi.nlm.nih.gov/genbank/about/) instead of [NCBI refseq](http://www.ncbi.nlm.nih.gov/refseq/about/), they can specify the
+argument `db = "genbank"` in `getGenome()`.
+
 ### Proteome Retrieval
 
-The `getProteome()` function is also an interface function to the [NCBI refseq](http://www.ncbi.nlm.nih.gov/refseq/about/) database from
-which corresponding proteomes are downloaded. It works analogous to the `getGenome()` function. 
+The `getProteome()` function is also an interface function to the [NCBI refseq](http://www.ncbi.nlm.nih.gov/refseq/about/) or [NCBI genbank](http://www.ncbi.nlm.nih.gov/genbank/about/) databases from
+which corresponding genomes can be retrieved. It works analogous to `getGenome()`. 
 
 
 ```{r,eval=FALSE}
@@ -418,6 +420,8 @@ Ath_proteome <- read_proteome(file_path, format = "fasta")
 In case users would like to store the proteome file at a different location,
 they can specify the `path = file.path("put","your","path","here")` argument.
 
+In case, users wish to download genomes from [NCBI genbank](http://www.ncbi.nlm.nih.gov/genbank/about/) instead of [NCBI refseq](http://www.ncbi.nlm.nih.gov/refseq/about/), they can specify the
+argument `db = "genbank"` in `getProteome()`.
 
 ### CDS Retrieval
 
@@ -479,9 +483,120 @@ subsequent analyses, `AT1G06090` and `AT1G06100`. Both genes are memebers of the
 
 For this purpose users can use the `biomart()` function [see [Functional Annotation](https://github.com/HajkD/biomartr/blob/master/vignettes/Functional_Annotation.Rmd) for details].
 
+## Perform Meta-Genome Retieval
+
+The number of genome sequences generated and stored in sequence databases is growing exponentially every day. With the availability of this growing amount of data, meta-genomics studies become more popular
+and useful for finding patterns within genomes by comparing them to thousands of other genomes.
+However, the first step in any meta-genomics study is the retrieval of the genomes that shall be compared
+or investigated. 
+
+For this purpose, I implemented the `meta.retrieval()` function to allow users to perform easy meta-genome retrieval in R.
+
+The `getKingdoms()` function stores a list of all available kingdoms of life.
+
+```{r, eval=FALSE}
+getKingdoms()
+```
+
+```
+[1] "archaea"              "bacteria"             "fungi"               
+[4] "invertebrate"         "plant"                "protozoa"            
+[7] "vertebrate_mammalian" "vertebrate_other"
+```
+
+These kingdoms can be specified in `meta.retrieval()`.
+
+The `meta.retrieval()` function aims to simplify the genome retrieval process
+for subsequent meta-genomics studies.
+
+Usually this step is performed with `shell` scripts. However, since many
+meta-genomics packages exist for the R programming language, I implemented
+this functionality for easy integration into existing workflows.
+
+For example, the pipeline logic of the [magrittr](https://github.com/smbache/magrittr) package can be used with
+`meta.retrieval()`.
+
+```{r,eval=FALSE}
+# download all vertebrate genomes, then apply ...
+meta.retrieval(kingdom = "vertebrate_mammalian", type = "genome") %>% ...
+```
+
+Here `...` denotes any subsequent meta-genomics analysis. Hence, `meta.retrieval()` enables the pipelining methodology for meta-genomics. 
+
+The `meta.retrieval()` function can retrieve genomes, proteomes, and CDS files.
+
+#### Retrieve Genomic Sequences
+
+Download all mammalian vertebrate genomes from RefSeq.
+
+```{r,eval=FALSE}
+# download all vertebrate genomes
+meta.retrieval(kingdom = "vertebrate_mammalian", db = "refseq", type = "genome")
+```
+
+All geneomes are stored in the folder named according to the kingdom.
+In this case `vertebrate_mammalian`. Alternatively, users can specify
+the `out.folder` argument to define a custom output folder path.
+
+Alternatively, download all mammalian vertebrate genomes from genbank
+
+```{r,eval=FALSE}
+# download all vertebrate genomes
+meta.retrieval(kingdom = "vertebrate_mammalian", db = "genbank", type = "genome")
+```
+
+#### Retrieve Protein Sequences
+
+Download all mammalian vertebrate proteomes from RefSeq.
+
+```{r,eval=FALSE}
+# download all vertebrate genomes
+meta.retrieval(kingdom = "vertebrate_mammalian", db = "refseq", type = "proteome")
+```
+
+Alternatively, download all mammalian vertebrate proteomes from genbank
+
+```{r,eval=FALSE}
+# download all vertebrate genomes
+meta.retrieval(kingdom = "vertebrate_mammalian", db = "genbank", type = "proteome")
+```
+
+#### Retrieve CDS Sequences
+
+Download all mammalian vertebrate CDS from RefSeq (Genbank does not store CDS data).
+
+```{r,eval=FALSE}
+# download all vertebrate genomes
+meta.retrieval(kingdom = "vertebrate_mammalian", type = "CDS")
+
+```
+
+Users can obtain alternative kingdoms using `getKingdoms()`.
+
+#### Retrieve Genomes for all kingdoms of life stored in RefSeq
+
+Finally, users can download all genomes stored in the RefSeq database with one command:
+
+```{r,eval=FALSE}
+# download all geneomes stored in RefSeq
+sapply(getKingdoms(), function(x) meta.retrieval(x, type = "genome"))
+```
+
+Analogously, proteomes or CDS files can be retrieved by exchanging `type = "genome"`
+by `type = "proteome"` or `type = "CDS"`.
 
 
+#### Retrieve Genomes for all kingdoms of life stored in GenBank
 
+Users can download all genomes stored in the Genbank database with one command:
+
+```{r,eval=FALSE}
+# download all geneomes stored in Genbank
+sapply(getKingdoms(), function(x) meta.retrieval(x, db = "genbank", type = "genome"))
+```
+
+Analogously, proteomes or CDS files can be retrieved by exchanging `type = "genome"`
+by `type = "proteome"`.
 
 
 

@@ -8,8 +8,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="date" content="2016-03-02" />
+
+<meta name="date" content="2016-08-07" />
 
 <title>Sequence Retrieval</title>
 
@@ -53,14 +55,10 @@ code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Ann
 code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
 code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
 </style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 
 
-<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0A%7D%0Apre%20%7B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
 
 </head>
 
@@ -68,10 +66,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<div id="header">
-<h1 class="title">Sequence Retrieval</h1>
-<h4 class="date"><em>2016-03-02</em></h4>
-</div>
+
+<h1 class="title toc-ignore">Sequence Retrieval</h1>
+<h4 class="date"><em>2016-08-07</em></h4>
+
 
 
 <p>The <code>biomartr</code> package allows users to retrieve biological sequences in a very simple and intuitive way.</p>
@@ -80,7 +78,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><code>getGenome()</code></li>
 <li><code>getProteome()</code></li>
 <li><code>getCDS()</code></li>
-<li><code>geneSequence()</code></li>
+<li><code>meta.retrieval()</code></li>
 </ul>
 <div id="getting-started-with-sequence-retrieval" class="section level2">
 <h2>Getting Started with Sequence Retrieval</h2>
@@ -287,8 +285,8 @@ ncbi_genomes &lt;-<span class="st"> </span><span class="kw">listGenomes</span>(<
 <h3>Genome Retrieval</h3>
 <p>The easiest way to download a genome is to use the <code>getGenome()</code> function.</p>
 <p>In this example we will download the genome of <code>A. thaliana</code>.</p>
-<p>The <code>getGenome()</code> function is an interface function to the <a href="http://www.ncbi.nlm.nih.gov/refseq/about/">NCBI refseq</a> database from which corresponding genomes are downloaded.</p>
-<p>For this purpose users need to specify the kingdom in which their organism of interest is classified into, e.g. <code>&quot;archaea&quot;</code>,<code>&quot;bacteria&quot;</code>, <code>&quot;fungi&quot;</code>, <code>&quot;invertebrate&quot;</code>, <code>&quot;plant&quot;</code>, <code>&quot;protozoa&quot;</code>, <code>&quot;vertebrate_mammalian&quot;</code>, or <code>&quot;vertebrate_other&quot;</code> and then the scientific name of the organism of interest.</p>
+<p>The <code>getGenome()</code> function is an interface function to the <a href="http://www.ncbi.nlm.nih.gov/refseq/about/">NCBI refseq</a> or <a href="http://www.ncbi.nlm.nih.gov/genbank/about/">NCBI genbank</a> databases from which corresponding genomes can be retrieved.</p>
+<p>For this purpose users need to specify the kingdom in which their organism of interest is classified into, e.g. <code>&quot;archaea&quot;</code>,<code>&quot;bacteria&quot;</code>, <code>&quot;fungi&quot;</code>, <code>&quot;invertebrate&quot;</code>, <code>&quot;plant&quot;</code>, <code>&quot;protozoa&quot;</code>, <code>&quot;vertebrate_mammalian&quot;</code>, or <code>&quot;vertebrate_other&quot;</code> (see also <code>?getKingdoms</code>) and then the scientific name of the organism of interest.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Arabidopsis thaliana from refseq</span>
 <span class="co"># and store the corresponding genome file in '_ncbi_downloads/genomes'</span>
 <span class="kw">getGenome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
@@ -301,10 +299,11 @@ file_path &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span 
 <span class="co"># read genome as data.table object</span>
 Ath_genome &lt;-<span class="st"> </span><span class="kw">read_genome</span>(file_path, <span class="dt">format =</span> <span class="st">&quot;fasta&quot;</span>)</code></pre></div>
 <p>In case users would like to store the genome file at a different location, they can specify the <code>path = file.path(&quot;put&quot;,&quot;your&quot;,&quot;path&quot;,&quot;here&quot;)</code> argument.</p>
+<p>In case, users wish to download genomes from <a href="http://www.ncbi.nlm.nih.gov/genbank/about/">NCBI genbank</a> instead of <a href="http://www.ncbi.nlm.nih.gov/refseq/about/">NCBI refseq</a>, they can specify the argument <code>db = &quot;genbank&quot;</code> in <code>getGenome()</code>.</p>
 </div>
 <div id="proteome-retrieval" class="section level3">
 <h3>Proteome Retrieval</h3>
-<p>The <code>getProteome()</code> function is also an interface function to the <a href="http://www.ncbi.nlm.nih.gov/refseq/about/">NCBI refseq</a> database from which corresponding proteomes are downloaded. It works analogous to the <code>getGenome()</code> function.</p>
+<p>The <code>getProteome()</code> function is also an interface function to the <a href="http://www.ncbi.nlm.nih.gov/refseq/about/">NCBI refseq</a> or <a href="http://www.ncbi.nlm.nih.gov/genbank/about/">NCBI genbank</a> databases from which corresponding genomes can be retrieved. It works analogous to <code>getGenome()</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the proteome of Arabidopsis thaliana from refseq</span>
 <span class="co"># and store the corresponding proteome file in '_ncbi_downloads/proteomes'</span>
 <span class="kw">getProteome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
@@ -317,6 +316,7 @@ file_path &lt;-<span class="st"> </span><span class="kw">file.path</span>(<span 
 <span class="co"># read proteome as data.table object</span>
 Ath_proteome &lt;-<span class="st"> </span><span class="kw">read_proteome</span>(file_path, <span class="dt">format =</span> <span class="st">&quot;fasta&quot;</span>)</code></pre></div>
 <p>In case users would like to store the proteome file at a different location, they can specify the <code>path = file.path(&quot;put&quot;,&quot;your&quot;,&quot;path&quot;,&quot;here&quot;)</code> argument.</p>
+<p>In case, users wish to download genomes from <a href="http://www.ncbi.nlm.nih.gov/genbank/about/">NCBI genbank</a> instead of <a href="http://www.ncbi.nlm.nih.gov/refseq/about/">NCBI refseq</a>, they can specify the argument <code>db = &quot;genbank&quot;</code> in <code>getProteome()</code>.</p>
 </div>
 <div id="cds-retrieval" class="section level3">
 <h3>CDS Retrieval</h3>
@@ -350,6 +350,64 @@ Ath_cds &lt;-<span class="st"> </span><span class="kw">read_cds</span>(file_path
 <p>Again, first we download the <em>A. thaliana</em> proteome and furthermore are interested in the following two genes for subsequent analyses, <code>AT1G06090</code> and <code>AT1G06100</code>. Both genes are memebers of the fatty acid desaturase family and take over functions in oxidoreductase activity.</p>
 <p>For this purpose users can use the <code>biomart()</code> function [see <a href="https://github.com/HajkD/biomartr/blob/master/vignettes/Functional_Annotation.Rmd">Functional Annotation</a> for details].</p>
 </div>
+</div>
+</div>
+<div id="perform-meta-genome-retieval" class="section level2">
+<h2>Perform Meta-Genome Retieval</h2>
+<p>The number of genome sequences generated and stored in sequence databases is growing exponentially every day. With the availability of this growing amount of data, meta-genomics studies become more popular and useful for finding patterns within genomes by comparing them to thousands of other genomes. However, the first step in any meta-genomics study is the retrieval of the genomes that shall be compared or investigated.</p>
+<p>For this purpose, I implemented the <code>meta.retrieval()</code> function to allow users to perform easy meta-genome retrieval in R.</p>
+<p>The <code>getKingdoms()</code> function stores a list of all available kingdoms of life.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">getKingdoms</span>()</code></pre></div>
+<pre><code>[1] &quot;archaea&quot;              &quot;bacteria&quot;             &quot;fungi&quot;               
+[4] &quot;invertebrate&quot;         &quot;plant&quot;                &quot;protozoa&quot;            
+[7] &quot;vertebrate_mammalian&quot; &quot;vertebrate_other&quot;</code></pre>
+<p>These kingdoms can be specified in <code>meta.retrieval()</code>.</p>
+<p>The <code>meta.retrieval()</code> function aims to simplify the genome retrieval process for subsequent meta-genomics studies.</p>
+<p>Usually this step is performed with <code>shell</code> scripts. However, since many meta-genomics packages exist for the R programming language, I implemented this functionality for easy integration into existing workflows.</p>
+<p>For example, the pipeline logic of the <a href="https://github.com/smbache/magrittr">magrittr</a> package can be used with <code>meta.retrieval()</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download all vertebrate genomes, then apply ...</span>
+<span class="kw">meta.retrieval</span>(<span class="dt">kingdom =</span> <span class="st">&quot;vertebrate_mammalian&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;genome&quot;</span>) %&gt;%<span class="st"> </span>...</code></pre></div>
+<p>Here <code>...</code> denotes any subsequent meta-genomics analysis. Hence, <code>meta.retrieval()</code> enables the pipelining methodology for meta-genomics.</p>
+<p>The <code>meta.retrieval()</code> function can retrieve genomes, proteomes, and CDS files.</p>
+<div id="retrieve-genomic-sequences" class="section level4">
+<h4>Retrieve Genomic Sequences</h4>
+<p>Download all mammalian vertebrate genomes from RefSeq.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download all vertebrate genomes</span>
+<span class="kw">meta.retrieval</span>(<span class="dt">kingdom =</span> <span class="st">&quot;vertebrate_mammalian&quot;</span>, <span class="dt">db =</span> <span class="st">&quot;refseq&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;genome&quot;</span>)</code></pre></div>
+<p>All geneomes are stored in the folder named according to the kingdom. In this case <code>vertebrate_mammalian</code>. Alternatively, users can specify the <code>out.folder</code> argument to define a custom output folder path.</p>
+<p>Alternatively, download all mammalian vertebrate genomes from genbank</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download all vertebrate genomes</span>
+<span class="kw">meta.retrieval</span>(<span class="dt">kingdom =</span> <span class="st">&quot;vertebrate_mammalian&quot;</span>, <span class="dt">db =</span> <span class="st">&quot;genbank&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;genome&quot;</span>)</code></pre></div>
+</div>
+<div id="retrieve-protein-sequences" class="section level4">
+<h4>Retrieve Protein Sequences</h4>
+<p>Download all mammalian vertebrate proteomes from RefSeq.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download all vertebrate genomes</span>
+<span class="kw">meta.retrieval</span>(<span class="dt">kingdom =</span> <span class="st">&quot;vertebrate_mammalian&quot;</span>, <span class="dt">db =</span> <span class="st">&quot;refseq&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;proteome&quot;</span>)</code></pre></div>
+<p>Alternatively, download all mammalian vertebrate proteomes from genbank</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download all vertebrate genomes</span>
+<span class="kw">meta.retrieval</span>(<span class="dt">kingdom =</span> <span class="st">&quot;vertebrate_mammalian&quot;</span>, <span class="dt">db =</span> <span class="st">&quot;genbank&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;proteome&quot;</span>)</code></pre></div>
+</div>
+<div id="retrieve-cds-sequences" class="section level4">
+<h4>Retrieve CDS Sequences</h4>
+<p>Download all mammalian vertebrate CDS from RefSeq (Genbank does not store CDS data).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download all vertebrate genomes</span>
+<span class="kw">meta.retrieval</span>(<span class="dt">kingdom =</span> <span class="st">&quot;vertebrate_mammalian&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;CDS&quot;</span>)</code></pre></div>
+<p>Users can obtain alternative kingdoms using <code>getKingdoms()</code>.</p>
+</div>
+<div id="retrieve-genomes-for-all-kingdoms-of-life-stored-in-refseq" class="section level4">
+<h4>Retrieve Genomes for all kingdoms of life stored in RefSeq</h4>
+<p>Finally, users can download all genomes stored in the RefSeq database with one command:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download all geneomes stored in RefSeq</span>
+<span class="kw">sapply</span>(<span class="kw">getKingdoms</span>(), function(x) <span class="kw">meta.retrieval</span>(x, <span class="dt">type =</span> <span class="st">&quot;genome&quot;</span>))</code></pre></div>
+<p>Analogously, proteomes or CDS files can be retrieved by exchanging <code>type = &quot;genome&quot;</code> by <code>type = &quot;proteome&quot;</code> or <code>type = &quot;CDS&quot;</code>.</p>
+</div>
+<div id="retrieve-genomes-for-all-kingdoms-of-life-stored-in-genbank" class="section level4">
+<h4>Retrieve Genomes for all kingdoms of life stored in GenBank</h4>
+<p>Users can download all genomes stored in the Genbank database with one command:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download all geneomes stored in Genbank</span>
+<span class="kw">sapply</span>(<span class="kw">getKingdoms</span>(), function(x) <span class="kw">meta.retrieval</span>(x, <span class="dt">db =</span> <span class="st">&quot;genbank&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;genome&quot;</span>))</code></pre></div>
+<p>Analogously, proteomes or CDS files can be retrieved by exchanging <code>type = &quot;genome&quot;</code> by <code>type = &quot;proteome&quot;</code>.</p>
 </div>
 </div>
 
