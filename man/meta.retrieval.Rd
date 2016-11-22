@@ -4,17 +4,18 @@
 \alias{meta.retrieval}
 \title{Perform Meta-Genome Retieval}
 \usage{
-meta.retrieval(kingdom, db = "refseq", type = "genome", out.folder = NULL)
+meta.retrieval(kingdom, db = "refseq", type = "genome", path = NULL)
 }
 \arguments{
 \item{kingdom}{a character string specifying the kingdom of the organisms of interest,
-e.g. "archaea","bacteria", "fungi", "invertebrate", "plant", "protozoa", "vertebrate_mammalian", or "vertebrate_other".}
+e.g. "archaea","bacteria", "fungi", "invertebrate", "plant", "protozoa", "vertebrate_mammalian", or "vertebrate_other".
+Available kingdoms can be retrieved with \code{\link{getKingdoms}}.}
 
-\item{db}{a character string specifying the database from which the genome shall be retrieved: \code{refseq} or \code{genbank}.}
+\item{db}{a character string specifying the database from which the genome shall be retrieved: \code{db = "refseq"}, \code{db = "genbank"}, \code{db = "emsembl"} or \code{db = "ensemblgenomes"}.}
 
 \item{type}{type of sequences that shall be retrieved. Either \code{genome}, \code{proteome}, or \code{CDS}.}
 
-\item{out.folder}{path to the folder in which downloaded genomes shall be stored. By default the
+\item{path}{path to the folder in which downloaded genomes shall be stored. By default the
 kingdom name is used to name the output folder.}
 }
 \description{
@@ -26,14 +27,21 @@ that belong to the same kingdom of life.
 }
 \examples{
 \dontrun{
-# get all available kingdoms
-getKingdoms()
-
+# get all available kingdoms for refseq
+getKingdoms(db = "refseq")
 # download all vertebrate genomes from refseq
 meta.retrieval(kingdom = "vertebrate_mammalian", db = "refseq", type = "genome")
 
+# get all available kingdoms for genbank
+getKingdoms(db = "genbank")
 # download all vertebrate genomes from genbank
 meta.retrieval(kingdom = "vertebrate_mammalian", db = "genbank", type = "genome")
+
+# get all available kingdoms for ensemblgenomes
+getKingdoms(db = "ensemblgenomes")
+# download all vertebrate genomes from ensemblgenomes
+meta.retrieval(kingdom = "", db = "ensemblgenomes", type = "genome")
+
 }
 }
 \author{

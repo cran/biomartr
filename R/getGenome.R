@@ -1,12 +1,9 @@
 #' @title Genome Retrieval
-#' @description This function retrieves a fasta-file storing the genome of an organism of interest and stores
-#' the genome file in the folder '_ncbi_downloads/genomes'.
-#' @param db a character string specifying the database from which the genome shall be retrieved: \code{refseq} or \code{genbank}.
-#' Right now only the ref seq database is included. Later version of \pkg{biomartr} will also allow
-#' sequence retrieval from additional databases.
-#' @param kingdom a character string specifying the kingdom of the organisms of interest,
-#' e.g. "archaea","bacteria", "fungi", "invertebrate", "plant", "protozoa", "vertebrate_mammalian", or "vertebrate_other". 
-#' @param organism a character string specifying the scientific name of the organism of interest, e.g. 'Arabidopsis thaliana'.
+#' @description  Main genome retrieval function for an organism of interest.
+#' By specifying the scientific name of an organism of interest the corresponding fasta-file storing the genome of the organism of interest
+#' can be downloaded and stored locally. Genome files can be retrieved from several databases.
+#' @param db a character string specifying the database from which the genome shall be retrieved: \code{db = "refseq"}, \code{db = "genbank"}, \code{db = "ensembl"}, or \code{db = "ensemblgenomes"}.
+#' @param organism a character string specifying the scientific name of the organism of interest, e.g. \code{organism = "Homo sapiens"}.
 #' @param path a character string specifying the location (a folder) in which the corresponding
 #' genome shall be stored. Default is \code{path} = \code{file.path("_ncbi_downloads","genomes")}.
 #' @author Hajk-Georg Drost
@@ -21,123 +18,304 @@
 #' In case the corresponding fasta file already exists within the
 #' '_ncbi_downloads/genomes' folder and is accessible within the workspace,
 #' no download process will be performed.
-#' @return A data.table storing the geneids in the first column and the DNA dequence in the second column.
+#' @return File path to downloaded genome.
 #' @examples \dontrun{
 #' 
 #' # download the genome of Arabidopsis thaliana from refseq
 #' # and store the corresponding genome file in '_ncbi_downloads/genomes'
-#' getGenome( db       = "refseq", 
-#'            kingdom  = "plant", 
-#'            organism = "Arabidopsis thaliana", 
-#'            path = file.path("_ncbi_downloads","genomes"))
+#' file_path <- getGenome( db       = "refseq", 
+#'              organism = "Arabidopsis thaliana", 
+#'              path = file.path("_ncbi_downloads","genomes"))
 #' 
-#' file_path <- file.path("_ncbi_downloads","genomes","Arabidopsis_thaliana_genomic.fna.gz")
 #' Ath_genome <- read_genome(file_path, format = "fasta")
 #' 
 #' 
 #' # download the genome of Arabidopsis thaliana from genbank
 #' # and store the corresponding genome file in '_ncbi_downloads/genomes'
-#' getGenome( db       = "genbank", 
-#'            kingdom  = "plant", 
-#'            organism = "Arabidopsis thaliana", 
-#'            path = file.path("_ncbi_downloads","genomes"))
+#' file_path <- getGenome( db       = "genbank", 
+#'              organism = "Arabidopsis thaliana", 
+#'              path = file.path("_ncbi_downloads","genomes"))
 #' 
-#' file_path <- file.path("_ncbi_downloads","genomes","Arabidopsis_thaliana_genomic.fna.gz")
 #' Ath_genome <- read_genome(file_path, format = "fasta")
 #' }
-#' @references 
 #' 
-#' \url{ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq}
-#' 
-#' \url{ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank}
-#' 
-#' \url{http://www.ncbi.nlm.nih.gov/refseq/about/}
-#' 
-#' @seealso \code{\link{getProteome}}, \code{\link{getCDS}}, \code{\link{meta.retrieval}}, \code{\link{read_genome}}
+#' @seealso \code{\link{getProteome}}, \code{\link{getCDS}}, \code{\link{getGFF}}, \code{\link{meta.retrieval}}, \code{\link{read_genome}}
 #' @export
 
-getGenome <- function(db = "refseq", kingdom, organism, path = file.path("_ncbi_downloads","genomes")){
+getGenome <-
+    function(db = "refseq",
+             organism,
+             path = file.path("_ncbi_downloads", "genomes")) {
         
-        if(!is.element(db,c("refseq","genbank")))
-                stop ("Please select one of the available data bases: 'refseq' or 'genbank'")
+        if (!is.element(db, c("refseq", "genbank","ensembl", "ensemblgenomes")))
+            stop("Please select one of the available data bases: 'refseq', 'genbank', 'ensembl', or 'ensemblgenomes'.", call. = FALSE)
         
-        if(!is.genome.available(organism = organism))
-                stop (paste0("Unfortunately for '",organism,"' no genome is stored on NCBI."))
-     
-                if(!file.exists(path)){
-                        dir.create(path, recursive = TRUE)
+        if (is.element(db, c("refseq", "genbank"))) {
+            # get Kingdom Assembly Summary file
+            AssemblyFilesAllKingdoms <- getKingdomAssemblySummary(db = db)
+        
+            # test wheter or not genome is available
+            is.genome.available(organism = organism, db = db)
+            
+            if (!file.exists(path)) {
+                dir.create(path, recursive = TRUE)
+            }
+            
+            organism_name <-
+                refseq_category <- version_status <- NULL
+            
+            organism <- stringr::str_replace_all(organism,"\\(","")
+            organism <- stringr::str_replace_all(organism,"\\)","")
+            
+            FoundOrganism <-
+                dplyr::filter(
+                    AssemblyFilesAllKingdoms,
+                    stringr::str_detect(organism_name, organism),
+                    ((refseq_category == "representative genome") ||
+                         (refseq_category == "reference genome")
+                    ),
+                    (version_status == "latest")
+                )
+            
+            if (nrow(FoundOrganism) == 0) {
+                cat("\n")
+                cat(paste0("----------> No reference genome or representative genome was found for '",organism,"'. Thus, download for this species has been omitted."))
+                cat("\n")
+            } else {
+                if (nrow(FoundOrganism) > 1) {
+                    warnings(
+                        "More than one entry has been found for '",
+                        organism,
+                        "'. Only the first entry '",
+                        FoundOrganism[1, 1],
+                        "' has been used for subsequent genome retrieval."
+                    )
+                    FoundOrganism <- FoundOrganism[1,]
                 }
                 
-                subfolders <- getKingdoms()
+                organism <- stringr::str_replace_all(organism, " ", "_")
                 
-                if(!is.element(kingdom,subfolders))
-                        stop(paste0("Please select a valid kingdom: ",paste0(subfolders,collapse = ", ")))
+                download_url <-
+                    paste0(
+                        FoundOrganism$ftp_path,
+                        "/",
+                        paste0(
+                            basename(FoundOrganism$ftp_path),
+                            "_genomic.fna.gz"
+                        )
+                    )
                 
-                url_organisms <- try(RCurl::getURL(paste0("ftp://ftp.ncbi.nlm.nih.gov/genomes/",db,"/",kingdom,"/"),
-                                                   ftp.use.epsv = FALSE, dirlistonly = TRUE))
-                
-                # replace white space in scientific name with "_"
-                # to match the corresponding folder on the NCBI server
-                # e.g. "Arabodopsis thaliana" will become "Arabodopsis_thaliana"
-                # organism <- stringr::str_replace(organism," ","_")
-                
-                check_organisms <- strsplit(url_organisms,"\n")
-                check_organisms <- stringr::str_replace(unlist(check_organisms),"_"," ")
-                check_organisms <- check_organisms[-which(is.element(check_organisms,c("assembly summary.txt", "check_organisms historical.txt")))]
-                
-                if(!is.element(organism,unlist(check_organisms)))
-                        stop("Please choose a valid organism.")
-                
-                utils::download.file(paste0("ftp://ftp.ncbi.nlm.nih.gov/genomes/",db,"/",kingdom,"/assembly_summary.txt"), 
-                                     destfile = file.path(tempdir(),"assembly_summary.txt"))
-                summary.file <- readr::read_tsv(file.path(tempdir(),"assembly_summary.txt"), comment = "#")
-                
-                colnames(summary.file) <- c("assembly_accession", "bioproject", "biosample",
-                                            "wgs_master", "refseq_category", "taxid",
-                                            "species_taxid", "organism_name", "infraspecific_name",
-                                            "isolate", "version_status", "assembly_level",
-                                            "release_type", "genome_rep", "seq_rel_date",
-                                            "asm_name", "submitter", "gbrs_paired_asm",
-                                            "paired_asm_comp", "ftp_path", "excluded_from_refseq")
-                
-                organism_name <- refseq_category <- version_status <- NULL
-                query <- dplyr::filter(summary.file, stringr::str_detect(organism_name,organism), 
-                                       ((refseq_category == "representative genome") || (refseq_category == "reference genome")), 
-                                       (version_status == "latest"))
-        
-                if (nrow(query) > 1){
-                        query <- query[1, ]
-                }
-                
-                organism <- stringr::str_replace(organism," ","_")
-                
-                          download_url <- paste0("ftp://ftp.ncbi.nlm.nih.gov/genomes/",db,"/",kingdom,"/",
-                                                 organism,"/latest_assembly_versions/",paste0(query$assembly_accession,"_",query$asm_name),"/",paste0(query$assembly_accession,"_",query$asm_name,"_genomic.fna.gz"))
- 
                 # download_url <- paste0(query$ftp_path,query$`# assembly_accession`,"_",query$asm_name,"_genomic.fna.gz")
                 
-                         if (nrow(query) == 1){
-#                                  downloader::download(download_url, 
-#                                                       destfile = file.path(path,paste0(organism,"_genomic.fna.gz")), mode = "wb")
-                                 downloader::download(download_url, 
-                                                      destfile = file.path(path,paste0(organism,"_genomic.fna.gz")), mode = "wb")
-                                 
-                                 docFile( file.name = paste0(organism,"_genomic.fna.gz"),
-                                          organism  = organism, 
-                                          url       = download_url, 
-                                          database  = db,
-                                          path      = path)
-                                 
-                                 # NCBI limits requests to three per second
-                                 Sys.sleep(0.33)
-                                 
-                                 
-                                 print(paste0("The genome of '",organism,"' has been downloaded to '",path,"' and has been named '",paste0(organism,"_genomic.fna.gz"),"' ."))
-                         } else {
-                                 
-                                 warning ("File: ",download_url, " could not be loaded properly...")
-     }
- }
+                local.org <- stringr::str_replace_all(organism,"-","_")
+                local.org <- stringr::str_replace_all(organism,"\\/","_")
+                
+                if (nrow(FoundOrganism) == 1) {
+                    tryCatch({utils::capture.output(downloader::download(
+                        download_url,
+                        destfile = file.path(path, paste0(local.org, "_genomic_",db,".fna.gz")),
+                        mode = "wb"
+                    ))}, error = function(e)
+                        stop(
+                            "The FTP site 'ftp://ftp.ncbi.nlm.nih.gov/' cannot be reached. Are you connected to the internet? Is the the FTP site '",download_url,"' currently available?", call. = FALSE
+                        ))
+                    
+                    docFile(
+                        file.name = paste0(local.org, "_genomic_",db,".fna.gz"),
+                        organism  = organism,
+                        url       = download_url,
+                        database  = db,
+                        path      = path,
+                        refseq_category = FoundOrganism$refseq_category,
+                        assembly_accession = FoundOrganism$assembly_accession,
+                        bioproject = FoundOrganism$bioproject,
+                        biosample = FoundOrganism$biosample,
+                        taxid = FoundOrganism$taxid,
+                        infraspecific_name = FoundOrganism$infraspecific_name,
+                        version_status = FoundOrganism$version_status,
+                        release_type = FoundOrganism$release_type,
+                        genome_rep = FoundOrganism$genome_rep,
+                        seq_rel_date = FoundOrganism$seq_rel_date,
+                        submitter = FoundOrganism$submitter
+                    )
+                    
+                    # NCBI limits requests to three per second
+                    Sys.sleep(0.33)
+                    
+                    
+                    print(
+                        paste0(
+                            "The genome of '",
+                            organism,
+                            "' has been downloaded to '",
+                            path,
+                            "' and has been named '",
+                            paste0(local.org, "_genomic_",db,".fna.gz"),
+                            "'."
+                        )
+                    )
+                    
+                    return(file.path(path, paste0(local.org, "_genomic_",db,".fna.gz")))
+                } else {
+                    stop(
+                        "File: ",
+                        download_url,
+                        " could not be loaded properly... Are you connected to the internet?", call. = FALSE
+                    )
+                }
+            }
+        }
+    
+        if (db == "ensembl") {
+            
+            # create result folder
+            if (!file.exists(path)) {
+                dir.create(path, recursive = TRUE)
+            }
+            
+            # download genome sequence from ENSEMBL
+            genome.path <- getENSEMBL.Seq(organism, type = "dna", id.type = "toplevel", path)
+            
+            if (is.logical(genome.path)) {
+                invisible(return(TRUE))
+            } else {
+                new.organism <- stringr::str_replace_all(organism," ","_")
+                
+                # test proper API access
+                tryCatch({
+                    json.qry.info <-
+                        jsonlite::fromJSON(
+                            paste0(
+                                "http://rest.ensembl.org/info/assembly/",
+                                new.organism,
+                                "?content-type=application/json"
+                            )
+                        )
+                }, error = function(e)
+                    stop(
+                        "The API 'http://rest.ensembl.org' does not seem to work properly. Are you connected to the internet? Is the homepage 'http://rest.ensembl.org' currently available?", call. = FALSE
+                    ))
+                
+                cwd <- getwd()
+                
+                setwd(path)
+                
+                # generate Genome documentation
+                sink(paste0("doc_",new.organism,"_db_",db,".txt"))
+                
+                cat(paste0("File Name: ", genome.path))
+                cat("\n")
+                cat(paste0("Organism Name: ", new.organism))
+                cat("\n")
+                cat(paste0("Database: ", db))
+                cat("\n")
+                cat(paste0("Download_Date: ", date()))
+                cat("\n")
+                cat(paste0("assembly_name: ", json.qry.info$assembly_name))
+                cat("\n")
+                cat(paste0("assembly_date: ", json.qry.info$assembly_date))
+                cat("\n")
+                cat(paste0("genebuild_last_geneset_update: ", json.qry.info$genebuild_last_geneset_update))
+                cat("\n")
+                cat(paste0("assembly_accession: ", json.qry.info$assembly_accession))
+                cat("\n")
+                cat(paste0("genebuild_initial_release_date: ", json.qry.info$genebuild_initial_release_date))
+                
+                sink()
+                
+                setwd(cwd)
+                
+                print(
+                    paste0(
+                        "The genome of '",
+                        organism,
+                        "' has been downloaded to '",
+                        path,
+                        "' and has been named '",
+                        basename(genome.path),
+                        "'."
+                    )
+                )
+                
+                return(genome.path)   
+            }
+        }
+        
+        if (db == "ensemblgenomes") {
+            
+            # create result folder
+            if (!file.exists(path)) {
+                dir.create(path, recursive = TRUE)
+            }
+            
+            # download genome sequence from ENSEMBLGENOMES
+            genome.path <- getENSEMBLGENOMES.Seq(organism, type = "dna", id.type = "toplevel", path)
+            
+            if (is.logical(genome.path)) {
+                invisible(return(TRUE))
+            } else {
+                new.organism <- stringr::str_replace_all(organism," ","_")
+                
+                # test proper API access
+                tryCatch({
+                    json.qry.info <-
+                        jsonlite::fromJSON(
+                            paste0(
+                                "http://rest.ensemblgenomes.org/info/assembly/",
+                                new.organism,
+                                "?content-type=application/json"
+                            )
+                        )
+                }, error = function(e)
+                    stop(
+                        "The API 'http://rest.ensemblgenomes.org' does not seem to work properly. Are you connected to the internet? Is the homepage 'http://rest.ensemblgenomes.org' currently available?", call. = FALSE
+                    ))
+                
+                cwd <- getwd()
+                
+                setwd(path)
+                
+                # generate Genome documentation
+                sink(paste0("doc_",new.organism,"_db_",db,".txt"))
+                
+                cat(paste0("File Name: ", genome.path))
+                cat("\n")
+                cat(paste0("Organism Name: ", new.organism))
+                cat("\n")
+                cat(paste0("Database: ", db))
+                cat("\n")
+                cat(paste0("Download_Date: ", date()))
+                cat("\n")
+                cat(paste0("assembly_name: ", json.qry.info$assembly_name))
+                cat("\n")
+                cat(paste0("assembly_date: ", json.qry.info$assembly_date))
+                cat("\n")
+                cat(paste0("genebuild_last_geneset_update: ", json.qry.info$genebuild_last_geneset_update))
+                cat("\n")
+                cat(paste0("assembly_accession: ", json.qry.info$assembly_accession))
+                cat("\n")
+                cat(paste0("genebuild_initial_release_date: ", json.qry.info$genebuild_initial_release_date))
+                
+                sink()
+                
+                setwd(cwd)
+                
+                print(
+                    paste0(
+                        "The genome of '",
+                        organism,
+                        "' has been downloaded to '",
+                        path,
+                        "' and has been named '",
+                        basename(genome.path),
+                        "'."
+                    )
+                )
+                
+                return(genome.path)
+            }   
+        }
+    }
 
 
 

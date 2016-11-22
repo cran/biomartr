@@ -2,7 +2,6 @@
 #' @description This function extracts all organism names (scientific names) for which genomes,
 #' proteomes, and CDS files are stored on the NCBI refseq server.
 #' @author Hajk-Georg Drost
-#' @references \url{ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/}
 #' @export
 
 refseqOrganisms <- function(){
@@ -17,8 +16,16 @@ refseqOrganisms <- function(){
                                "vertebrate_other")
         
         
-        all_refseqOrgs <- as.vector( unlist( sapply( refseq_kingdoms, function(kingdom) strsplit(RCurl::getURL(paste0("ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/",kingdom,"/"),
-                                                 ftp.use.epsv = FALSE, dirlistonly = TRUE),"\n" ) ) ) )
+        all_refseqOrgs <-
+            as.vector(unlist(sapply(refseq_kingdoms, function(kingdom)
+                strsplit(
+                    RCurl::getURL(
+                        paste0("ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/", kingdom, "/"),
+                        ftp.use.epsv = FALSE,
+                        dirlistonly = TRUE
+                    ),
+                    "\n"
+                ))))
         
         
         all_refseqOrgs <- stringr::str_replace(all_refseqOrgs,"_"," ")

@@ -5,14 +5,32 @@ test_that("The getCDS() interface works properly..",{
         skip_on_cran()
         skip_on_travis() 
         
-        getCDS( db       = "refseq",
-                kingdom  = "plant",
-                organism = "Arabidopsis thaliana",
-                path     = tempdir())
+        # test proper download
+        Ath_CDS <- read_cds(getCDS( db       = "refseq",
+                                    organism = "Arabidopsis thaliana",
+                                    path     = tempdir()), format = "fasta")
         
+        # test proper use of internal referece files when command is repeated
+        Ath_CDS <- read_cds(getCDS( db       = "refseq",
+                                    organism = "Arabidopsis thaliana",
+                                    path     = tempdir()), format = "fasta")
         
-        file_path <- file.path(tempdir(),"Arabidopsis_thaliana_rna.fna.gz")
-        Ath_CDS <- read_cds(file_path, format = "fasta")
+        # test proper download from genbank
+        Ath_CDS <- read_cds(getCDS( db       = "genbank",
+                                    organism = "Arabidopsis thaliana",
+                                    path     = tempdir()), format = "fasta")
         
-        expect_identical(Ath_CDS[1,geneids],"NM_001035536.2")
+        # test proper use of internal referece files when command is repeated
+        Ath_CDS <- read_cds(getCDS( db       = "genbank",
+                                    organism = "Arabidopsis thaliana",
+                                    path     = tempdir()), format = "fasta")
+        
+})
+
+test_that("The getCDS() error messages work properly..",{
+        skip_on_cran()
+        
+    expect_true(getCDS( db       = "ensembl",
+                        organism = "Saccharomyces cerevisi",
+                        path     = tempdir()))
 })

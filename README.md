@@ -1,9 +1,14 @@
 biomartr
 ========
 
-## Biological Data Retrieval with R
+## Genomic Data Retrieval with R
 
-The `biomartr` package is designed for life scientists and provides a powerful sequence retrieval and functional annotation framework for the R programming language that aims to facilitate reproducibility and large-scale handling of biological data.  
+The vastly growing number of sequenced genomes allows us to perform a new type of biological research.
+Using a comparative approach these genomes provide us with new insights on how biological information is encoded 
+on the molecular level and how this information changes over evolutionary time.
+
+The first step, however, of any genome based study is to retrieve genomes from databases. For automating this
+retrieval process on a meta-genomic scale, the `biomartr` package provides useful interface functions for genomic sequence retrieval and functional annotation retrieval. The major aim of `biomartr` is to facilitate reproducibility and large-scale handling of genomic data for (meta-)genomic analyses.  
 
 In detail, `biomartr` aims to provide users with an easy to use framework to obtain genome, proteome, and CDS data, as well as an interface to the [BioMart](http://www.biomart.org/) database to retrieve functional annotation for genomic loci.
 Hence, the `biomartr` package is designed to achieve the highest degree of reproducible research from data retrieval to data visualization.
@@ -15,8 +20,9 @@ Additionally, the `biomartr` package allows users to retrieve entire NCBI databa
 Getting Started with `biomartr`:
 
 - [Introduction](https://github.com/HajkD/biomartr/tree/master/vignettes/Introduction.Rmd)
-- [NCBI Database Retrieval](https://github.com/HajkD/biomartr/blob/master/vignettes/Database_Retrieval.Rmd)
-- [Sequence and Database Retrieval](https://github.com/HajkD/biomartr/tree/master/vignettes/Sequence_Retrieval.Rmd)
+- [Database Retrieval](https://github.com/HajkD/biomartr/blob/master/vignettes/Database_Retrieval.Rmd)
+- [Genomic Sequence Retrieval](https://github.com/HajkD/biomartr/tree/master/vignettes/Sequence_Retrieval.Rmd)
+- [Meta-Genome Retrieval](https://github.com/HajkD/biomartr/tree/master/vignettes/MetaGenome_Retrieval.Rmd)
 - [Functional Annotation](https://github.com/HajkD/biomartr/tree/master/vignettes/Functional_Annotation.Rmd)
 - [Evolutionary Transcriptomics using myTAI, orthologr, and biomartr](https://github.com/HajkD/biomartr/tree/master/vignettes/Evolutionary_Transcriptomics.Rmd)
 
@@ -45,7 +51,7 @@ Please type `a` specifying that all package dependencies of the corresponding pa
 Now users can download `biomartr` from CRAN :
 
 ```r
-# install biomartr 0.0.3 from CRAN
+# install biomartr 0.1.0 from CRAN
 install.packages("biomartr",
                  repos        = "https://cran.rstudio.com/",
                  dependencies = TRUE)
@@ -53,6 +59,63 @@ install.packages("biomartr",
 
 ## NEWS
 The current status of the package as well as a detailed history of the functionality of each version of `biomartr` can be found in the [NEWS](https://github.com/HajkD/biomartr/blob/master/NEWS.md) section.
+
+## Genomic Data Retrieval
+
+#### Meta-Genome Retrieval
+
+* `meta.retieval()` : Perform Meta-Genome Retieval from NCBI of species belonging to the same kingdom of life 
+* `meta.retieval.all()` : Perform Meta-Genome Retieval from NCBI of the entire kingdom of life
+* `getMetaGenomes()` : Retrieve metagenomes from NCBI Genbank
+* `getMetaGenomeAnnotations()` : Retrieve annotation *.gff files for metagenomes from NCBI Genbank
+* `listMetaGenomes()` : List available metagenomes on NCBI Genbank
+* `getMetaGenomeSummary()` : Helper function to retrieve the assembly_summary.txt file from NCBI genbank metagenomes
+
+#### Genome Retrieval
+
+* `listGenomes()` : List all genomes available on NCBI and ENSEMBL servers
+* `listKingdoms()` : list the number of available species per kingdom of life on NCBI and ENSEMBL servers
+* `listGroups()` : list the number of available species per group on NCBI and ENSEMBL servers
+* `listSubgroups()` : list the number of available species per subgroup on NCBI and ENSEMBL servers
+* `getKingdoms()` : Retrieve available kingdoms of life
+* `getGroups()` : Retrieve available groups for a kingdom of life
+* `getSubgroups()` : Retrieve available subgroups for a kingdom of life
+* `is.genome.available()` : Check Genome Availability  NCBI and ENSEMBL servers
+* `getGenome()` : Download a specific genome stored on NCBI and ENSEMBL servers
+* `getProteome()` : Download a specific proteome stored on NCBI and ENSEMBL servers
+* `getCDS()` : Download a specific CDS file (genome) stored on NCBI and ENSEMBL servers
+* `getGFF()` : Genome Annotation Retrieval (`*.gff`) from NCBI and ENSEMBL servers
+* `getKingdomAssemblySummary()` : Helper function to retrieve the assembly_summary.txt files from NCBI for all kingdoms
+* `getMetaGenomeSummary()` : Helper function to retrieve the assembly_summary.txt files from NCBI genbank metagenomes
+* `getSummaryFile()` : Helper function to retrieve the assembly_summary.txt file from NCBI for a specific kingdom
+* `read_genome()` : Import genomes as Biostrings or data.table object
+* `read_proteome()` : Import proteome as Biostrings or data.table object
+* `read_cds()` : Import CDS as Biostrings or data.table object
+* `read_gff()` : Import GFF file
+
+#### Database Retrieval
+
+* `listDatabases()` : Retrieve a list of available NCBI databases
+* `download.database()` : Download a NCBI database to your local hard drive
+* `download.database.all()` : Download a complete NCBI Database such as e.g. `NCBI nr` to your local hard drive
+
+### BioMart Queries
+
+* `biomart()` : Main function to query the BioMart database
+* `getMarts()` : Retrieve All Available BioMart Databases
+* `getDatasets()` : Retrieve All Available Datasets for a BioMart Database
+* `getAttributes()` : Retrieve All Available Attributes for a Specific Dataset
+* `getFilters()` : Retrieve All Available Filters for a Specific Dataset
+* `organismBM()` : Function for organism specific retrieval of available BioMart marts and datasets
+* `organismAttributes()` : Function for organism specific retrieval of available BioMart attributes
+* `organismFilters()` : Function for organism specific retrieval of available BioMart filters
+
+### Performing Gene Ontology queries
+
+#### Gene Ontology
+
+* `getGO()` : Function to retrieve GO terms for a given set of genes
+
 
 ## Download Developer Version
 
@@ -92,45 +155,6 @@ library("biomartr", lib.loc = "C:/Program Files/R/R-3.1.1/library")
 ### Troubleshooting on Windows Machines
 
 - Install `biomartr` on a Win 8 laptop: [solution](https://github.com/HajkD/orthologr/issues/1) ( Thanks to Andres Romanowski )
-
-
-### BioMart Queries
-
-* `biomart()` : Main function to query the BioMart database
-* `getMarts()` : Retrieve All Available BioMart Databases
-* `getDatasets()` : Retrieve All Available Datasets for a BioMart Database
-* `getAttributes()` : Retrieve All Available Attributes for a Specific Dataset
-* `getFilters()` : Retrieve All Available Filters for a Specific Dataset
-* `organismBM()` : Function for organism specific retrieval of available BioMart marts and datasets
-* `organismAttributes()` : Function for organism specific retrieval of available BioMart attributes
-* `organismFilters()` : Function for organism specific retrieval of available BioMart filters
-
-
-### Biological Data Retrieval
-
-#### Genome Retrieval
-
-* `getGenome()` : Download a specific genome stored on the NCBI ftp:// server
-* `listGenomes()` : List all genomes available on the NCBI ftp:// server
-* `is.genome.available()` : Check Genome Availability
-* `getProteome()` : Download a specific proteome stored on the NCBI ftp:// server
-* `getCDS()` : Download a specific CDS file (genome) stored on the NCBI ftp:// server
-
-#### Database Retrieval
-
-* `listDatabases()` : Retrieve a List of Available NCBI Databases for Download
-* `download_database()` : Download a NCBI Database to Your Local Hard Drive
-
-#### Meta-Genome Retrieval
-
-* `meta.retieval()` : Perform Meta-Genome Retieval from NCBI
-
-### Performing Gene Ontology queries
-
-#### Gene Ontology
-
-* `getGO()` : Function to retrieve GO terms for a given set of genes
-
 
 ## Discussions and Bug Reports
 

@@ -4,28 +4,24 @@
 \alias{getProteome}
 \title{Proteome Retrieval}
 \usage{
-getProteome(db = "refseq", kingdom, organism,
-  path = file.path("_ncbi_downloads", "proteomes"))
+getProteome(db = "refseq", organism, path = file.path("_ncbi_downloads",
+  "proteomes"))
 }
 \arguments{
-\item{db}{a character string specifying the database from which the proteome shall be retrieved: \code{refseq} or \code{genbank}.
-Right now only the ref seq database is included. Later version of \pkg{biomartr} will also allow
-sequence retrieval from additional databases.}
+\item{db}{a character string specifying the database from which the genome shall be retrieved: \code{db = "refseq"}, \code{db = "genbank"}, \code{db = "ensembl"} or \code{db = "ensemblgenomes"}.}
 
-\item{kingdom}{a character string specifying the kingdom of the organisms of interest,
-e.g. "archaea","bacteria", "fungi", "invertebrate", "plant", "protozoa", "vertebrate_mammalian", or "vertebrate_other".}
-
-\item{organism}{a character string specifying the scientific name of the organism of interest, e.g. 'Arabidopsis thaliana'.}
+\item{organism}{a character string specifying the scientific name of the organism of interest, e.g. \code{organism = "Homo sapiens"}.}
 
 \item{path}{a character string specifying the location (a folder) in which the corresponding
 proteome shall be stored. Default is \code{path} = \code{file.path("_ncbi_downloads","proteomes")}.}
 }
 \value{
-A data.table storing the geneids in the first column and the protein dequence in the second column.
+File path to downloaded proteome.
 }
 \description{
-This function retrieves a fasta-file storing the proteome of an organism of interest and stores
-the proteome file in the folder '_ncbi_downloads/proteomes'.
+Main proteome retrieval function for an organism of interest.
+By specifying the scientific name of an organism of interest the corresponding fasta-file storing the proteome of the organism of interest
+can be downloaded and stored locally. Proteome files can be retrieved from several databases.
 }
 \details{
 Internally this function loads the the overview.txt file from NCBI:
@@ -36,47 +32,31 @@ Internally this function loads the the overview.txt file from NCBI:
 
 and creates a directory '_ncbi_downloads/proteomes' to store
 the proteome of interest as fasta file for future processing.
-In case the corresponding fasta file already exists within the
-'_ncbi_downloads/genomes' folder and is accessible within the workspace,
-no download process will be performed.
 }
 \examples{
 \dontrun{
 
 # download the proteome of Arabidopsis thaliana from refseq
 # and store the corresponding proteome file in '_ncbi_downloads/proteomes'
-getProteome( db       = "refseq", 
-             kingdom  = "plant", 
+file_path <- getProteome( db       = "refseq", 
              organism = "Arabidopsis thaliana", 
              path     = file.path("_ncbi_downloads","proteomes") )
 
-
-file_path <- file.path("_ncbi_downloads","proteomes","Arabidopsis_thaliana_protein.faa.gz")
 Ath_proteome <- read_proteome(file_path, format = "fasta")
 
 # download the proteome of Arabidopsis thaliana from genbank
 # and store the corresponding proteome file in '_ncbi_downloads/proteomes'
-getProteome( db       = "genbank", 
-             kingdom  = "plant", 
+file_path <- getProteome( db       = "genbank", 
              organism = "Arabidopsis thaliana", 
              path     = file.path("_ncbi_downloads","proteomes") )
 
-
-file_path <- file.path("_ncbi_downloads","proteomes","Arabidopsis_thaliana_protein.faa.gz")
 Ath_proteome <- read_proteome(file_path, format = "fasta")
 }
 }
 \author{
 Hajk-Georg Drost
 }
-\references{
-\url{ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq}
-
-\url{ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank}
-
-\url{http://www.ncbi.nlm.nih.gov/refseq/about/}
-}
 \seealso{
-\code{\link{getGenome}}, \code{\link{getCDS}}, \code{\link{meta.retrieval}}, \code{\link{read_proteome}}
+\code{\link{getGenome}}, \code{\link{getCDS}}, \code{\link{getGFF}}, \code{\link{meta.retrieval}}, \code{\link{read_proteome}}
 }
 

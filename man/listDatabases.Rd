@@ -4,12 +4,10 @@
 \alias{listDatabases}
 \title{Retrieve a List of Available NCBI Databases for Download}
 \usage{
-listDatabases(db_name = "nr", db_format = "fasta", update = FALSE)
+listDatabases(db = "nr", update = FALSE)
 }
 \arguments{
-\item{db_name}{a character string specifying the name of the database that shall be searched for.}
-
-\item{db_format}{a character string specifying the database format, e.g. \code{db_format} = \code{"fasta"}.}
+\item{db}{a character string specifying the name of the database that shall be searched for.}
 
 \item{update}{a logical value specifying whether or not the local listDatabases.txt file shall be updated by remote access to NCBI.}
 }
@@ -21,27 +19,24 @@ Database retrieval is crucial for most biological studies and analyses.
 There is a vast diversity of databases that can be accessed remotely or that can be downloaded
 to your local machine. This function provides an interface to databases that can be downloaded 
 from NCBI servers and lists all available databases and their database version to be able to
-select an appropriate database for download with \code{\link{download_database}}.
+select an appropriate database for download with \code{\link{download.database}}.
 }
 \examples{
 
 # retrieve all versions of the NCBI 'nr' database that can be downloaded
-# listDatabases(db_name = "nr", db_format = "fasta")
+# listDatabases(db = "nr")
 
 # analogous:
-# listDatabases(db_name = "cdd", db_format = "fasta")
-# listDatabases(db_name = "nt", db_format = "fasta")
-# listDatabases(db_name = "gss", db_format = "fasta")
-# listDatabases(db_name = "refseq_protein", db_format = "fasta")
+# listDatabases(db = "cdd")
+# listDatabases(db = "nt")
+# listDatabases(db = "gss")
+# listDatabases(db = "refseq_protein")
 
 }
 \author{
 Hajk-Georg Drost
 }
-\references{
-\url{ftp://ftp.ncbi.nlm.nih.gov/blast/db/FASTA}
-}
 \seealso{
-\code{\link{download_database}}
+\code{\link{download.database}}
 }
 

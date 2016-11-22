@@ -4,56 +4,32 @@
 \alias{getCDS}
 \title{Coding Sequence Retrieval}
 \usage{
-getCDS(db = "refseq", kingdom, organism, path = file.path("_ncbi_downloads",
-  "CDS"), delete_corrupt = FALSE)
+getCDS(db = "refseq", organism, path = file.path("_ncbi_downloads", "CDS"))
 }
 \arguments{
-\item{db}{a character string specifying the database from which the CDS file shall be retrieved: \code{refseq}.
-Right now only the ref seq database is included. Later version of \pkg{biomartr} will also allow
-sequence retrieval from additional databases.}
+\item{db}{a character string specifying the database from which the genome shall be retrieved: \code{db = "refseq"}, \code{db = "genbank"}, \code{db = "ensembl"} or \code{db = "ensemblgenomes"}.}
 
-\item{kingdom}{a character string specifying the kingdom of the organisms of interest,
-e.g. "archaea","bacteria", "fungi", "invertebrate", "plant", "protozoa", "vertebrate_mammalian", or "vertebrate_other".}
-
-\item{organism}{a character string specifying the scientific name of the organism of interest, e.g. 'Arabidopsis thaliana'.}
+\item{organism}{a character string specifying the scientific name of the organism of interest,\code{organism = "Homo sapiens"}.}
 
 \item{path}{a character string specifying the location (a folder) in which the corresponding
 CDS file shall be stored. Default is \code{path} = \code{file.path("_ncbi_downloads","CDS")}.}
-
-\item{delete_corrupt}{a logical value specifying whether potential CDS sequences that cannot be divided by 3 shall be
-be excluded from the the dataset. Default is \code{delete_corrupt = FALSE}.}
 }
 \value{
-A data.table storing the geneids in the first column and the DNA dequence in the second column.
+File path to downloaded CDS file.
 }
 \description{
-This function retrieves a fasta-file storing the CDS files of the genome of an organism of interest and stores
-this file in the folder '_ncbi_downloads/CDS'.
-}
-\details{
-Internally this function loads the the overview.txt file from NCBI:
-
- refseq: ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/
-
-and creates a directory '_ncbi_downloads/CDS' to store
-the genome of interest as CDS fasta file for future processing.
-In case the corresponding fasta file already exists within the
-'_ncbi_downloads/CDS' folder and is accessible within the workspace,
-no download process will be performed. So the folder can delete when the corresponding
-CDS file shall be downloaded again.
+Main retrieval function for coding sequences (CDS) of an organism of interest.
+By specifying the scientific name of an organism of interest the corresponding fasta-file storing the CDS information for the organism of interest
+can be downloaded and stored locally. CDS files can be retrieved from several databases.
 }
 \examples{
 \dontrun{
-
 # download the genome of Arabidopsis thaliana from refseq
 # and store the corresponding genome CDS file in '_ncbi_downloads/CDS'
-getCDS( db       = "refseq", 
-        kingdom  = "plant", 
-        organism = "Arabidopsis thaliana", 
-        path     = file.path("_ncbi_downloads","CDS"))
+file_path <- getCDS( db       = "refseq", 
+             organism = "Arabidopsis thaliana", 
+             path     = file.path("_ncbi_downloads","CDS"))
 
-
-file_path <- file.path("_ncbi_downloads","CDS","Arabidopsis_thaliana_rna.fna.gz")
 Ath_CDS <- read_cds(file_path, format = "fasta")
 
 }
@@ -61,12 +37,7 @@ Ath_CDS <- read_cds(file_path, format = "fasta")
 \author{
 Hajk-Georg Drost
 }
-\references{
-\url{ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq}
- 
-\url{http://www.ncbi.nlm.nih.gov/refseq/about/}
-}
 \seealso{
-\code{\link{getGenome}}, \code{\link{getProteome}}, \code{\link{meta.retrieval}}, \code{\link{read_cds}}
+\code{\link{getGenome}}, \code{\link{getProteome}}, \code{\link{getGFF}}, \code{\link{meta.retrieval}}, \code{\link{read_cds}}
 }
 
