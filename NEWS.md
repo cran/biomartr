@@ -1,3 +1,14 @@
+biomartr 0.2.1
+===========
+
+In this version of `biomartr` the `organism*()` functions were adapted to the new [ENSEMBL 87 release](http://www.ensembl.info/blog/2016/12/08/ensembl-87-has-been-released/)
+in which organism name specification in the Biomart description column [was changed](https://github.com/HajkD/biomartr/issues/1)
+from a scientific name convention to a mix of common name and scientific name convention.
+
+- all `organism*()` functions have been adapted to the new ENSEMBL 87 release organism name notation that is used in the Biomart description
+
+- fixing error handling bug that caused commands such as `download.database(db = "nr.27.tar.gz")` to not execute properly
+
 biomartr 0.2.0
 ===========
 

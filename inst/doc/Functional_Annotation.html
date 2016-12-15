@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2016-11-21" />
+<meta name="date" content="2016-12-15" />
 
 <title>Functional Annotation with BioMart, GO, and KeGG</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Functional Annotation with BioMart, GO, and KeGG</h1>
-<h4 class="date"><em>2016-11-21</em></h4>
+<h4 class="date"><em>2016-12-15</em></h4>
 
 
 
@@ -142,7 +142,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 10 chromosomal_region Chromosome Regions (e.g 1:100:10000:-1,1:100000:200000:1)</code></pre>
 <p>After accumulating all this information, it is now possible to perform an actual BioMart query by using the <code>getBM()</code> function.</p>
 <p>In this example we will retrieve attributes: <code>start_position</code>,<code>end_position</code> and <code>description</code> for the <em>Homo sapiens</em> gene <code>&quot;GUCA2A&quot;</code>.</p>
-<p>Since the input genes are <code>ensembl gene ids</code>, we need to specify the <code>filters</code> argument <code>filters = &quot;tair_locus&quot;</code>.</p>
+<p>Since the input genes are <code>ensembl gene ids</code>, we need to specify the <code>filters</code> argument <code>filters = &quot;hgnc_symbol&quot;</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1) select a mart and data set</span>
 mart &lt;-<span class="st"> </span><span class="kw">useDataset</span>(<span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>, 
                    <span class="dt">mart    =</span> <span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>,
@@ -171,8 +171,8 @@ resultTable </code></pre></div>
 <p>Taken together, the following workflow allows users to perform fast BioMart queries for attributes using the <code>biomart()</code> function implemented in this <code>biomartr</code> package:</p>
 <ol style="list-style-type: decimal">
 <li><p>get attributes, datasets, and marts via : <code>organismAttributes()</code></p></li>
-<li><p>choose available filters via: <code>organismFilters()</code></p></li>
-<li><p>specify a set of query genes</p></li>
+<li><p>choose available biological features (filters) via: <code>organismFilters()</code></p></li>
+<li><p>specify a set of query genes: e.g. retrieved with <code>getGenome()</code>, <code>getProteome()</code> or <code>getCDS()</code></p></li>
 <li><p>specify all arguments of the <code>biomart()</code> function using steps 1) - 3) and perform a BioMart query</p></li>
 </ol>
 <p><strong>Note that dataset names change very frequently due to the update of dataset versions. So in case some query functions do not work properly, users should check with <code>organismAttributes(update = TRUE)</code> whether or not their dataset name has been changed. For example, <code>organismAttributes(&quot;Homo sapiens&quot;, topic = &quot;id&quot;, update = TRUE)</code> might reveal that the dataset <code>ENSEMBL_MART_ENSEMBL</code> has changed.</strong></p>
@@ -187,66 +187,105 @@ resultTable </code></pre></div>
 <span class="co"># list all available databases</span>
 <span class="kw">getMarts</span>()</code></pre></div>
 <pre><code>                   mart               version
-1  ENSEMBL_MART_ENSEMBL      Ensembl Genes 83
-2 ENSEMBL_MART_SEQUENCE              Sequence
-3 ENSEMBL_MART_ONTOLOGY              Ontology
-4  ENSEMBL_MART_GENOMIC   Genomic features 83
-5      ENSEMBL_MART_SNP  Ensembl Variation 83
-6  ENSEMBL_MART_FUNCGEN Ensembl Regulation 83
-7     ENSEMBL_MART_VEGA               Vega 63
-8                 pride        PRIDE (EBI UK)</code></pre>
+1  ENSEMBL_MART_ENSEMBL      Ensembl Genes 87
+2    ENSEMBL_MART_MOUSE      Mouse strains 87
+3 ENSEMBL_MART_SEQUENCE              Sequence
+4 ENSEMBL_MART_ONTOLOGY              Ontology
+5  ENSEMBL_MART_GENOMIC   Genomic features 87
+6      ENSEMBL_MART_SNP  Ensembl Variation 87
+7  ENSEMBL_MART_FUNCGEN Ensembl Regulation 87
+8     ENSEMBL_MART_VEGA               Vega 67</code></pre>
 </div>
 <div id="retrieve-available-datasets-from-a-specific-mart" class="section level3">
 <h3>Retrieve Available Datasets from a Specific Mart</h3>
 <p>Now users can select a specific database to list all available datasets that can be accessed through this database. In this example we choose the <code>ENSEMBL_MART_ENSEMBL</code> database.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(<span class="kw">getDatasets</span>(<span class="dt">mart =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>) , <span class="dv">5</span>)</code></pre></div>
-<pre><code>                         dataset                                description version
-1         oanatinus_gene_ensembl     Ornithorhynchus anatinus genes (OANA5)   OANA5
-2        cporcellus_gene_ensembl            Cavia porcellus genes (cavPor3) cavPor3
-3        gaculeatus_gene_ensembl     Gasterosteus aculeatus genes (BROADS1) BROADS1
-4         lafricana_gene_ensembl         Loxodonta africana genes (loxAfr3) loxAfr3
-5 itridecemlineatus_gene_ensembl Ictidomys tridecemlineatus genes (spetri2) spetri2</code></pre>
+<pre><code>                         dataset                  description   version
+1         oanatinus_gene_ensembl       Platypus genes (OANA5)     OANA5
+2        cporcellus_gene_ensembl   Guinea Pig genes (cavPor3)   cavPor3
+3        gaculeatus_gene_ensembl Stickleback genes (BROAD S1)  BROAD S1
+4         lafricana_gene_ensembl   Elephant genes (Loxafr3.0) Loxafr3.0
+5 itridecemlineatus_gene_ensembl     Squirrel genes (spetri2)   spetri2</code></pre>
 <p>Now you can select the dataset <code>hsapiens_gene_ensembl</code> and list all available attributes that can be retrieved from this dataset.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tail</span>(<span class="kw">getDatasets</span>(<span class="dt">mart =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>) , <span class="dv">38</span>)</code></pre></div>
-<pre><code>                       dataset                                 description      version
-32       hsapiens_gene_ensembl              Homo sapiens genes (GRCh38.p5)    GRCh38.p5
-33       pformosa_gene_ensembl       Poecilia formosa genes (PoeFor_5.1.2) PoeFor_5.1.2
-34          mfuro_gene_ensembl  Mustela putorius furo genes (MusPutFur1.0) MusPutFur1.0
-35     tbelangeri_gene_ensembl            Tupaia belangeri genes (tupBel1)      tupBel1
-36        ggallus_gene_ensembl               Gallus gallus genes (Galgal4)      Galgal4
-37    xtropicalis_gene_ensembl           Xenopus tropicalis genes (JGI4.2)       JGI4.2
-38      ecaballus_gene_ensembl              Equus caballus genes (EquCab2)      EquCab2
-39        pabelii_gene_ensembl                  Pongo abelii genes (PPYG2)        PPYG2
-40     xmaculatus_gene_ensembl   Xiphophorus maculatus genes (Xipmac4.4.2)  Xipmac4.4.2
-41         drerio_gene_ensembl                  Danio rerio genes (GRCz10)       GRCz10
-42     lchalumnae_gene_ensembl         Latimeria chalumnae genes (LatCha1)      LatCha1
-43  tnigroviridis_gene_ensembl Tetraodon nigroviridis genes (TETRAODON8.0) TETRAODON8.0
-44   amelanoleuca_gene_ensembl      Ailuropoda melanoleuca genes (ailMel1)      ailMel1
-45       mmulatta_gene_ensembl               Macaca mulatta genes (MMUL_1)       MMUL_1
-46      pvampyrus_gene_ensembl           Pteropus vampyrus genes (pteVam1)      pteVam1
-47        panubis_gene_ensembl              Papio anubis genes (PapAnu2.0)    PapAnu2.0
-48     mdomestica_gene_ensembl       Monodelphis domestica genes (monDom5)      monDom5
-49  acarolinensis_gene_ensembl       Anolis carolinensis genes (AnoCar2.0)    AnoCar2.0
-50         vpacos_gene_ensembl               Vicugna pacos genes (vicPac1)      vicPac1
-51      tsyrichta_gene_ensembl            Tarsius syrichta genes (tarSyr1)      tarSyr1
-52     ogarnettii_gene_ensembl          Otolemur garnettii genes (OtoGar3)      OtoGar3
-53  dmelanogaster_gene_ensembl       Drosophila melanogaster genes (BDGP6)        BDGP6
-54       mmurinus_gene_ensembl          Microcebus murinus genes (micMur1)      micMur1
-55      loculatus_gene_ensembl        Lepisosteus oculatus genes (LepOcu1)      LepOcu1
-56       olatipes_gene_ensembl                Oryzias latipes genes (HdrR)         HdrR
-57       ggorilla_gene_ensembl           Gorilla gorilla genes (gorGor3.1)    gorGor3.1
-58      oprinceps_gene_ensembl         Ochotona princeps genes (OchPri2.0)    OchPri2.0
-59         dordii_gene_ensembl             Dipodomys ordii genes (dipOrd1)      dipOrd1
-60         oaries_gene_ensembl                 Ovis aries genes (Oar_v3.1)     Oar_v3.1
-61      mmusculus_gene_ensembl              Mus musculus genes (GRCm38.p4)    GRCm38.p4
-62     mgallopavo_gene_ensembl            Meleagris gallopavo genes (UMD2)         UMD2
-63        gmorhua_gene_ensembl                Gadus morhua genes (gadMor1)      gadMor1
-64 aplatyrhynchos_gene_ensembl     Anas platyrhynchos genes (BGI_duck_1.0) BGI_duck_1.0
-65       saraneus_gene_ensembl               Sorex araneus genes (sorAra1)      sorAra1
-66      sharrisii_gene_ensembl       Sarcophilus harrisii genes (DEVIL7.0)     DEVIL7.0
-67       meugenii_gene_ensembl           Macropus eugenii genes (Meug_1.0)     Meug_1.0
-68        btaurus_gene_ensembl                   Bos taurus genes (UMD3.1)       UMD3.1
-69    cfamiliaris_gene_ensembl          Canis familiaris genes (CanFam3.1)    CanFam3.1</code></pre>
+<pre><code>                       dataset
+32       hsapiens_gene_ensembl
+33       pformosa_gene_ensembl
+34     tbelangeri_gene_ensembl
+35          mfuro_gene_ensembl
+36        ggallus_gene_ensembl
+37    xtropicalis_gene_ensembl
+38      ecaballus_gene_ensembl
+39        pabelii_gene_ensembl
+40     xmaculatus_gene_ensembl
+41         drerio_gene_ensembl
+42  tnigroviridis_gene_ensembl
+43     lchalumnae_gene_ensembl
+44   amelanoleuca_gene_ensembl
+45       mmulatta_gene_ensembl
+46      pvampyrus_gene_ensembl
+47        panubis_gene_ensembl
+48     mdomestica_gene_ensembl
+49  acarolinensis_gene_ensembl
+50         vpacos_gene_ensembl
+51      tsyrichta_gene_ensembl
+52     ogarnettii_gene_ensembl
+53  dmelanogaster_gene_ensembl
+54      loculatus_gene_ensembl
+55       mmurinus_gene_ensembl
+56       olatipes_gene_ensembl
+57      oprinceps_gene_ensembl
+58       ggorilla_gene_ensembl
+59         dordii_gene_ensembl
+60         oaries_gene_ensembl
+61      mmusculus_gene_ensembl
+62     mgallopavo_gene_ensembl
+63        gmorhua_gene_ensembl
+64       saraneus_gene_ensembl
+65 aplatyrhynchos_gene_ensembl
+66      sharrisii_gene_ensembl
+67        btaurus_gene_ensembl
+68       meugenii_gene_ensembl
+69    cfamiliaris_gene_ensembl
+                                   description                version
+32                     Human genes (GRCh38.p7)              GRCh38.p7
+33 Amazon molly genes (Poecilia_formosa-5.1.2) Poecilia_formosa-5.1.2
+34                  Tree Shrew genes (tupBel1)                tupBel1
+35                 Ferret genes (MusPutFur1.0)           MusPutFur1.0
+36           Chicken genes (Gallus_gallus-5.0)      Gallus_gallus-5.0
+37                     Xenopus genes (JGI 4.2)                JGI 4.2
+38                     Horse genes (Equ Cab 2)              Equ Cab 2
+39                     Orangutan genes (PPYG2)                  PPYG2
+40               Platyfish genes (Xipmac4.4.2)            Xipmac4.4.2
+41                    Zebrafish genes (GRCz10)                 GRCz10
+42             Tetraodon genes (TETRAODON 8.0)          TETRAODON 8.0
+43                  Coelacanth genes (LatCha1)                LatCha1
+44                       Panda genes (ailMel1)                ailMel1
+45                  Macaque genes (Mmul_8.0.1)             Mmul_8.0.1
+46                     Megabat genes (pteVam1)                pteVam1
+47              Olive baboon genes (PapAnu2.0)              PapAnu2.0
+48                     Opossum genes (monDom5)                monDom5
+49              Anole lizard genes (AnoCar2.0)              AnoCar2.0
+50                      Alpaca genes (vicPac1)                vicPac1
+51                     Tarsier genes (tarSyr1)                tarSyr1
+52                    Bushbaby genes (OtoGar3)                OtoGar3
+53                      Fruitfly genes (BDGP6)                  BDGP6
+54                 Spotted gar genes (LepOcu1)                LepOcu1
+55                Mouse Lemur genes (Mmur_2.0)               Mmur_2.0
+56                         Medaka genes (HdrR)                   HdrR
+57                      Pika genes (OchPri2.0)              OchPri2.0
+58                   Gorilla genes (gorGor3.1)              gorGor3.1
+59                Kangaroo rat genes (dipOrd1)                dipOrd1
+60                      Sheep genes (Oar_v3.1)               Oar_v3.1
+61                     Mouse genes (GRCm38.p5)              GRCm38.p5
+62                  Turkey genes (Turkey_2.01)            Turkey_2.01
+63                         Cod genes (gadMor1)                gadMor1
+64                       Shrew genes (sorAra1)                sorAra1
+65                   Duck genes (BGI_duck_1.0)           BGI_duck_1.0
+66      Tasmanian devil genes (Devil_ref v7.0)         Devil_ref v7.0
+67                          Cow genes (UMD3.1)                 UMD3.1
+68                    Wallaby genes (Meug_1.0)               Meug_1.0
+69                       Dog genes (CanFam3.1)              CanFam3.1</code></pre>
 </div>
 <div id="retrieve-available-attributes-from-a-specific-dataset" class="section level3">
 <h3>Retrieve Available Attributes from a Specific Dataset</h3>
@@ -254,17 +293,17 @@ resultTable </code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># list all available attributes for dataset: hsapiens_gene_ensembl</span>
 <span class="kw">head</span>( <span class="kw">getAttributes</span>(<span class="dt">mart    =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>, 
                     <span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>), <span class="dv">10</span> )</code></pre></div>
-<pre><code>                    name           description
-1        ensembl_gene_id       Ensembl Gene ID
-2  ensembl_transcript_id Ensembl Transcript ID
-3     ensembl_peptide_id    Ensembl Protein ID
-4        ensembl_exon_id       Ensembl Exon ID
-5            description           Description
-6        chromosome_name       Chromosome Name
-7         start_position       Gene Start (bp)
-8           end_position         Gene End (bp)
-9                 strand                Strand
-10                  band                  Band</code></pre>
+<pre><code>                    name              description
+1        ensembl_gene_id                  Gene ID
+2  ensembl_transcript_id            Transcript ID
+3     ensembl_peptide_id               Protein ID
+4        ensembl_exon_id                  Exon ID
+5            description              Description
+6        chromosome_name Chromosome/scaffold name
+7         start_position          Gene Start (bp)
+8           end_position            Gene End (bp)
+9                 strand                   Strand
+10                  band                     Band</code></pre>
 </div>
 <div id="retrieve-available-filters-from-a-specific-dataset" class="section level3">
 <h3>Retrieve Available Filters from a Specific Dataset</h3>
@@ -293,336 +332,198 @@ resultTable </code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># retrieving all available datasets and biomart connections for</span>
 <span class="co"># a specific query organism (scientific name)</span>
 <span class="kw">organismBM</span>(<span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>)</code></pre></div>
-<pre><code>   organism_name
-1   Homo sapiens
-2   Homo sapiens
-3   Homo sapiens
-4   Homo sapiens
-5   Homo sapiens
-6   Homo sapiens
-7   Homo sapiens
-8   Homo sapiens
-9   Homo sapiens
-10  Homo sapiens
-11  Homo sapiens
-12  Homo sapiens
-                                                                                    description
-1                                                                Homo sapiens genes (GRCh38.p5)
-2          Homo sapiens Short Variants (SNPs and indels excluding flagged variants) (GRCh38.p5)
-3                                                  Homo sapiens Structural Variants (GRCh38.p5)
-4                                          Homo sapiens Somatic Structural Variants (GRCh38.p5)
-5  Homo sapiens Somatic Short Variants (SNPs and indels excluding flagged variants) (GRCh38.p5)
-6                                                  Homo sapiens Regulatory Evidence (GRCh38.p5)
-7                                                       Homo sapiens Binding Motifs (GRCh38.p5)
-8                                                  Homo sapiens Regulatory Features (GRCh38.p5)
-9                                                 Homo sapiens miRNA Target Regions (GRCh38.p5)
-10                                                 Homo sapiens Regulatory Segments (GRCh38.p5)
-11                                            Homo sapiens Other Regulatory Regions (GRCh38.p5)
-12                                                               Homo sapiens genes (GRCh38.p5)
-                   mart                       dataset   version
-1  ENSEMBL_MART_ENSEMBL         hsapiens_gene_ensembl GRCh38.p5
-2      ENSEMBL_MART_SNP                  hsapiens_snp GRCh38.p5
-3      ENSEMBL_MART_SNP            hsapiens_structvar GRCh38.p5
-4      ENSEMBL_MART_SNP        hsapiens_structvar_som GRCh38.p5
-5      ENSEMBL_MART_SNP              hsapiens_snp_som GRCh38.p5
-6  ENSEMBL_MART_FUNCGEN    hsapiens_annotated_feature GRCh38.p5
-7  ENSEMBL_MART_FUNCGEN        hsapiens_motif_feature GRCh38.p5
-8  ENSEMBL_MART_FUNCGEN   hsapiens_regulatory_feature GRCh38.p5
-9  ENSEMBL_MART_FUNCGEN hsapiens_mirna_target_feature GRCh38.p5
-10 ENSEMBL_MART_FUNCGEN hsapiens_segmentation_feature GRCh38.p5
-11 ENSEMBL_MART_FUNCGEN     hsapiens_external_feature GRCh38.p5
-12    ENSEMBL_MART_VEGA            hsapiens_gene_vega GRCh38.p5
-</code></pre>
+<pre><code>   organism_name                                                                           description
+           &lt;chr&gt;                                                                                 &lt;chr&gt;
+1       hsapiens                                                               Human genes (GRCh38.p7)
+2       hsapiens                                                    homo_sapiens sequences (GRCh38.p7)
+3       hsapiens         Human Short Variants (SNPs and indels excluding flagged variants) (GRCh38.p7)
+4       hsapiens                                                 Human Structural Variants (GRCh38.p7)
+5       hsapiens                                         Human Somatic Structural Variants (GRCh38.p7)
+6       hsapiens Human Somatic Short Variants (SNPs and indels excluding flagged variants) (GRCh38.p7)
+7       hsapiens                                                 Human Regulatory Evidence (GRCh38.p7)
+8       hsapiens                                                      Human Binding Motifs (GRCh38.p7)
+9       hsapiens                                                 Human Regulatory Features (GRCh38.p7)
+10      hsapiens                                                Human miRNA Target Regions (GRCh38.p7)
+11      hsapiens                                            Human Other Regulatory Regions (GRCh38.p7)
+12      hsapiens                                                               Human genes (GRCh38.p7)
+ with 3 more variables: mart &lt;chr&gt;, dataset &lt;chr&gt;, version &lt;chr&gt;</code></pre>
 <p>The result is a table storing all <code>marts</code> and <code>datasets</code> from which annotations can be retrieved for <em>Homo sapiens</em>. Furthermore, a short description as well as the version of the dataset being accessed (very useful for publications) is returned.</p>
 <p>Users will observe that 3 different <code>marts</code> provide 6 different <code>datasets</code> storing annotation information for <em>Homo sapiens</em>.</p>
 <p><strong>Please note, however, that scientific names of organisms must be written correctly! For ex. “Homo Sapiens” will be treated differently (not recognized) than “Homo sapiens” (recognized).</strong></p>
 <p>Similar to the <code>biomaRt</code> package query methodology, users need to specify <code>attributes</code> and <code>filters</code> to be able to perform accurate BioMart queries. Here the functions <code>organismAttributes()</code> and <code>organismFilters()</code> provide useful and intuitive concepts to obtain this information.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># return available attributes for &quot;Homo sapiens&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>), <span class="dv">20</span>)</code></pre></div>
-<pre><code>                       name                                description               dataset
-1           ensembl_gene_id                            Ensembl Gene ID hsapiens_gene_ensembl
-2     ensembl_transcript_id                      Ensembl Transcript ID hsapiens_gene_ensembl
-3        ensembl_peptide_id                         Ensembl Protein ID hsapiens_gene_ensembl
-4           ensembl_exon_id                            Ensembl Exon ID hsapiens_gene_ensembl
-5               description                                Description hsapiens_gene_ensembl
-6           chromosome_name                            Chromosome Name hsapiens_gene_ensembl
-7            start_position                            Gene Start (bp) hsapiens_gene_ensembl
-8              end_position                              Gene End (bp) hsapiens_gene_ensembl
-9                    strand                                     Strand hsapiens_gene_ensembl
-10                     band                                       Band hsapiens_gene_ensembl
-11         transcript_start                      Transcript Start (bp) hsapiens_gene_ensembl
-12           transcript_end                        Transcript End (bp) hsapiens_gene_ensembl
-13 transcription_start_site             Transcription Start Site (TSS) hsapiens_gene_ensembl
-14        transcript_length Transcript length (including UTRs and CDS) hsapiens_gene_ensembl
-15           transcript_tsl             Transcript Support Level (TSL) hsapiens_gene_ensembl
-16 transcript_gencode_basic                   GENCODE basic annotation hsapiens_gene_ensembl
-17        transcript_appris                          APPRIS annotation hsapiens_gene_ensembl
-18       external_gene_name                       Associated Gene Name hsapiens_gene_ensembl
-19     external_gene_source                     Associated Gene Source hsapiens_gene_ensembl
-20 external_transcript_name                 Associated Transcript Name hsapiens_gene_ensembl
-                   mart
-1  ENSEMBL_MART_ENSEMBL
-2  ENSEMBL_MART_ENSEMBL
-3  ENSEMBL_MART_ENSEMBL
-4  ENSEMBL_MART_ENSEMBL
-5  ENSEMBL_MART_ENSEMBL
-6  ENSEMBL_MART_ENSEMBL
-7  ENSEMBL_MART_ENSEMBL
-8  ENSEMBL_MART_ENSEMBL
-9  ENSEMBL_MART_ENSEMBL
-10 ENSEMBL_MART_ENSEMBL
-11 ENSEMBL_MART_ENSEMBL
-12 ENSEMBL_MART_ENSEMBL
-13 ENSEMBL_MART_ENSEMBL
-14 ENSEMBL_MART_ENSEMBL
-15 ENSEMBL_MART_ENSEMBL
-16 ENSEMBL_MART_ENSEMBL
-17 ENSEMBL_MART_ENSEMBL
-18 ENSEMBL_MART_ENSEMBL
-19 ENSEMBL_MART_ENSEMBL
-20 ENSEMBL_MART_ENSEMBL</code></pre>
-<p>Users will observe that the <code>organismAttributes()</code> function returns a data.frame storing attribute names, datasets, and marts which are available for <code>Homo sapiens</code>.</p>
+<pre><code>                       name                                description
+                      &lt;chr&gt;                                      &lt;chr&gt;
+1           ensembl_gene_id                                    Gene ID
+2     ensembl_transcript_id                              Transcript ID
+3        ensembl_peptide_id                                 Protein ID
+4           ensembl_exon_id                                    Exon ID
+5               description                                Description
+6           chromosome_name                   Chromosome/scaffold name
+7            start_position                            Gene Start (bp)
+8              end_position                              Gene End (bp)
+9                    strand                                     Strand
+10                     band                                       Band
+11         transcript_start                      Transcript Start (bp)
+12           transcript_end                        Transcript End (bp)
+13 transcription_start_site             Transcription Start Site (TSS)
+14        transcript_length Transcript length (including UTRs and CDS)
+15           transcript_tsl             Transcript Support Level (TSL)
+16 transcript_gencode_basic                   GENCODE basic annotation
+17        transcript_appris                          APPRIS annotation
+18       external_gene_name                       Associated Gene Name
+19     external_gene_source                     Associated Gene Source
+20 external_transcript_name                 Associated Transcript Name
+ with 2 more variables: dataset &lt;chr&gt;, mart &lt;chr&gt;
+Warning messages:
+1: No attributes were available for mart = ENSEMBL_MART_SEQUENCE and dataset = hsapiens_genomic_sequence. 
+2: No attributes were available for mart = ENSEMBL_MART_SEQUENCE and dataset = hsapiens_genomic_sequence. 
+3: No attributes were available for mart = ENSEMBL_MART_SEQUENCE and dataset = hsapiens_genomic_sequence. 
+4: No attributes were available for mart = ENSEMBL_MART_SEQUENCE and dataset = hsapiens_genomic_sequence. 
+5: No attributes were available for mart = ENSEMBL_MART_SEQUENCE and dataset = hsapiens_genomic_sequence.</code></pre>
+<p>Users will observe that the <code>organismAttributes()</code> function returns a data.frame storing attribute names, datasets, and marts which are available for <code>Homo sapiens</code>. After the ENSEMBL release 87 the <code>ENSEMBL_MART_SEQUENCE</code> service provided by Ensembl does not work properly and thus the <code>organismAttributes()</code> function prints out warning messages to make the user aware when certain marts provided bt Ensembl do not work properly, yet.</p>
 <p>An additional feature provided by <code>organismAttributes()</code> is the <code>topic</code> argument. The <code>topic</code> argument allows users to to search for specific attributes, topics, or categories for faster filtering.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for attribute topic &quot;id&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>), <span class="dv">20</span>)</code></pre></div>
-<pre><code>                        name                                       description
-1            ensembl_gene_id                                   Ensembl Gene ID
-2      ensembl_transcript_id                             Ensembl Transcript ID
-3         ensembl_peptide_id                                Ensembl Protein ID
-4            ensembl_exon_id                                   Ensembl Exon ID
-34         study_external_id                          Study External Reference
-35                     go_id                                 GO Term Accession
-49                 dbass3_id Database of Aberrant 3' Splice Sites (DBASS3) IDs
-51                 dbass5_id Database of Aberrant 5' Splice Sites (DBASS5) IDs
-64                   hgnc_id                                        HGNC ID(s)
-68      mim_morbid_accession                              MIM Morbid Accession
-69    mim_morbid_description                            MIM Morbid Description
-73                mirbase_id                                     miRBase ID(s)
-76                protein_id              Protein (Genbank) ID [e.g. AAA02487]
-84            refseq_peptide             RefSeq Protein ID [e.g. NP_001005353]
-85  refseq_peptide_predicted   RefSeq Predicted Protein ID [e.g. XP_001720922]
-96               wikigene_id                                       WikiGene ID
-182          ensembl_gene_id                                   Ensembl Gene ID
-183    ensembl_transcript_id                             Ensembl Transcript ID
-184       ensembl_peptide_id                                Ensembl Protein ID
-213          ensembl_exon_id                                   Ensembl Exon ID
-                  dataset                 mart
-1   hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-2   hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-3   hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-4   hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-34  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-35  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-49  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-51  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-64  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-68  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-69  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-73  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-76  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-84  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-85  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-96  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-182 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-183 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-184 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-213 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL</code></pre>
+<pre><code>                       name                                       description               dataset
+                      &lt;chr&gt;                                             &lt;chr&gt;                 &lt;chr&gt;
+1           ensembl_gene_id                                           Gene ID hsapiens_gene_ensembl
+2     ensembl_transcript_id                                     Transcript ID hsapiens_gene_ensembl
+3        ensembl_peptide_id                                        Protein ID hsapiens_gene_ensembl
+4           ensembl_exon_id                                           Exon ID hsapiens_gene_ensembl
+5         study_external_id                          Study External Reference hsapiens_gene_ensembl
+6                     go_id                                 GO Term Accession hsapiens_gene_ensembl
+7                 dbass3_id Database of Aberrant 3 Splice Sites (DBASS3) IDs hsapiens_gene_ensembl
+8                 dbass5_id Database of Aberrant 5 Splice Sites (DBASS5) IDs hsapiens_gene_ensembl
+9                   hgnc_id                                        HGNC ID(s) hsapiens_gene_ensembl
+10               mirbase_id                                     miRBase ID(s) hsapiens_gene_ensembl
+11               mim_morbid                                        MIM MORBID hsapiens_gene_ensembl
+12               protein_id              Protein (Genbank) ID [e.g. AAA02487] hsapiens_gene_ensembl
+13           refseq_peptide             RefSeq Protein ID [e.g. NP_001005353] hsapiens_gene_ensembl
+14 refseq_peptide_predicted   RefSeq Predicted Protein ID [e.g. XP_001720922] hsapiens_gene_ensembl
+15              wikigene_id                                       WikiGene ID hsapiens_gene_ensembl
+16          ensembl_gene_id                                           Gene ID hsapiens_gene_ensembl
+17    ensembl_transcript_id                                     Transcript ID hsapiens_gene_ensembl
+18       ensembl_peptide_id                                        Protein ID hsapiens_gene_ensembl
+19          ensembl_exon_id                                           Exon ID hsapiens_gene_ensembl
+20          ensembl_gene_id                                           Gene ID hsapiens_gene_ensembl
+with 1 more variables: mart &lt;chr&gt;</code></pre>
 <p>Now, all <code>attribute names</code> having <code>id</code> as part of their <code>name</code> are being returned.</p>
 <p>Another example is <code>topic = &quot;homolog&quot;</code>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for attribute topic &quot;homolog&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;homolog&quot;</span>), <span class="dv">20</span>)</code></pre></div>
-<pre><code>                                             name                            description
-229                   vpacos_homolog_ensembl_gene                 Alpaca Ensembl Gene ID
-230   vpacos_homolog_canonical_transcript_protein     Canonical Protein or Transcript ID
-231                vpacos_homolog_ensembl_peptide              Alpaca Ensembl Protein ID
-232                     vpacos_homolog_chromosome                 Alpaca Chromosome Name
-233                    vpacos_homolog_chrom_start           Alpaca Chromosome Start (bp)
-234                      vpacos_homolog_chrom_end             Alpaca Chromosome End (bp)
-235                 vpacos_homolog_orthology_type                          Homology Type
-236                        vpacos_homolog_subtype                               Ancestor
-237           vpacos_homolog_orthology_confidence   Orthology confidence [0 low, 1 high]
-238                        vpacos_homolog_perc_id  % Identity with respect to query gene
-239                     vpacos_homolog_perc_id_r1 % Identity with respect to Alpaca gene
-240                 pformosa_homolog_ensembl_gene           Amazon molly Ensembl Gene ID
-241 pformosa_homolog_canonical_transcript_protein     Canonical Protein or Transcript ID
-242              pformosa_homolog_ensembl_peptide        Amazon molly Ensembl Protein ID
-243                   pformosa_homolog_chromosome           Amazon molly Chromosome Name
-244                  pformosa_homolog_chrom_start     Amazon molly Chromosome Start (bp)
-245                    pformosa_homolog_chrom_end       Amazon molly Chromosome End (bp)
-246               pformosa_homolog_orthology_type                          Homology Type
-247                      pformosa_homolog_subtype                               Ancestor
-248         pformosa_homolog_orthology_confidence   Orthology confidence [0 low, 1 high]
-                  dataset                 mart
-229 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-230 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-231 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-232 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-233 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-234 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-235 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-236 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-237 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-238 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-239 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-240 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-241 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-242 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-243 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-244 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-245 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-246 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-247 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-248 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL</code></pre>
+<pre><code>                                          name
+                                         &lt;chr&gt;
+1                  vpacos_homolog_ensembl_gene
+2          vpacos_homolog_associated_gene_name
+3               vpacos_homolog_ensembl_peptide
+4                    vpacos_homolog_chromosome
+5                   vpacos_homolog_chrom_start
+6                     vpacos_homolog_chrom_end
+7  vpacos_homolog_canonical_transcript_protein
+8                       vpacos_homolog_subtype
+9                vpacos_homolog_orthology_type
+10                      vpacos_homolog_perc_id
+11                   vpacos_homolog_perc_id_r1
+12                    vpacos_homolog_goc_score
+13                 vpacos_homolog_wga_coverage
+14                           vpacos_homolog_dn
+15                           vpacos_homolog_ds
+16         vpacos_homolog_orthology_confidence
+17               pformosa_homolog_ensembl_gene
+18       pformosa_homolog_associated_gene_name
+19            pformosa_homolog_ensembl_peptide
+20                 pformosa_homolog_chromosome
+  with 3 more variables: description &lt;chr&gt;, dataset &lt;chr&gt;, mart &lt;chr&gt;</code></pre>
 <p>Or <code>topic = &quot;dn&quot;</code> and <code>topic = &quot;ds&quot;</code> for <code>dn</code> and <code>ds</code> value retrieval.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for attribute topic &quot;dn&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;dn&quot;</span>))</code></pre></div>
-<pre><code>                                                  name                        description
-209                                  cdna_coding_start                  cDNA coding start
-210                                    cdna_coding_end                    cDNA coding end
-262                           acarolinensis_homolog_dn                                 dN
-264                 dnovemcinctus_homolog_ensembl_gene          Armadillo Ensembl Gene ID
-265 dnovemcinctus_homolog_canonical_transcript_protein Canonical Protein or Transcript ID
-266              dnovemcinctus_homolog_ensembl_peptide       Armadillo Ensembl Protein ID
-                  dataset                 mart
-209 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-210 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-262 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-264 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-265 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-266 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL</code></pre>
+<pre><code>A tibble: 6 × 4
+                                name              description               dataset                 mart
+                               &lt;chr&gt;                    &lt;chr&gt;                 &lt;chr&gt;                &lt;chr&gt;
+1                  cdna_coding_start        cDNA coding start hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+2                    cdna_coding_end          cDNA coding end hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+3                  vpacos_homolog_dn           dN with Alpaca hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+4                pformosa_homolog_dn     dN with Amazon molly hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+5           acarolinensis_homolog_dn     dN with Anole lizard hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+6 dnovemcinctus_homolog_ensembl_gene Armadillo gene stable ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for attribute topic &quot;ds&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;ds&quot;</span>))</code></pre></div>
-<pre><code>                        name description               dataset                 mart
-48                      ccds     CCDS ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-199               cds_length  CDS Length hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-214                cds_start   CDS Start hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-215                  cds_end     CDS End hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-263 acarolinensis_homolog_ds          dS hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-276 dnovemcinctus_homolog_ds          dS hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL</code></pre>
+<pre><code>                 name          description               dataset                 mart
+                &lt;chr&gt;                &lt;chr&gt;                 &lt;chr&gt;                &lt;chr&gt;
+1                ccds              CCDS ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+2          cds_length           CDS Length hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+3           cds_start            CDS Start hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+4             cds_end              CDS End hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+5   vpacos_homolog_ds       dS with Alpaca hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+6 pformosa_homolog_ds dS with Amazon molly hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL</code></pre>
 <p>Analogous to the <code>organismAttributes()</code> function, the <code>organismFilters()</code> function returns all filters that are available for a query organism of interest.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># return available filters for &quot;Homo sapiens&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismFilters</span>(<span class="st">&quot;Homo sapiens&quot;</span>), <span class="dv">20</span>)</code></pre></div>
-<pre><code>                                     name
-1                         chromosome_name
-2                                   start
-3                                     end
-4                              band_start
-5                                band_end
-6                            marker_start
-7                              marker_end
-8                           encode_region
-9                                  strand
-10                     chromosomal_region
-11                              with_hgnc
-12              with_hgnc_transcript_name
-13                   with_ox_arrayexpress
-14                              with_ccds
-15                            with_chembl
-16       with_ox_clone_based_ensembl_gene
-17 with_ox_clone_based_ensembl_transcript
-18          with_ox_clone_based_vega_gene
-19    with_ox_clone_based_vega_transcript
-20                            with_dbass3
-                                                 description               dataset
-1                                            Chromosome name hsapiens_gene_ensembl
-2                                            Gene Start (bp) hsapiens_gene_ensembl
-3                                              Gene End (bp) hsapiens_gene_ensembl
-4                                                 Band Start hsapiens_gene_ensembl
-5                                                   Band End hsapiens_gene_ensembl
-6                                               Marker Start hsapiens_gene_ensembl
-7                                                 Marker End hsapiens_gene_ensembl
-8                                              Encode region hsapiens_gene_ensembl
-9                                                     Strand hsapiens_gene_ensembl
-10 Chromosome Regions (e.g 1:100:10000:-1,1:100000:200000:1) hsapiens_gene_ensembl
-11                                           with HGNC ID(s) hsapiens_gene_ensembl
-12                              with HGNC transcript name(s) hsapiens_gene_ensembl
-13                                   with ArrayExpress ID(s) hsapiens_gene_ensembl
-14                                           with CCDS ID(s) hsapiens_gene_ensembl
-15                                         with ChEMBL ID(s) hsapiens_gene_ensembl
-16                       with clone based Ensembl gene ID(s) hsapiens_gene_ensembl
-17                 with clone based Ensembl transcript ID(s) hsapiens_gene_ensembl
-18                          with clone based VEGA gene ID(s) hsapiens_gene_ensembl
-19                    with clone based VEGA transcript ID(s) hsapiens_gene_ensembl
-20                                         with DBASS3 ID(s) hsapiens_gene_ensembl
-                   mart
-1  ENSEMBL_MART_ENSEMBL
-2  ENSEMBL_MART_ENSEMBL
-3  ENSEMBL_MART_ENSEMBL
-4  ENSEMBL_MART_ENSEMBL
-5  ENSEMBL_MART_ENSEMBL
-6  ENSEMBL_MART_ENSEMBL
-7  ENSEMBL_MART_ENSEMBL
-8  ENSEMBL_MART_ENSEMBL
-9  ENSEMBL_MART_ENSEMBL
-10 ENSEMBL_MART_ENSEMBL
-11 ENSEMBL_MART_ENSEMBL
-12 ENSEMBL_MART_ENSEMBL
-13 ENSEMBL_MART_ENSEMBL
-14 ENSEMBL_MART_ENSEMBL
-15 ENSEMBL_MART_ENSEMBL
-16 ENSEMBL_MART_ENSEMBL
-17 ENSEMBL_MART_ENSEMBL
-18 ENSEMBL_MART_ENSEMBL
-19 ENSEMBL_MART_ENSEMBL
-20 ENSEMBL_MART_ENSEMBL</code></pre>
+<pre><code>                                     name                                               description
+                                    &lt;chr&gt;                                                     &lt;chr&gt;
+1                         chromosome_name                                           Chromosome name
+2                                   start                                           Gene Start (bp)
+3                                     end                                             Gene End (bp)
+4                              band_start                                                Band Start
+5                                band_end                                                  Band End
+6                            marker_start                                              Marker Start
+7                              marker_end                                                Marker End
+8                           encode_region                                             Encode region
+9                                  strand                                                    Strand
+10                     chromosomal_region Chromosome Regions (e.g 1:100:10000:-1,1:100000:200000:1)
+11                              with_hgnc                                           with HGNC ID(s)
+12              with_hgnc_transcript_name                              with HGNC transcript name(s)
+13                   with_ox_arrayexpress                                   with ArrayExpress ID(s)
+14                              with_ccds                                           with CCDS ID(s)
+15                            with_chembl                                         with ChEMBL ID(s)
+16       with_ox_clone_based_ensembl_gene                       with clone based Ensembl gene ID(s)
+17 with_ox_clone_based_ensembl_transcript                 with clone based Ensembl transcript ID(s)
+18          with_ox_clone_based_vega_gene                          with clone based VEGA gene ID(s)
+19    with_ox_clone_based_vega_transcript                    with clone based VEGA transcript ID(s)
+20                            with_dbass3                                         with DBASS3 ID(s)
+ with 2 more variables: dataset &lt;chr&gt;, mart &lt;chr&gt;</code></pre>
 <p>The <code>organismFilters()</code> function also allows users to search for filters that correspond to a specific topic or category.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for filter topic &quot;id&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismFilters</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>), <span class="dv">20</span>)</code></pre></div>
 <pre><code>                             name                                        description
-31                     with_go_id                          with GO Term Accession(s)
-36                with_mim_morbid                             with MIM disease ID(s)
-43                with_protein_id                       with protein (Genbank) ID(s)
-53            with_refseq_peptide                          with RefSeq protein ID(s)
-54  with_refseq_peptide_predicted                with RefSeq predicted protein ID(s)
-63                ensembl_gene_id          Ensembl Gene ID(s) [e.g. ENSG00000139618]
-64          ensembl_transcript_id    Ensembl Transcript ID(s) [e.g. ENST00000380152]
-65             ensembl_peptide_id       Ensembl protein ID(s) [e.g. ENSP00000369497]
-66                ensembl_exon_id          Ensembl exon ID(s) [e.g. ENSE00001508081]
-67                        hgnc_id                        HGNC ID(s) [e.g. HGNC:8030]
-87                          go_id             GO Term Accession(s) [e.g. GO:0005515]
-92           mim_morbid_accession              MIM Morbid Accession(s) [e.g. 540000]
-93                     mirbase_id                   miRBase ID(s) [e.g. hsa-mir-137]
-97                     protein_id            Protein (Genbank) ID(s) [e.g. ACU09872]
-105                refseq_peptide           RefSeq protein ID(s) [e.g. NP_001005353]
-106      refseq_peptide_predicted RefSeq predicted protein ID(s) [e.g. XP_011520427]
-119                   wikigene_id                       WikiGene ID(s) [e.g. 115286]
-197              go_evidence_code                                   GO Evidence code
-300            with_validated_snp                        Variant supporting evidence
-325                with_validated                        Variant supporting evidence
-                  dataset                 mart
-31  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-36  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-43  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-53  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-54  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-63  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-64  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-65  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-66  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-67  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-87  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-92  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-93  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-97  hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-105 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-106 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-119 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-197 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-300 hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-325          hsapiens_snp ENSEMBL_MART_ENSEMBL</code></pre>
+                            &lt;chr&gt;                                              &lt;chr&gt;
+1                      with_go_id                          with GO Term Accession(s)
+2                 with_mim_morbid                              with MIM MORBID ID(s)
+3                 with_protein_id                       with protein (Genbank) ID(s)
+4             with_refseq_peptide                          with RefSeq protein ID(s)
+5   with_refseq_peptide_predicted                with RefSeq predicted protein ID(s)
+6                 ensembl_gene_id                  Gene ID(s) [e.g. ENSG00000139618]
+7           ensembl_transcript_id            Transcript ID(s) [e.g. ENST00000380152]
+8              ensembl_peptide_id               Protein ID(s) [e.g. ENSP00000369497]
+9                 ensembl_exon_id                  Exon ID(s) [e.g. ENSE00001508081]
+10                        hgnc_id                        HGNC ID(s) [e.g. HGNC:8030]
+11                          go_id             GO Term Accession(s) [e.g. GO:0005515]
+12                     mim_morbid                     MIM MORBID ID(s) [e.g. 100100]
+13                     mirbase_id                   miRBase ID(s) [e.g. hsa-mir-137]
+14                     protein_id            Protein (Genbank) ID(s) [e.g. ACU09872]
+15                 refseq_peptide           RefSeq protein ID(s) [e.g. NP_001005353]
+16       refseq_peptide_predicted RefSeq predicted protein ID(s) [e.g. XP_011520427]
+17                    wikigene_id                       WikiGene ID(s) [e.g. 115286]
+18               go_evidence_code                                   GO Evidence code
+19 with_itridecemlineatus_homolog                         Orthologous Squirrel Genes
+20     with_tnigroviridis_homolog                        Orthologous Tetraodon Genes
+with 2 more variables: dataset &lt;chr&gt;, mart &lt;chr&gt;</code></pre>
 </div>
 <div id="performing-biomart-queries-with-biomartr" class="section level2">
 <h2>Performing BioMart queries with biomartr</h2>
 <p>The short introduction to the functionality of <code>organismBM()</code>, <code>organismAttributes()</code>, and <code>organismFilters()</code> will allow users to perform BioMart queries in a very intuitive organism centric way. The main function to perform BioMart queries is <code>biomart()</code>.</p>
 <p>For the following examples we will assume that we are interested in the annotation of specific genes from the <em>Homo sapiens</em> proteome. We want to map the corresponding refseq gene id to a set of other gene ids used in other databases. For this purpose, first we need consult the <code>organismAttributes()</code> function.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>))</code></pre></div>
-<pre><code>                    name              description               dataset                 mart
-1        ensembl_gene_id          Ensembl Gene ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-2  ensembl_transcript_id    Ensembl Transcript ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-3     ensembl_peptide_id       Ensembl Protein ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-4        ensembl_exon_id          Ensembl Exon ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-34     study_external_id Study External Reference hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
-35                 go_id        GO Term Accession hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL</code></pre>
+<pre><code>                   name              description               dataset                 mart
+                  &lt;chr&gt;                    &lt;chr&gt;                 &lt;chr&gt;                &lt;chr&gt;
+1       ensembl_gene_id                  Gene ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+2 ensembl_transcript_id            Transcript ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+3    ensembl_peptide_id               Protein ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+4       ensembl_exon_id                  Exon ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+5     study_external_id Study External Reference hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
+6                 go_id        GO Term Accession hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># retrieve the proteome of Homo sapiens from refseq</span>
 file_path &lt;-<span class="st"> </span><span class="kw">getProteome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>,
                           <span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>,
@@ -631,7 +532,7 @@ file_path &lt;-<span class="st"> </span><span class="kw">getProteome</span>( <sp
 Hsapiens_proteome &lt;-<span class="st"> </span><span class="kw">read_proteome</span>(file_path, <span class="dt">format =</span> <span class="st">&quot;fasta&quot;</span>)
 
 <span class="co"># remove splice variants from id</span>
-gene_set &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">sapply</span>(<span class="kw">strsplit</span>(Hsapiens_proteome@ranges@NAMES[<span class="dv">1</span>:<span class="dv">5</span>], <span class="st">&quot;.&quot;</span>,<span class="dt">fixed =</span> <span class="ot">TRUE</span>),function(x) x[<span class="dv">1</span>]))
+gene_set &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">sapply</span>(<span class="kw">strsplit</span>(Hsapiens_proteome@ranges@NAMES[<span class="dv">1</span>:<span class="dv">5</span>], <span class="st">&quot;.&quot;</span>,<span class="dt">fixed =</span> <span class="ot">TRUE</span>), function(x) x[<span class="dv">1</span>]))
 
 result_BM &lt;-<span class="st"> </span><span class="kw">biomart</span>( <span class="dt">genes      =</span> gene_set,
                       <span class="dt">mart       =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>, 
@@ -661,12 +562,16 @@ GO_tbl &lt;-<span class="st"> </span><span class="kw">getGO</span>(<span class="
                 <span class="dt">filters  =</span> <span class="st">&quot;hgnc_symbol&quot;</span>)
 
 GO_tbl</code></pre></div>
-<pre><code>  hgnc_symbol    goslim_goa_description goslim_goa_accession
-1      GUCA2A      extracellular region           GO:0005576
-2      GUCA2A        molecular_function           GO:0003674
-3      GUCA2A        cellular_component           GO:0005575
-4      GUCA2A                 organelle           GO:0043226
-5      GUCA2A enzyme regulator activity           GO:0030234</code></pre>
+<pre><code>  hgnc_symbol                       goslim_goa_description goslim_goa_accession
+1      GUCA2A                           cellular_component           GO:0005575
+2      GUCA2A                         extracellular region           GO:0005576
+3      GUCA2A                           biological_process           GO:0008150
+4      GUCA2A cellular nitrogen compound metabolic process           GO:0034641
+5      GUCA2A             small molecule metabolic process           GO:0044281
+6      GUCA2A                         biosynthetic process           GO:0009058
+7      GUCA2A                           molecular_function           GO:0003674
+8      GUCA2A                                    organelle           GO:0043226
+9      GUCA2A                    enzyme regulator activity           GO:0030234</code></pre>
 <p>Hence, for each <em>gene id</em> the resulting table stores all annotated GO terms found in BioMart.</p>
 </div>
 </div>

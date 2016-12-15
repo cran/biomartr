@@ -114,7 +114,7 @@ knitr::opts_chunk$set(
 #  Hsapiens_proteome <- read_proteome(file_path, format = "fasta")
 #  
 #  # remove splice variants from id
-#  gene_set <- unlist(sapply(strsplit(Hsapiens_proteome@ranges@NAMES[1:5], ".",fixed = TRUE),function(x) x[1]))
+#  gene_set <- unlist(sapply(strsplit(Hsapiens_proteome@ranges@NAMES[1:5], ".",fixed = TRUE), function(x) x[1]))
 #  
 #  result_BM <- biomart( genes      = gene_set,
 #                        mart       = "ENSEMBL_MART_ENSEMBL",

@@ -10,10 +10,10 @@ on the molecular level and how this information changes over evolutionary time.
 The first step, however, of any genome based study is to retrieve genomes from databases. For automating this
 retrieval process on a meta-genomic scale, the `biomartr` package provides useful interface functions for genomic sequence retrieval and functional annotation retrieval. The major aim of `biomartr` is to facilitate reproducibility and large-scale handling of genomic data for (meta-)genomic analyses.  
 
-In detail, `biomartr` aims to provide users with an easy to use framework to obtain genome, proteome, and CDS data, as well as an interface to the [BioMart](http://www.biomart.org/) database to retrieve functional annotation for genomic loci.
-Hence, the `biomartr` package is designed to achieve the highest degree of reproducible research from data retrieval to data visualization.
+In detail, `biomartr` aims to provide users with an easy to use framework to obtain genome, proteome, CDS, GFF, and metagenome project data. Furthermore, an interface to the [BioMart](http://www.biomart.org/) database allows users to retrieve functional annotation for genomic loci.
+Users can [download entire databases](https://github.com/HajkD/biomartr/blob/master/vignettes/Database_Retrieval.Rmd) such as `NCBI RefSeq`, `NCBI nr`, `NCBI nt`, `NCBI Genbank`, etc. as well as `ENSEMBL` and `ENSEMBLGENOMES` with only one command.
 
-Additionally, the `biomartr` package allows users to retrieve entire NCBI databases using only one command (see [Database Retrieval Vignette](https://github.com/HajkD/biomartr/blob/master/vignettes/Database_Retrieval.Rmd)).
+Hence, the `biomartr` package is designed to achieve the highest degree of reproducible research.
 
 ## Tutorials
 
@@ -51,10 +51,8 @@ Please type `a` specifying that all package dependencies of the corresponding pa
 Now users can download `biomartr` from CRAN :
 
 ```r
-# install biomartr 0.1.0 from CRAN
-install.packages("biomartr",
-                 repos        = "https://cran.rstudio.com/",
-                 dependencies = TRUE)
+# install biomartr 0.2.1 from CRAN
+install.packages("biomartr")
 ```
 
 ## NEWS
