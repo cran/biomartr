@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2016-12-15" />
+<meta name="date" content="2017-02-09" />
 
 <title>Sequence Retrieval</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Sequence Retrieval</h1>
-<h4 class="date"><em>2016-12-15</em></h4>
+<h4 class="date"><em>2017-02-09</em></h4>
 
 
 
@@ -318,7 +318,13 @@ Apple fruit crinkle viroid
 HS.genome.refseq &lt;-<span class="st"> </span><span class="kw">getGenome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
                                <span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>,
                                <span class="dt">path     =</span> <span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;genomes&quot;</span>) )</code></pre></div>
-<p>In this example, <code>getGenome()</code> creates a directory named <code>'_ncbi_downloads/genomes'</code> into which the corresponding genome named <code>GCF_000001405.34_GRCh38.p8_genomic.fna.gz</code> is downloaded. The return value of <code>getGenome()</code> is the folder path to the downloaded genome file that can then be used as input to the <code>read_genome()</code> function. The variable <code>HS.genome.refseq</code> stores the path to the downloaded genome. Subsequently, users can use the <code>read_genome()</code> function to import the genome into the R session. Users can choose to work with the genome sequence in R either as <a href="http://bioconductor.org/packages/release/bioc/html/Biostrings.html">Biostrings</a> object (<code>obj.type = &quot;Biostrings&quot;</code>) or <a href="https://github.com/Rdatatable/data.table/wiki">data.table</a> object (<code>obj.type = &quot;data.table&quot;</code>) by specifying the <code>obj.type</code> argument of the <code>read_genome()</code> function.</p>
+<p>In this example, <code>getGenome()</code> creates a directory named <code>'_ncbi_downloads/genomes'</code> into which the corresponding genome named <code>GCF_000001405.34_GRCh38.p8_genomic.fna.gz</code> is downloaded. The return value of <code>getGenome()</code> is the folder path to the downloaded genome file that can then be used as input to the <code>read_genome()</code> function. The variable <code>HS.genome.refseq</code> stores the path to the downloaded genome.</p>
+<p>Users can also omit the <code>path</code> argument if they wish to store the genome in their current working directory. E.g.:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Homo sapiens from refseq</span>
+<span class="co"># and store the corresponding genome file in '_ncbi_downloads/genomes'</span>
+HS.genome.refseq &lt;-<span class="st"> </span><span class="kw">getGenome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
+                               <span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>)</code></pre></div>
+<p>Subsequently, users can use the <code>read_genome()</code> function to import the genome into the R session. Users can choose to work with the genome sequence in R either as <a href="http://bioconductor.org/packages/release/bioc/html/Biostrings.html">Biostrings</a> object (<code>obj.type = &quot;Biostrings&quot;</code>) or <a href="https://github.com/Rdatatable/data.table/wiki">data.table</a> object (<code>obj.type = &quot;data.table&quot;</code>) by specifying the <code>obj.type</code> argument of the <code>read_genome()</code> function.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># import downloaded genome as Biostrings object</span>
 Human_Genome &lt;-<span class="st"> </span><span class="kw">read_genome</span>(<span class="dt">file     =</span> HS.genome.refseq, 
                             <span class="dt">obj.type =</span> <span class="st">&quot;Biostrings&quot;</span>)</code></pre></div>
