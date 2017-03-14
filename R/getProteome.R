@@ -68,9 +68,7 @@ getProteome <- function(db = "refseq", organism, path = file.path("_ncbi_downloa
             )
         
         if (nrow(FoundOrganism) == 0) {
-            cat("\n")
-            cat(paste0("----------> No reference genome or representative genome was found for '",organism,"'. Thus, download for this species has been omitted."))
-            cat("\n")
+            message(paste0("----------> No reference genome or representative genome was found for '",organism,"'. Thus, download for this species has been omitted."))
         } else {
             if (nrow(FoundOrganism) > 1) {
                 warnings(
@@ -97,6 +95,11 @@ getProteome <- function(db = "refseq", organism, path = file.path("_ncbi_downloa
             
             local.org <- stringr::str_replace_all(organism,"-","_")
             local.org <- stringr::str_replace_all(organism,"\\/","_")
+            
+            if (!exists.ftp.file(url = paste0(FoundOrganism$ftp_path,"/"), file.path = download_url)) {
+                message("Unfortunately no proteome file could be found for organism '",organism,"'. Thus, the download of this organism has been omitted.")
+                return(FALSE) 
+            }
             
             if (nrow(FoundOrganism) == 1) {
                 tryCatch({
@@ -193,12 +196,8 @@ getProteome <- function(db = "refseq", organism, path = file.path("_ncbi_downloa
                     "The API 'http://rest.ensembl.org' does not seem to work properly. Are you connected to the internet? Is the homepage 'http://rest.ensembl.org' currently available?", call. = FALSE
                 ))
             
-            cwd <- getwd()
-            
-            setwd(path)
-            
             # generate Proteome documentation
-            sink(paste0("doc_",new.organism,"_db_",db,".txt"))
+            sink(file.path(path, paste0("doc_",new.organism,"_db_",db,".txt")))
             
             cat(paste0("File Name: ", proteome.path))
             cat("\n")
@@ -219,8 +218,6 @@ getProteome <- function(db = "refseq", organism, path = file.path("_ncbi_downloa
             cat(paste0("genebuild_initial_release_date: ", json.qry.info$genebuild_initial_release_date))
             
             sink()
-            
-            setwd(cwd)
             
             print(
                 paste0(
@@ -267,13 +264,9 @@ getProteome <- function(db = "refseq", organism, path = file.path("_ncbi_downloa
                 stop(
                     "The API 'http://rest.ensemblgenomes.org' does not seem to work properly. Are you connected to the internet? Is the homepage 'http://rest.ensemblgenomes.org' currently available?", call. = FALSE
                 ))
-            
-            cwd <- getwd()
-            
-            setwd(path)
-            
+        
             # generate Proteome documentation
-            sink(paste0("doc_",new.organism,"_db_",db,".txt"))
+            sink(file.path(path, paste0("doc_",new.organism,"_db_",db,".txt")))
             
             cat(paste0("File Name: ", proteome.path))
             cat("\n")
@@ -294,8 +287,6 @@ getProteome <- function(db = "refseq", organism, path = file.path("_ncbi_downloa
             cat(paste0("genebuild_initial_release_date: ", json.qry.info$genebuild_initial_release_date))
             
             sink()
-            
-            setwd(cwd)
             
             print(
                 paste0(

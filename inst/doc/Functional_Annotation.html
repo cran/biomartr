@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2017-02-09" />
+<meta name="date" content="2017-03-13" />
 
 <title>Functional Annotation with BioMart, GO, and KeGG</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Functional Annotation with BioMart, GO, and KeGG</h1>
-<h4 class="date"><em>2017-02-09</em></h4>
+<h4 class="date"><em>2017-03-13</em></h4>
 
 
 
@@ -290,7 +290,9 @@ resultTable </code></pre></div>
 <div id="retrieve-available-attributes-from-a-specific-dataset" class="section level3">
 <h3>Retrieve Available Attributes from a Specific Dataset</h3>
 <p>Now that you have selected a database (<code>hsapiens_gene_ensembl</code>) and a dataset (<code>hsapiens_gene_ensembl</code>), users can list all available attributes for this dataset using the <code>getAttributes()</code> function.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># list all available attributes for dataset: hsapiens_gene_ensembl</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+<span class="co"># list all available attributes for dataset: hsapiens_gene_ensembl</span>
 <span class="kw">head</span>( <span class="kw">getAttributes</span>(<span class="dt">mart    =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>, 
                     <span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>), <span class="dv">10</span> )</code></pre></div>
 <pre><code>                    name              description
@@ -308,7 +310,9 @@ resultTable </code></pre></div>
 <div id="retrieve-available-filters-from-a-specific-dataset" class="section level3">
 <h3>Retrieve Available Filters from a Specific Dataset</h3>
 <p>Finally, the <code>getFilters()</code> function allows users to list available filters for a specific dataset that can be used for a <code>biomart()</code> query.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># list all available filters for dataset: hsapiens_gene_ensembl</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+<span class="co"># list all available filters for dataset: hsapiens_gene_ensembl</span>
 <span class="kw">head</span>( <span class="kw">getFilters</span>(<span class="dt">mart    =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>, 
                  <span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>), <span class="dv">10</span> )</code></pre></div>
 <pre><code>                 name                                               description
@@ -329,7 +333,9 @@ resultTable </code></pre></div>
 <p>In most use cases, users will work with a single or a set of model organisms. In this process they will mostly be interested in specific annotations for this particular model organism. The <code>organismBM()</code> function addresses this issue and provides users with an organism centric query to <code>marts</code> and <code>datasets</code> which are available for a particular organism of interest.</p>
 <p><strong>Note</strong> that when running the following functions for the first time, the data retrieval procedure will take some time, due to the remote access to BioMart. The corresponding result is then saved in a <code>*.txt</code> file named <code>_biomart/listDatasets.txt</code> within the <code>tempdir()</code> folder, allowing subsequent queries to be performed much faster. The <code>tempdir()</code> folder, however, will be deleted after a new R session was established. In this case the inital call of the subsequent functions again will take time to retrieve all organism specific data from the BioMart database.</p>
 <p>This concept of locally storing all organism specific database linking information available in BioMart into an internal file allows users to significantly speed up subsequent retrieval queries for that particular organism.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># retrieving all available datasets and biomart connections for</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+<span class="co"># retrieving all available datasets and biomart connections for</span>
 <span class="co"># a specific query organism (scientific name)</span>
 <span class="kw">organismBM</span>(<span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>)</code></pre></div>
 <pre><code>   organism_name                                                                           description
@@ -351,7 +357,9 @@ resultTable </code></pre></div>
 <p>Users will observe that 3 different <code>marts</code> provide 6 different <code>datasets</code> storing annotation information for <em>Homo sapiens</em>.</p>
 <p><strong>Please note, however, that scientific names of organisms must be written correctly! For ex. “Homo Sapiens” will be treated differently (not recognized) than “Homo sapiens” (recognized).</strong></p>
 <p>Similar to the <code>biomaRt</code> package query methodology, users need to specify <code>attributes</code> and <code>filters</code> to be able to perform accurate BioMart queries. Here the functions <code>organismAttributes()</code> and <code>organismFilters()</code> provide useful and intuitive concepts to obtain this information.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># return available attributes for &quot;Homo sapiens&quot;</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+<span class="co"># return available attributes for &quot;Homo sapiens&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>), <span class="dv">20</span>)</code></pre></div>
 <pre><code>                       name                                description
                       &lt;chr&gt;                                      &lt;chr&gt;
@@ -384,7 +392,9 @@ Warning messages:
 5: No attributes were available for mart = ENSEMBL_MART_SEQUENCE and dataset = hsapiens_genomic_sequence.</code></pre>
 <p>Users will observe that the <code>organismAttributes()</code> function returns a data.frame storing attribute names, datasets, and marts which are available for <code>Homo sapiens</code>. After the ENSEMBL release 87 the <code>ENSEMBL_MART_SEQUENCE</code> service provided by Ensembl does not work properly and thus the <code>organismAttributes()</code> function prints out warning messages to make the user aware when certain marts provided bt Ensembl do not work properly, yet.</p>
 <p>An additional feature provided by <code>organismAttributes()</code> is the <code>topic</code> argument. The <code>topic</code> argument allows users to to search for specific attributes, topics, or categories for faster filtering.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for attribute topic &quot;id&quot;</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+<span class="co"># search for attribute topic &quot;id&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>), <span class="dv">20</span>)</code></pre></div>
 <pre><code>                       name                                       description               dataset
                       &lt;chr&gt;                                             &lt;chr&gt;                 &lt;chr&gt;
@@ -411,7 +421,9 @@ Warning messages:
 with 1 more variables: mart &lt;chr&gt;</code></pre>
 <p>Now, all <code>attribute names</code> having <code>id</code> as part of their <code>name</code> are being returned.</p>
 <p>Another example is <code>topic = &quot;homolog&quot;</code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for attribute topic &quot;homolog&quot;</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+<span class="co"># search for attribute topic &quot;homolog&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;homolog&quot;</span>), <span class="dv">20</span>)</code></pre></div>
 <pre><code>                                          name
                                          &lt;chr&gt;
@@ -437,7 +449,9 @@ with 1 more variables: mart &lt;chr&gt;</code></pre>
 20                 pformosa_homolog_chromosome
   with 3 more variables: description &lt;chr&gt;, dataset &lt;chr&gt;, mart &lt;chr&gt;</code></pre>
 <p>Or <code>topic = &quot;dn&quot;</code> and <code>topic = &quot;ds&quot;</code> for <code>dn</code> and <code>ds</code> value retrieval.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for attribute topic &quot;dn&quot;</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+<span class="co"># search for attribute topic &quot;dn&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;dn&quot;</span>))</code></pre></div>
 <pre><code>A tibble: 6 × 4
                                 name              description               dataset                 mart
@@ -448,7 +462,9 @@ with 1 more variables: mart &lt;chr&gt;</code></pre>
 4                pformosa_homolog_dn     dN with Amazon molly hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
 5           acarolinensis_homolog_dn     dN with Anole lizard hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
 6 dnovemcinctus_homolog_ensembl_gene Armadillo gene stable ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for attribute topic &quot;ds&quot;</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+<span class="co"># search for attribute topic &quot;ds&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;ds&quot;</span>))</code></pre></div>
 <pre><code>                 name          description               dataset                 mart
                 &lt;chr&gt;                &lt;chr&gt;                 &lt;chr&gt;                &lt;chr&gt;
@@ -459,7 +475,9 @@ with 1 more variables: mart &lt;chr&gt;</code></pre>
 5   vpacos_homolog_ds       dS with Alpaca hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
 6 pformosa_homolog_ds dS with Amazon molly hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL</code></pre>
 <p>Analogous to the <code>organismAttributes()</code> function, the <code>organismFilters()</code> function returns all filters that are available for a query organism of interest.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># return available filters for &quot;Homo sapiens&quot;</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+<span class="co"># return available filters for &quot;Homo sapiens&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismFilters</span>(<span class="st">&quot;Homo sapiens&quot;</span>), <span class="dv">20</span>)</code></pre></div>
 <pre><code>                                     name                                               description
                                     &lt;chr&gt;                                                     &lt;chr&gt;
@@ -485,7 +503,9 @@ with 1 more variables: mart &lt;chr&gt;</code></pre>
 20                            with_dbass3                                         with DBASS3 ID(s)
  with 2 more variables: dataset &lt;chr&gt;, mart &lt;chr&gt;</code></pre>
 <p>The <code>organismFilters()</code> function also allows users to search for filters that correspond to a specific topic or category.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for filter topic &quot;id&quot;</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+<span class="co"># search for filter topic &quot;id&quot;</span>
 <span class="kw">head</span>(<span class="kw">organismFilters</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>), <span class="dv">20</span>)</code></pre></div>
 <pre><code>                             name                                        description
                             &lt;chr&gt;                                              &lt;chr&gt;
@@ -515,7 +535,10 @@ with 2 more variables: dataset &lt;chr&gt;, mart &lt;chr&gt;</code></pre>
 <h2>Performing BioMart queries with biomartr</h2>
 <p>The short introduction to the functionality of <code>organismBM()</code>, <code>organismAttributes()</code>, and <code>organismFilters()</code> will allow users to perform BioMart queries in a very intuitive organism centric way. The main function to perform BioMart queries is <code>biomart()</code>.</p>
 <p>For the following examples we will assume that we are interested in the annotation of specific genes from the <em>Homo sapiens</em> proteome. We want to map the corresponding refseq gene id to a set of other gene ids used in other databases. For this purpose, first we need consult the <code>organismAttributes()</code> function.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+
+<span class="kw">head</span>(<span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>))</code></pre></div>
 <pre><code>                   name              description               dataset                 mart
                   &lt;chr&gt;                    &lt;chr&gt;                 &lt;chr&gt;                &lt;chr&gt;
 1       ensembl_gene_id                  Gene ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
@@ -524,7 +547,9 @@ with 2 more variables: dataset &lt;chr&gt;, mart &lt;chr&gt;</code></pre>
 4       ensembl_exon_id                  Exon ID hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
 5     study_external_id Study External Reference hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL
 6                 go_id        GO Term Accession hsapiens_gene_ensembl ENSEMBL_MART_ENSEMBL</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># retrieve the proteome of Homo sapiens from refseq</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+<span class="co"># retrieve the proteome of Homo sapiens from refseq</span>
 file_path &lt;-<span class="st"> </span><span class="kw">getProteome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>,
                           <span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>,
                           <span class="dt">path     =</span> <span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;proteomes&quot;</span>) )
@@ -556,7 +581,9 @@ result_BM </code></pre></div>
 <div id="go-annotation-retrieval-via-biomart" class="section level3">
 <h3>GO Annotation Retrieval via BioMart</h3>
 <p>The <code>getGO()</code> function takes several arguments as input to retrieve GO information from BioMart. First, the scientific name of the <code>organism</code> of interest needs to be specified. Furthermore, a set of <code>gene ids</code> as well as their corresponding <code>filter</code> notation (<code>GUCA2A</code> gene ids have <code>filter</code> notation <code>hgnc_symbol</code>; see <code>organismFilters()</code> for details) need to be specified. The <code>database</code> argument then defines the database from which GO information shall be retrieved.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># search for GO terms of an example Homo sapiens gene</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
+<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
+<span class="co"># search for GO terms of an example Homo sapiens gene</span>
 GO_tbl &lt;-<span class="st"> </span><span class="kw">getGO</span>(<span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>, 
                 <span class="dt">genes    =</span> <span class="st">&quot;GUCA2A&quot;</span>,
                 <span class="dt">filters  =</span> <span class="st">&quot;hgnc_symbol&quot;</span>)

@@ -64,6 +64,7 @@ getGFF <-
             organism <- stringr::str_replace_all(organism,"\\(","")
             organism <- stringr::str_replace_all(organism,"\\)","")
             
+            
             FoundOrganism <-
                 dplyr::filter(
                     AssemblyFilesAllKingdoms,
@@ -75,9 +76,7 @@ getGFF <-
                 )
             
             if (nrow(FoundOrganism) == 0) {
-                cat("\n")
-                cat(paste0("----------> No reference genome or representative genome was found for '",organism,"'. Thus, download for this species has been omitted."))
-                cat("\n")
+                message(paste0("----------> No reference genome or representative genome was found for '",organism,"'. Thus, download for this species has been omitted."))
             } else {
                 if (nrow(FoundOrganism) > 1) {
                     warnings(
@@ -101,6 +100,11 @@ getGFF <-
                             "_genomic.gff.gz"
                         )
                     )
+                
+                if (!exists.ftp.file(url = paste0(FoundOrganism$ftp_path,"/"), file.path = download_url)) {
+                    message("Unfortunately no GFF file could be found for organism '",organism,"'. Thus, the download of this organism has been omitted.")
+                    return(FALSE) 
+                }
                 
                 # download_url <- paste0(query$ftp_path,query$`# assembly_accession`,"_",query$asm_name,"_genomic.fna.gz")
                 local.org <- stringr::str_replace_all(organism,"-","_")
@@ -192,12 +196,8 @@ getGFF <-
                         "The API 'http://rest.ensembl.org' does not seem to work properly. Are you connected to the internet? Is the homepage '",json.qry.info,"' currently available?", call. = FALSE
                     ))
                 
-                cwd <- getwd()
-                
-                setwd(path)
-                
                 # generate Genome documentation
-                sink(paste0("doc_",new.organism,"_db_",db,".txt"))
+                sink(file.path(path, paste0("doc_",new.organism,"_db_",db,".txt")))
                 
                 cat(paste0("File Name: ", genome.path))
                 cat("\n")
@@ -218,8 +218,6 @@ getGFF <-
                 cat(paste0("genebuild_initial_release_date: ", json.qry.info$genebuild_initial_release_date))
                 
                 sink()
-                
-                setwd(cwd)
                 
                 print(
                     paste0(
@@ -267,12 +265,8 @@ getGFF <-
                         "The API 'http://rest.ensemblgenomes.org' does not seem to work properly. Are you connected to the internet? Is the homepage 'http://rest.ensemblgenomes.org' currently available?", call. = FALSE
                     ))
                 
-                cwd <- getwd()
-                
-                setwd(path)
-                
                 # generate Genome documentation
-                sink(paste0("doc_",new.organism,"_db_",db,".txt"))
+                sink(file.path(path, paste0("doc_",new.organism,"_db_",db,".txt")))
                 
                 cat(paste0("File Name: ", genome.path))
                 cat("\n")
@@ -293,9 +287,7 @@ getGFF <-
                 cat(paste0("genebuild_initial_release_date: ", json.qry.info$genebuild_initial_release_date))
                 
                 sink()
-                
-                setwd(cwd)
-                
+            
                 print(
                     paste0(
                         "The *.gff annotation file of '",

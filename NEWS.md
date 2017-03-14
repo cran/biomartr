@@ -1,3 +1,47 @@
+biomartr 0.4.0
+===========
+
+### Bug fixes
+
+- fixing a major bug https://github.com/HajkD/biomartr/issues/6 that caused that in all `get*()` (genome, proteome, gff, etc.) and `meta.retrieval*()` functions
+ the meta retrieval process errored and terminated whenever NCBI or ENSEMBL didn't
+store all types of sequences for a particular organism: genome, proteome, cds, etc. This has been fixed now and function calls
+such as `meta.retrieval(kingdom = "bacteria", db = "genbank", type = "proteome")` should work properly now (Thanks to @ARamesh123 for making me aware if this bug). Hence, this bug affected all attempts to download all proteome sequences e.g. for bacteria and viruses, because NCBI does not store genome AND proteome information for all bacterial or viral species. 
+
+
+### New Functions
+
+- new function `getAssemblyStats()` allows users to retrieve the genome assembly stats file from NCBI RefSeq or Genbank, e.g. ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.36_GRCh38.p10/GCF_000001405.36_GRCh38.p10_assembly_stats.txt
+
+- new function `read_assemblystats()` allows to import the genome assembly stats file from NCBI RefSeq or Genbank that was retrieved
+using the `getAssemblyStats()` function
+
+### Function changes
+
+- `meta.retrieval()` and `meta.retrieval.all()` can now also download genome assembly stats for all selected species
+
+- `meta.retrieval()` receives a new argument `group` that allows users to retrieve species belonging to a subgroup instead of the entire kingdom.
+Available groups can be retrieved with `getGroups()`.
+
+- functions `getSubgroups()` and `listSubgroups()` have been removed and their initial functionality
+has been merged and integrated into `getGroups()` and `listGroups()`
+
+- `listGroups()` receives a new argument `details` that allows users to retrieve the organism names that belong to the corresponding subgroups
+
+- `getGroups()` is now based on `listGroups()`
+
+- internal function `getGENOMESREPORT()` is now exported and available to the user
+
+- all `organism*()` functions now also support Ensembl Plants, Ensembl Metazoa, Ensembl Protist, and Ensembl Fungi (Thanks for pointing out [Alex Gabel](https://github.com/AlexGa))
+
+- `getMarts()` and `getDatasets()` now also support Ensembl Plants, Ensembl Metazoa, Ensembl Protist, and Ensembl Fungi (Thanks for pointing out [Alex Gabel](https://github.com/AlexGa))
+
+
+### Vignette updates
+
+- Vignette `Meta-Genome Retrieval` has more examples how to download genomes of species that belong to the same subgroup
+
+
 biomartr 0.3.0
 ===========
 

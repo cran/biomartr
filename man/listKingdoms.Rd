@@ -31,7 +31,7 @@ listKingdoms(db = "ensemblgenomes")
 
 }
 \seealso{
-\code{\link{listGenomes}}, \code{\link{is.genome.available}}, \code{\link{listGroups}}, \code{\link{listSubgroups}}
+\code{\link{listGenomes}}, \code{\link{is.genome.available}}, \code{\link{listGroups}}
 }
 \author{
 Hajk-Georg Drost

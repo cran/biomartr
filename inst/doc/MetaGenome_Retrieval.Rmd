@@ -19,12 +19,12 @@ knitr::opts_chunk$set(
 
 ## Perform Meta-Genome Retrieval
 
-The number of genome sequences generated and stored in sequence databases is growing exponentially every day. With the availability of this growing amount of data, meta-genomics studies become more popular
-and useful for finding patterns within genomes by comparing them to thousands of other genomes.
-However, the first step in any meta-genomics study is the retrieval of the genomes that shall be compared
-or investigated. 
+The number of genome assemblies generated and stored in sequence databases is growing exponentially every year. With the availability of this growing amount of data, meta-genomics studies become more and more popular. By using this bulk of genomes for comparing them to thousands of other genomes
+new structural patterns and evolutionary insights can be obtained.
+However, the first step in any meta-genomics study is the retrieval of the genomes, proteomes, coding sequences or annotation files that shall be compared
+and investigated. 
 
-For this purpose, I implemented the `meta.retrieval()` function to allow users to perform easy meta-genome retrieval in R.
+For this purpose, the `meta.retrieval()` function allows users to perform straightforward meta-genome retrieval in R.
 
 The `getKingdoms()` function stores a list of all available kingdoms of life. Using the argument `db` users can specify from which database
 kingdom information shall be retrieved.
@@ -139,6 +139,204 @@ meta.retrieval(kingdom = "vertebrate_mammalian", db = "genbank", type = "genome"
 ```
 
 
+#### Example retrieval of all `Gammaproteobacteria` genomes from `NCBI RefSeq`:
+
+Please note that the following functionality is so far only provided by the [developer version of biomartr](https://github.com/HajkD/biomartr#download-developer-version).
+
+In case users do not wish to retrieve genomes from an entire kingdom, but rather from
+a subgoup (e.g. from species belonging to the `Gammaproteobacteria` class, a subgroup of the `bacteria` kingdom),
+they can use the following workflow:
+
+
+First, users can again consult the `getKingdoms()` function to retrieve kingdom information.
+
+```{r, eval=FALSE}
+getKingdoms(db = "refseq")
+```
+
+```
+[1] "archaea"              "bacteria"             "fungi"                "invertebrate"        
+[5] "plant"                "protozoa"             "vertebrate_mammalian" "vertebrate_other"    
+[9] "viral"
+```
+
+In this example, we will choose the `bacteria` kingdom. Now, the `getGroups()` function allows users to obtain
+available subgroups of the `bacteria` kingdom.
+
+```{r, eval=FALSE}
+getGroups(db = "refseq", kingdom = "bacteria")
+```
+
+```
+ [1] "Acidithiobacillia"                     "Acidobacteriia"                       
+ [3] "Actinobacteria"                        "Alphaproteobacteria"                  
+ [5] "Aquificae"                             "Armatimonadetes"                      
+ [7] "Bacteroidetes/Chlorobi group"          "Balneolia"                            
+ [9] "Betaproteobacteria"                    "Blastocatellia"                       
+[11] "Candidatus Kryptonia"                  "Chlamydiae"                           
+[13] "Chloroflexi"                           "Cyanobacteria/Melainabacteria group"  
+[15] "Deinococcus-Thermus"                   "delta/epsilon subdivisions"           
+[17] "Endomicrobia"                          "Fibrobacteres"                        
+[19] "Firmicutes"                            "Fusobacteriia"                        
+[21] "Gammaproteobacteria"                   "Gemmatimonadetes"                     
+[23] "Kiritimatiellaeota"                    "Nitrospira"                           
+[25] "Planctomycetes"                        "Spirochaetia"                         
+[27] "Synergistia"                           "Tenericutes"                          
+[29] "Thermodesulfobacteria"                 "Thermotogae"                          
+[31] "unclassified Acidobacteria"            "unclassified Bacteria (miscellaneous)"
+[33] "unclassified Proteobacteria"           "Verrucomicrobia"                      
+[35] "Zetaproteobacteria" 
+```
+
+Please note, that the `kingdom` argument specified in `getGroups()` needs to match with an available kingdom retrieved with `getKingdoms()`.
+It is also important that in both cases: `getKingdoms()` and `getGroups()` the same database should be specified.
+
+
+Now we choose the group `Gammaproteobacteria` and specify the `group` argument in the `meta.retrieval()` function.
+
+```{r, eval=FALSE}
+meta.retrieval(kingdom = "bacteria", group = "Gammaproteobacteria", db = "refseq", type = "genome")
+```
+
+Using this command, all bacterial (`kingdom = "bacteria"`) genomes (`type = "genome"`) that belong to the group `Gammaproteobacteria` (`group = "Gammaproteobacteria"`) will be retrieved from NCBI RefSeq (`db = "refseq"`).
+
+Alternatively, `Gammaproteobacteria` genomes can be retrieved from NCBI Genbank by exchanging `db = "refseq"` to `db = "genbank"`.
+If users wish to download proteome, CDS, or GFF files instead of genomes, they can specify the argument: `type = "proteome"`, `type = "CDS"`, or `type = "gff"`.
+
+#### Example retrieval of all `Adenoviridae` genomes from `NCBI RefSeq`:
+
+Retrieve groups for viruses.
+```{r, eval=FALSE}
+getGroups(db = "refseq", kingdom = "viral")
+```
+
+```
+ [1] "Adenoviridae"                                        "Alloherpesviridae"                                  
+  [3] "Alphaflexiviridae"                                   "Alphatetraviridae"                                  
+  [5] "Alvernaviridae"                                      "Amalgaviridae"                                      
+  [7] "Ampullaviridae"                                      "Anelloviridae"                                      
+  [9] "Apple fruit crinkle viroid"                          "Apple hammerhead viroid-like circular RNA"          
+ [11] "Apscaviroid"                                         "Arenaviridae"                                       
+ [13] "Arteriviridae"                                       "Ascoviridae"                                        
+ [15] "Asfarviridae"                                        "Astroviridae"                                       
+ [17] "Avsunviroid"                                         "Baculoviridae"                                      
+ [19] "Barnaviridae"                                        "Benyviridae"                                        
+ [21] "Betaflexiviridae"                                    "Bicaudaviridae"                                     
+ [23] "Birnaviridae"                                        "Bornaviridae"                                       
+ [25] "Bromoviridae"                                        "Bunyaviridae"                                       
+ [27] "Caliciviridae"                                       "Carmotetraviridae"                                  
+ [29] "Caulimoviridae"                                      "Cherry leaf scorch small circular viroid-like RNA 1"
+ [31] "Cherry small circular viroid-like RNA"               "Chrysoviridae"                                      
+ [33] "Circoviridae"                                        "Closteroviridae"                                    
+ [35] "Cocadviroid"                                         "Coleviroid"                                         
+ [37] "Coronaviridae"                                       "Corticoviridae"                                     
+ [39] "Cystoviridae"                                        "Dicistroviridae"                                    
+ [41] "Elaviroid"                                           "Endornaviridae"                                     
+ [43] "Filoviridae"                                         "Flaviviridae"                                       
+ [45] "Fusarividae"                                         "Fuselloviridae"                                     
+ [47] "Gammaflexiviridae"                                   "Geminiviridae"                                      
+ [49] "Genomoviridae"                                       "Globuloviridae"                                     
+ [51] "Grapevine latent viroid"                             "Guttaviridae"                                       
+ [53] "Hepadnaviridae"                                      "Hepeviridae"                                        
+ [55] "Herpesviridae"                                       "Hostuviroid"                                        
+ [57] "Hypoviridae"                                         "Hytrosaviridae"                                     
+ [59] "Iflaviridae"                                         "Inoviridae"                                         
+ [61] "Iridoviridae"                                        "Lavidaviridae"                                      
+ [63] "Leviviridae"                                         "Lipothrixviridae"                                   
+ [65] "Luteoviridae"                                        "Malacoherpesviridae"                                
+ [67] "Marnaviridae"                                        "Marseilleviridae"                                   
+ [69] "Megabirnaviridae"                                    "Mesoniviridae"                                      
+ [71] "Microviridae"                                        "Mimiviridae"                                        
+ [73] "Mulberry small circular viroid-like RNA 1"           "Mymonaviridae"                                      
+ [75] "Myoviridae"                                          "Nanoviridae"                                        
+ [77] "Narnaviridae"                                        "Nimaviridae"                                        
+ [79] "Nodaviridae"                                         "Nudiviridae"                                        
+ [81] "Nyamiviridae"                                        "Ophioviridae"                                       
+ [83] "Orthomyxoviridae"                                    "Other"                                              
+ [85] "Papillomaviridae"                                    "Paramyxoviridae"                                    
+ [87] "Partitiviridae"                                      "Parvoviridae"                                       
+ [89] "Pelamoviroid"                                        "Permutotetraviridae"                                
+ [91] "Persimmon viroid"                                    "Phycodnaviridae"                                    
+ [93] "Picobirnaviridae"                                    "Picornaviridae"                                     
+ [95] "Plasmaviridae"                                       "Pneumoviridae"                                      
+ [97] "Podoviridae"                                         "Polydnaviridae"                                     
+ [99] "Polyomaviridae"                                      "Pospiviroid"                                        
+[101] "Potyviridae"                                         "Poxviridae"                                         
+[103] "Quadriviridae"                                       "Reoviridae"                                         
+[105] "Retroviridae"                                        "Rhabdoviridae"                                      
+[107] "Roniviridae"                                         "Rubber viroid India/2009"                           
+[109] "Rudiviridae"                                         "Secoviridae"                                        
+[111] "Siphoviridae"                                        "Sphaerolipoviridae"                                 
+[113] "Sunviridae"                                          "Tectiviridae"                                       
+[115] "Togaviridae"                                         "Tombusviridae"                                      
+[117] "Totiviridae"                                         "Turriviridae"                                       
+[119] "Tymoviridae"                                         "unclassified"                                       
+[121] "unclassified Pospiviroidae"                          "Virgaviridae"
+```
+
+Now we can choose `Adenoviridae` as group argument for the `meta.retrieval()` function.
+
+```{r, eval=FALSE}
+meta.retrieval(kingdom = "viral", group = "Adenoviridae", db = "refseq", type = "genome")
+```
+
+Again, by exchanging `type = "genome"` by either `type = "proteome"`, `type = "CDS"`, or `type = "gff"`, users can retrieve proteome, CDS, or GFF files instead of genomes.
+
+
+### Meta retrieval of genome assembly quality information
+
+Although much effort is invested to increase the genome assembly quality
+when new genomes are published or new versions are released, the influence
+of genome assembly quality on downstream analyses cannot be neglected.
+A rule of thumb is, that the larger the genome the more prone it is to
+genome assembly errors and therefore, a reduction of assembly quality.
+
+In [Veeckman et al., 2016](http://www.plantcell.org/content/28/8/1759.short) the authors conclude:
+
+> As yet, no uniform metrics or standards are in place to estimate the completeness of a genome assembly or
+> the annotated gene space, despite their importance for downstream analyses
+
+In most metagenomics studies, however, the influence or bias of genome assembly quality on the 
+outcome of the analysis (e.g. comparative genomics, annotation, etc.) is neglected. To better 
+grasp the genome assembly quality, the NCBI databases store genome assembly statistics of some
+species for which genome assemblies are available. An example assembly statistics report can
+be found at: ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.36_GRCh38.p10/GCF_000001405.36_GRCh38.p10_assembly_stats.txt. 
+
+The `biomartr` package allows users to retrieve these genome assembly stats file in an automated way.
+
+```{r, eval=FALSE}
+# show all elements of the data.frame
+options(tibble.print_max = Inf)
+# retrieve genome assembly stats for all mammal genome assemblies
+# and store these stats in a data.frame
+mammals.gc <- meta.retrieval(kingdom = "vertebrate_mammalian", 
+                             db      = "refseq", 
+                             type    = "assemblystats", 
+                             combine = TRUE)
+
+mammals.gc
+```
+
+```
+                    species total_length spanned_gaps unspanned_gaps region_count scaffold_count
+                      <chr>        <int>        <int>          <int>        <int>          <int>
+1  Ornithorhynchus anatinus   1995607322       243698            137            0         200283
+2      Sarcophilus harrisii           NA       201317              0            0          35974
+3      Dasypus novemcinctus           NA       268413              0            0          46559
+4       Erinaceus europaeus           NA       219764              0            0           5803
+5         Echinops telfairi           NA       269444              0            0           8402
+6           Pteropus alecto   1985975446       104566              0            0          65598
+7     Rousettus aegyptiacus   1910250568          559              0            0             NA
+8        Callithrix jacchus           NA       184972           2242            0          16399
+9  Cebus capucinus imitator           NA       133441              0            0           7156
+10          Cercocebus atys           NA        65319              0            0          11433
+# ... with 89 more rows, and 9 more variables: scaffold_N50 <int>, scaffold_L50 <int>,
+#   scaffold_N75 <int>, scaffold_N90 <int>, contig_count <int>, contig_N50 <int>, total_gap_length <int>,
+#   molecule_count <int>, top_level_count <int>
+```
+
+Analogous, for each kingdom available at `getKingdoms()` this information can be retrieved.
+
 ### Metagenome project retrieval from NCBI Genbank
 
 NCBI Genbank stores [metagenome projects](ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/metagenomes/) in addition to species specific genome, proteome or CDS sequences. To retrieve these metagenomes users can perform the following combination of commands:
@@ -177,6 +375,8 @@ achieve a much faster access of this information during following uses of `listM
 In case users wish to retrieve detailed information about available metagenome projects they can specify the `details = TRUE` argument.
 
 ```{r,eval=FALSE}
+# show all elements of the data.frame
+options(tibble.print_max = Inf)
 # detailed information on available metagenomes at NCBI Genbank
 listMetaGenomes(details = TRUE)
 ```

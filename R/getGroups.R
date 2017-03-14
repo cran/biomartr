@@ -16,28 +16,10 @@
 #' # retrieve subgroups for vertebrate_mammalian available from genbank
 #' getGroups(kingdom = "vertebrate_mammalian",db = "genbank")
 #' }
-#' @seealso \code{\link{meta.retrieval}}, \code{\link{getGenome}}, \code{\link{getProteome}}, \code{\link{getCDS}}, \code{\link{getKingdoms}}, \code{\link{getSubgroups}}
+#' @seealso \code{\link{meta.retrieval}}, \code{\link{getGenome}}, \code{\link{getProteome}}, \code{\link{getCDS}}, \code{\link{getKingdoms}}
 #' @export
 
 getGroups <- function(kingdom, db = "refseq") {
-    
-    if (!is.element(kingdom, getKingdoms(db = db)))
-        stop(paste0(
-            "Please select a valid kingdom: ",
-            paste0(getKingdoms(db = db), collapse = ", ")
-        ), call. = FALSE)
-    
-    if (!is.element(db, c("refseq", "genbank")))
-        stop("Please select one of the available data bases: 'refseq', 'genbank'.", call. = FALSE)
-    
-    # get Kingdom Assembly Summary file
-    AssemblyFilesAllKingdoms <- getKingdomAssemblySummary(db = db)
-    
-    # get all genomes list
-    all.genomes <- listGenomes(db = db, type = "group", details = TRUE)
-    
-    # join tables
-    joined.df <- dplyr::inner_join(AssemblyFilesAllKingdoms,all.genomes, by = "organism_name")
-    
-    return(names(table(joined.df$group)))
+    groups <- listGroups(db = db, kingdom = kingdom, details = FALSE)
+    return(names(groups))
 }

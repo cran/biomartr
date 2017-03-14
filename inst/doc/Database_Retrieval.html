@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2017-02-09" />
+<meta name="date" content="2017-03-13" />
 
 <title>NCBI Database Retrieval</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">NCBI Database Retrieval</h1>
-<h4 class="date"><em>2017-02-09</em></h4>
+<h4 class="date"><em>2017-03-13</em></h4>
 
 
 
@@ -78,95 +78,47 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="search-for-available-databases" class="section level2">
 <h2>Search for available databases</h2>
 <p>Before downloading specific databases from NCBI users might want to list available databases. Using the <code>listDatabases()</code> function users can retrieve a list of available databases stored on NCBI.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">&quot;biomartr&quot;</span>)
-
-<span class="co"># retrieve a list of available sequence databases at NCBI</span>
-<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;all&quot;</span>)</code></pre></div>
-<pre><code> [1] &quot;16SMicrobial&quot;             &quot;cdd_delta&quot;                &quot;cloud&quot;                    &quot;env_nr&quot;
- [5] &quot;env_nt&quot;                   &quot;est&quot;                      &quot;est_human&quot;                &quot;est_mouse&quot;
- [9] &quot;est_others&quot;               &quot;FASTA&quot;                    &quot;gene_info&quot;                &quot;gss&quot;
-[13] &quot;gss_annot&quot;                &quot;htgs&quot;                     &quot;human_genomic&quot;            &quot;human_genomic_transcript&quot;
-[17] &quot;landmark&quot;                 &quot;mouse_genomic_transcript&quot; &quot;nr&quot;                       &quot;nt&quot;
-[21] &quot;other_genomic&quot;            &quot;pataa&quot;                    &quot;patnt&quot;                    &quot;pdbaa&quot;
-[25] &quot;pdbnt&quot;                    &quot;refseq_genomic&quot;           &quot;refseq_protein&quot;           &quot;refseq_rna&quot;
-[29] &quot;refseqgene&quot;               &quot;Representative_Genomes&quot;   &quot;sts&quot;                      &quot;swissprot&quot;
-[33] &quot;taxdb&quot;                    &quot;tsa_nr&quot;                   &quot;tsa_nt&quot;                   &quot;vector&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># retrieve a list of available sequence databases at NCBI</span>
+biomartr::<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;all&quot;</span>)</code></pre></div>
+<pre><code>#&gt;  [1] &quot;16SMicrobial&quot;             &quot;FASTA&quot;                    &quot;cdd_delta&quot;                &quot;cloud&quot;                    &quot;env_nr&quot;                   &quot;env_nt&quot;                   &quot;est&quot;                      &quot;est_human&quot;                &quot;est_mouse&quot;                &quot;est_others&quot;               &quot;gene_info&quot;                &quot;gss&quot;                      &quot;gss_annot&quot;                &quot;htgs&quot;                     &quot;human_genomic&quot;            &quot;human_genomic_transcript&quot; &quot;landmark&quot;                 &quot;mouse_genomic_transcript&quot; &quot;nr&quot;                       &quot;nt&quot;                       &quot;other_genomic&quot;            &quot;pataa&quot;                    &quot;patnt&quot;                    &quot;pdbaa&quot;                    &quot;pdbnt&quot;                    &quot;ref_prok_rep_genomes&quot;     &quot;ref_viroids_rep_genomes&quot; 
+#&gt; [28] &quot;ref_viruses_rep_genomes&quot;  &quot;refseq_genomic&quot;           &quot;refseq_protein&quot;           &quot;refseq_rna&quot;               &quot;refseqgene&quot;               &quot;sts&quot;                      &quot;swissprot&quot;                &quot;taxdb&quot;                    &quot;tsa_nr&quot;                   &quot;tsa_nt&quot;                   &quot;vector&quot;</code></pre>
 <p>However, in case users already know which database they would like to retrieve they can filter for the exact files by specifying the NCBI database name. In the following example all sequence files that are part of the <code>NCBI nr</code> database shall be retrieved.</p>
 <p>First, the <code>listDatabases(db = &quot;nr&quot;)</code> allows to list all files corresponding to the <code>nr</code> database.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all NCBI nr files</span>
-<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;nr&quot;</span>)</code></pre></div>
-<pre><code> [1] &quot;nr.00.tar.gz&quot; &quot;nr.01.tar.gz&quot; &quot;nr.02.tar.gz&quot; &quot;nr.03.tar.gz&quot; &quot;nr.04.tar.gz&quot; &quot;nr.05.tar.gz&quot;
- [7] &quot;nr.16.tar.gz&quot; &quot;nr.06.tar.gz&quot; &quot;nr.15.tar.gz&quot; &quot;nr.30.tar.gz&quot; &quot;nr.07.tar.gz&quot; &quot;nr.08.tar.gz&quot;
-[13] &quot;nr.09.tar.gz&quot; &quot;nr.10.tar.gz&quot; &quot;nr.11.tar.gz&quot; &quot;nr.12.tar.gz&quot; &quot;nr.13.tar.gz&quot; &quot;nr.14.tar.gz&quot;
-[19] &quot;nr.28.tar.gz&quot; &quot;nr.29.tar.gz&quot; &quot;nr.31.tar.gz&quot; &quot;nr.17.tar.gz&quot; &quot;nr.18.tar.gz&quot; &quot;nr.19.tar.gz&quot;
-[25] &quot;nr.20.tar.gz&quot; &quot;nr.21.tar.gz&quot; &quot;nr.22.tar.gz&quot; &quot;nr.23.tar.gz&quot; &quot;nr.32.tar.gz&quot; &quot;nr.24.tar.gz&quot;
-[31] &quot;nr.25.tar.gz&quot; &quot;nr.26.tar.gz&quot; &quot;nr.27.tar.gz&quot; &quot;nr.33.tar.gz&quot; &quot;nr.34.tar.gz&quot; &quot;nr.35.tar.gz&quot;
-[37] &quot;nr.36.tar.gz&quot; &quot;nr.37.tar.gz&quot; &quot;nr.38.tar.gz&quot; &quot;nr.39.tar.gz&quot; &quot;nr.40.tar.gz&quot; &quot;nr.41.tar.gz&quot;</code></pre>
+biomartr::<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;nr&quot;</span>)</code></pre></div>
+<pre><code>#&gt;  [1] &quot;nr.00.tar.gz&quot; &quot;nr.01.tar.gz&quot; &quot;nr.02.tar.gz&quot; &quot;nr.03.tar.gz&quot; &quot;nr.04.tar.gz&quot; &quot;nr.05.tar.gz&quot; &quot;nr.16.tar.gz&quot; &quot;nr.54.tar.gz&quot; &quot;nr.55.tar.gz&quot; &quot;nr.56.tar.gz&quot; &quot;nr.06.tar.gz&quot; &quot;nr.15.tar.gz&quot; &quot;nr.30.tar.gz&quot; &quot;nr.57.tar.gz&quot; &quot;nr.58.tar.gz&quot; &quot;nr.59.tar.gz&quot; &quot;nr.60.tar.gz&quot; &quot;nr.61.tar.gz&quot; &quot;nr.07.tar.gz&quot; &quot;nr.08.tar.gz&quot; &quot;nr.09.tar.gz&quot; &quot;nr.10.tar.gz&quot; &quot;nr.11.tar.gz&quot; &quot;nr.12.tar.gz&quot; &quot;nr.13.tar.gz&quot; &quot;nr.14.tar.gz&quot; &quot;nr.28.tar.gz&quot; &quot;nr.29.tar.gz&quot; &quot;nr.31.tar.gz&quot; &quot;nr.17.tar.gz&quot; &quot;nr.18.tar.gz&quot; &quot;nr.19.tar.gz&quot; &quot;nr.20.tar.gz&quot; &quot;nr.21.tar.gz&quot; &quot;nr.22.tar.gz&quot; &quot;nr.23.tar.gz&quot; &quot;nr.32.tar.gz&quot; &quot;nr.24.tar.gz&quot; &quot;nr.25.tar.gz&quot; &quot;nr.26.tar.gz&quot; &quot;nr.27.tar.gz&quot; &quot;nr.33.tar.gz&quot; &quot;nr.34.tar.gz&quot; &quot;nr.35.tar.gz&quot; &quot;nr.36.tar.gz&quot; &quot;nr.37.tar.gz&quot; &quot;nr.38.tar.gz&quot; &quot;nr.39.tar.gz&quot; &quot;nr.40.tar.gz&quot;
+#&gt; [50] &quot;nr.41.tar.gz&quot; &quot;nr.42.tar.gz&quot; &quot;nr.43.tar.gz&quot; &quot;nr.44.tar.gz&quot; &quot;nr.45.tar.gz&quot; &quot;nr.46.tar.gz&quot; &quot;nr.47.tar.gz&quot; &quot;nr.48.tar.gz&quot; &quot;nr.49.tar.gz&quot; &quot;nr.53.tar.gz&quot; &quot;nr.50.tar.gz&quot; &quot;nr.51.tar.gz&quot; &quot;nr.52.tar.gz&quot;</code></pre>
 <p>The output illustrates that the <code>NCBI nr</code> database has been separated into 41 files.</p>
 <p>Further examples are:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all NCBI nt files</span>
-<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;nt&quot;</span>)</code></pre></div>
-<pre><code> [1] &quot;nt.00.tar.gz&quot; &quot;nt.01.tar.gz&quot; &quot;nt.02.tar.gz&quot; &quot;nt.03.tar.gz&quot; &quot;nt.04.tar.gz&quot; &quot;nt.05.tar.gz&quot;
- [7] &quot;nt.06.tar.gz&quot; &quot;nt.07.tar.gz&quot; &quot;nt.08.tar.gz&quot; &quot;nt.09.tar.gz&quot; &quot;nt.10.tar.gz&quot; &quot;nt.11.tar.gz&quot;
-[13] &quot;nt.12.tar.gz&quot; &quot;nt.13.tar.gz&quot; &quot;nt.14.tar.gz&quot; &quot;nt.15.tar.gz&quot; &quot;nt.16.tar.gz&quot; &quot;nt.26.tar.gz&quot;
-[19] &quot;nt.27.tar.gz&quot; &quot;nt.17.tar.gz&quot; &quot;nt.18.tar.gz&quot; &quot;nt.28.tar.gz&quot; &quot;nt.29.tar.gz&quot; &quot;nt.19.tar.gz&quot;
-[25] &quot;nt.20.tar.gz&quot; &quot;nt.21.tar.gz&quot; &quot;nt.22.tar.gz&quot; &quot;nt.23.tar.gz&quot; &quot;nt.24.tar.gz&quot; &quot;nt.25.tar.gz&quot;
-[31] &quot;nt.30.tar.gz&quot; &quot;nt.31.tar.gz&quot; &quot;nt.32.tar.gz&quot; &quot;nt.33.tar.gz&quot;</code></pre>
+biomartr::<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;nt&quot;</span>)</code></pre></div>
+<pre><code>#&gt;  [1] &quot;nt.00.tar.gz&quot; &quot;nt.01.tar.gz&quot; &quot;nt.02.tar.gz&quot; &quot;nt.03.tar.gz&quot; &quot;nt.04.tar.gz&quot; &quot;nt.05.tar.gz&quot; &quot;nt.06.tar.gz&quot; &quot;nt.07.tar.gz&quot; &quot;nt.08.tar.gz&quot; &quot;nt.09.tar.gz&quot; &quot;nt.10.tar.gz&quot; &quot;nt.40.tar.gz&quot; &quot;nt.11.tar.gz&quot; &quot;nt.41.tar.gz&quot; &quot;nt.42.tar.gz&quot; &quot;nt.43.tar.gz&quot; &quot;nt.44.tar.gz&quot; &quot;nt.12.tar.gz&quot; &quot;nt.13.tar.gz&quot; &quot;nt.14.tar.gz&quot; &quot;nt.15.tar.gz&quot; &quot;nt.16.tar.gz&quot; &quot;nt.26.tar.gz&quot; &quot;nt.27.tar.gz&quot; &quot;nt.17.tar.gz&quot; &quot;nt.18.tar.gz&quot; &quot;nt.28.tar.gz&quot; &quot;nt.29.tar.gz&quot; &quot;nt.19.tar.gz&quot; &quot;nt.20.tar.gz&quot; &quot;nt.21.tar.gz&quot; &quot;nt.22.tar.gz&quot; &quot;nt.23.tar.gz&quot; &quot;nt.24.tar.gz&quot; &quot;nt.25.tar.gz&quot; &quot;nt.30.tar.gz&quot; &quot;nt.31.tar.gz&quot; &quot;nt.32.tar.gz&quot; &quot;nt.33.tar.gz&quot; &quot;nt.34.tar.gz&quot; &quot;nt.35.tar.gz&quot; &quot;nt.36.tar.gz&quot; &quot;nt.37.tar.gz&quot; &quot;nt.39.tar.gz&quot; &quot;nt.38.tar.gz&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all NCBI ESTs others</span>
-<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;est_others&quot;</span>)</code></pre></div>
-<pre><code> [1] &quot;est_others.00.tar.gz&quot; &quot;est_others.01.tar.gz&quot; &quot;est_others.02.tar.gz&quot; &quot;est_others.03.tar.gz&quot;
- [5] &quot;est_others.04.tar.gz&quot; &quot;est_others.05.tar.gz&quot; &quot;est_others.06.tar.gz&quot; &quot;est_others.07.tar.gz&quot;
- [9] &quot;est_others.08.tar.gz&quot; &quot;est_others.09.tar.gz&quot; &quot;est_others.10.tar.gz&quot;</code></pre>
+biomartr::<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;est_others&quot;</span>)</code></pre></div>
+<pre><code>#&gt;  [1] &quot;est_others.00.tar.gz&quot; &quot;est_others.01.tar.gz&quot; &quot;est_others.02.tar.gz&quot; &quot;est_others.03.tar.gz&quot; &quot;est_others.04.tar.gz&quot; &quot;est_others.05.tar.gz&quot; &quot;est_others.06.tar.gz&quot; &quot;est_others.07.tar.gz&quot; &quot;est_others.08.tar.gz&quot; &quot;est_others.09.tar.gz&quot; &quot;est_others.10.tar.gz&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all NCBI RefSeq (only genomes)</span>
-<span class="kw">head</span>(<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;refseq_genomic&quot;</span>), <span class="dv">20</span>)</code></pre></div>
-<pre><code> [1] &quot;refseq_genomic.00.tar.gz&quot; &quot;refseq_genomic.01.tar.gz&quot; &quot;refseq_genomic.02.tar.gz&quot;
- [4] &quot;refseq_genomic.03.tar.gz&quot; &quot;refseq_genomic.04.tar.gz&quot; &quot;refseq_genomic.05.tar.gz&quot;
- [7] &quot;refseq_genomic.06.tar.gz&quot; &quot;refseq_genomic.07.tar.gz&quot; &quot;refseq_genomic.08.tar.gz&quot;
-[10] &quot;refseq_genomic.09.tar.gz&quot; &quot;refseq_genomic.10.tar.gz&quot; &quot;refseq_genomic.11.tar.gz&quot;
-[13] &quot;refseq_genomic.12.tar.gz&quot; &quot;refseq_genomic.13.tar.gz&quot; &quot;refseq_genomic.14.tar.gz&quot;
-[16] &quot;refseq_genomic.15.tar.gz&quot; &quot;refseq_genomic.16.tar.gz&quot; &quot;refseq_genomic.17.tar.gz&quot;
-[19] &quot;refseq_genomic.18.tar.gz&quot; &quot;refseq_genomic.19.tar.gz&quot;</code></pre>
+<span class="kw">head</span>(biomartr::<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;refseq_genomic&quot;</span>), <span class="dv">20</span>)</code></pre></div>
+<pre><code>#&gt;  [1] &quot;refseq_genomic.218.tar.gz&quot; &quot;refseq_genomic.219.tar.gz&quot; &quot;refseq_genomic.220.tar.gz&quot; &quot;refseq_genomic.00.tar.gz&quot;  &quot;refseq_genomic.01.tar.gz&quot;  &quot;refseq_genomic.02.tar.gz&quot;  &quot;refseq_genomic.03.tar.gz&quot;  &quot;refseq_genomic.04.tar.gz&quot;  &quot;refseq_genomic.05.tar.gz&quot;  &quot;refseq_genomic.06.tar.gz&quot;  &quot;refseq_genomic.07.tar.gz&quot;  &quot;refseq_genomic.08.tar.gz&quot;  &quot;refseq_genomic.09.tar.gz&quot;  &quot;refseq_genomic.10.tar.gz&quot;  &quot;refseq_genomic.11.tar.gz&quot;  &quot;refseq_genomic.12.tar.gz&quot;  &quot;refseq_genomic.13.tar.gz&quot;  &quot;refseq_genomic.14.tar.gz&quot;  &quot;refseq_genomic.15.tar.gz&quot;  &quot;refseq_genomic.16.tar.gz&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all NCBI RefSeq (only proteomes)</span>
-<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;refseq_protein&quot;</span>)</code></pre></div>
-<pre><code>[1] &quot;refseq_protein.00.tar.gz&quot; &quot;refseq_protein.01.tar.gz&quot; &quot;refseq_protein.02.tar.gz&quot;
- [4] &quot;refseq_protein.03.tar.gz&quot; &quot;refseq_protein.04.tar.gz&quot; &quot;refseq_protein.05.tar.gz&quot;
- [7] &quot;refseq_protein.06.tar.gz&quot; &quot;refseq_protein.07.tar.gz&quot; &quot;refseq_protein.08.tar.gz&quot;
-[10] &quot;refseq_protein.09.tar.gz&quot; &quot;refseq_protein.14.tar.gz&quot; &quot;refseq_protein.15.tar.gz&quot;
-[13] &quot;refseq_protein.16.tar.gz&quot; &quot;refseq_protein.10.tar.gz&quot; &quot;refseq_protein.11.tar.gz&quot;
-[16] &quot;refseq_protein.17.tar.gz&quot; &quot;refseq_protein.12.tar.gz&quot; &quot;refseq_protein.13.tar.gz&quot;
-[19] &quot;refseq_protein.18.tar.gz&quot; &quot;refseq_protein.19.tar.gz&quot;</code></pre>
+biomartr::<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;refseq_protein&quot;</span>)</code></pre></div>
+<pre><code>#&gt;  [1] &quot;refseq_protein.25.tar.gz&quot; &quot;refseq_protein.00.tar.gz&quot; &quot;refseq_protein.01.tar.gz&quot; &quot;refseq_protein.02.tar.gz&quot; &quot;refseq_protein.03.tar.gz&quot; &quot;refseq_protein.26.tar.gz&quot; &quot;refseq_protein.27.tar.gz&quot; &quot;refseq_protein.28.tar.gz&quot; &quot;refseq_protein.29.tar.gz&quot; &quot;refseq_protein.04.tar.gz&quot; &quot;refseq_protein.05.tar.gz&quot; &quot;refseq_protein.06.tar.gz&quot; &quot;refseq_protein.07.tar.gz&quot; &quot;refseq_protein.08.tar.gz&quot; &quot;refseq_protein.09.tar.gz&quot; &quot;refseq_protein.14.tar.gz&quot; &quot;refseq_protein.15.tar.gz&quot; &quot;refseq_protein.16.tar.gz&quot; &quot;refseq_protein.10.tar.gz&quot; &quot;refseq_protein.11.tar.gz&quot; &quot;refseq_protein.17.tar.gz&quot; &quot;refseq_protein.12.tar.gz&quot; &quot;refseq_protein.13.tar.gz&quot; &quot;refseq_protein.18.tar.gz&quot; &quot;refseq_protein.19.tar.gz&quot; &quot;refseq_protein.20.tar.gz&quot; &quot;refseq_protein.21.tar.gz&quot;
+#&gt; [28] &quot;refseq_protein.22.tar.gz&quot; &quot;refseq_protein.23.tar.gz&quot; &quot;refseq_protein.24.tar.gz&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all NCBI RefSeq (only RNA)</span>
-<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;refseq_rna&quot;</span>)</code></pre></div>
-<pre><code>[1] &quot;refseq_rna.00.tar.gz&quot; &quot;refseq_rna.01.tar.gz&quot; &quot;refseq_rna.02.tar.gz&quot; &quot;refseq_rna.05.tar.gz&quot;
-[5] &quot;refseq_rna.03.tar.gz&quot; &quot;refseq_rna.06.tar.gz&quot; &quot;refseq_rna.04.tar.gz&quot; &quot;refseq_rna.07.tar.gz&quot;</code></pre>
+biomartr::<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;refseq_rna&quot;</span>)</code></pre></div>
+<pre><code>#&gt;  [1] &quot;refseq_rna.00.tar.gz&quot; &quot;refseq_rna.01.tar.gz&quot; &quot;refseq_rna.10.tar.gz&quot; &quot;refseq_rna.02.tar.gz&quot; &quot;refseq_rna.05.tar.gz&quot; &quot;refseq_rna.03.tar.gz&quot; &quot;refseq_rna.06.tar.gz&quot; &quot;refseq_rna.04.tar.gz&quot; &quot;refseq_rna.07.tar.gz&quot; &quot;refseq_rna.08.tar.gz&quot; &quot;refseq_rna.09.tar.gz&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show NCBI swissprot</span>
-<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;swissprot&quot;</span>)</code></pre></div>
-<pre><code>[1] &quot;swissprot.tar.gz&quot;</code></pre>
+biomartr::<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;swissprot&quot;</span>)</code></pre></div>
+<pre><code>#&gt; [1] &quot;swissprot.tar.gz&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show NCBI PDB</span>
-<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;pdb&quot;</span>)</code></pre></div>
-<pre><code>[1] &quot;pdbnt.00.tar.gz&quot; &quot;pdbnt.26.tar.gz&quot; &quot;pdbnt.27.tar.gz&quot; &quot;pdbnt.01.tar.gz&quot; &quot;pdbnt.02.tar.gz&quot;
- [6] &quot;pdbnt.03.tar.gz&quot; &quot;pdbnt.04.tar.gz&quot; &quot;pdbnt.05.tar.gz&quot; &quot;pdbnt.06.tar.gz&quot; &quot;pdbnt.07.tar.gz&quot;
-[11] &quot;pdbnt.08.tar.gz&quot; &quot;pdbnt.09.tar.gz&quot; &quot;pdbnt.10.tar.gz&quot; &quot;pdbnt.11.tar.gz&quot; &quot;pdbnt.12.tar.gz&quot;
-[16] &quot;pdbnt.13.tar.gz&quot; &quot;pdbnt.14.tar.gz&quot; &quot;pdbnt.15.tar.gz&quot; &quot;pdbnt.16.tar.gz&quot; &quot;pdbnt.17.tar.gz&quot;
-[21] &quot;pdbnt.18.tar.gz&quot; &quot;pdbnt.28.tar.gz&quot; &quot;pdbnt.19.tar.gz&quot; &quot;pdbnt.20.tar.gz&quot; &quot;pdbnt.21.tar.gz&quot;
-[26] &quot;pdbnt.22.tar.gz&quot; &quot;pdbnt.23.tar.gz&quot; &quot;pdbnt.24.tar.gz&quot; &quot;pdbnt.29.tar.gz&quot; &quot;pdbnt.25.tar.gz&quot;
-[31] &quot;pdbaa.tar.gz&quot;    &quot;pdbnt.30.tar.gz&quot; &quot;pdbnt.31.tar.gz&quot; &quot;pdbnt.32.tar.gz&quot; &quot;pdbnt.33.tar.gz&quot;</code></pre>
+biomartr::<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;pdb&quot;</span>)</code></pre></div>
+<pre><code>#&gt;  [1] &quot;pdbnt.00.tar.gz&quot; &quot;pdbnt.40.tar.gz&quot; &quot;pdbnt.41.tar.gz&quot; &quot;pdbnt.42.tar.gz&quot; &quot;pdbnt.43.tar.gz&quot; &quot;pdbnt.44.tar.gz&quot; &quot;pdbnt.26.tar.gz&quot; &quot;pdbnt.27.tar.gz&quot; &quot;pdbnt.01.tar.gz&quot; &quot;pdbnt.02.tar.gz&quot; &quot;pdbnt.03.tar.gz&quot; &quot;pdbnt.04.tar.gz&quot; &quot;pdbnt.05.tar.gz&quot; &quot;pdbnt.06.tar.gz&quot; &quot;pdbnt.07.tar.gz&quot; &quot;pdbnt.08.tar.gz&quot; &quot;pdbnt.09.tar.gz&quot; &quot;pdbnt.10.tar.gz&quot; &quot;pdbnt.11.tar.gz&quot; &quot;pdbnt.12.tar.gz&quot; &quot;pdbnt.13.tar.gz&quot; &quot;pdbnt.14.tar.gz&quot; &quot;pdbnt.15.tar.gz&quot; &quot;pdbnt.16.tar.gz&quot; &quot;pdbnt.17.tar.gz&quot; &quot;pdbnt.18.tar.gz&quot; &quot;pdbnt.28.tar.gz&quot; &quot;pdbnt.19.tar.gz&quot; &quot;pdbnt.20.tar.gz&quot; &quot;pdbnt.21.tar.gz&quot; &quot;pdbnt.22.tar.gz&quot; &quot;pdbnt.23.tar.gz&quot; &quot;pdbnt.24.tar.gz&quot; &quot;pdbnt.29.tar.gz&quot; &quot;pdbnt.25.tar.gz&quot; &quot;pdbaa.tar.gz&quot;    &quot;pdbnt.30.tar.gz&quot; &quot;pdbnt.31.tar.gz&quot; &quot;pdbnt.32.tar.gz&quot; &quot;pdbnt.33.tar.gz&quot; &quot;pdbnt.34.tar.gz&quot;
+#&gt; [42] &quot;pdbnt.35.tar.gz&quot; &quot;pdbnt.36.tar.gz&quot; &quot;pdbnt.37.tar.gz&quot; &quot;pdbnt.39.tar.gz&quot; &quot;pdbnt.38.tar.gz&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show NCBI Human database</span>
-<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;human&quot;</span>)</code></pre></div>
-<pre><code> [1] &quot;human_genomic.00.tar.gz&quot;         &quot;human_genomic.01.tar.gz&quot;        
- [3] &quot;human_genomic.02.tar.gz&quot;         &quot;human_genomic.03.tar.gz&quot;        
- [5] &quot;human_genomic.04.tar.gz&quot;         &quot;human_genomic.05.tar.gz&quot;        
- [7] &quot;human_genomic.06.tar.gz&quot;         &quot;human_genomic.07.tar.gz&quot;        
- [9] &quot;human_genomic.08.tar.gz&quot;         &quot;human_genomic_transcript.tar.gz&quot;
-[11] &quot;human_genomic.10.tar.gz&quot;         &quot;human_genomic.11.tar.gz&quot;        
-[13] &quot;human_genomic.12.tar.gz&quot;         &quot;human_genomic.13.tar.gz&quot;        
-[15] &quot;human_genomic.14.tar.gz&quot;         &quot;human_genomic.15.tar.gz&quot;</code></pre>
+biomartr::<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;human&quot;</span>)</code></pre></div>
+<pre><code>#&gt;  [1] &quot;human_genomic.00.tar.gz&quot;         &quot;human_genomic.01.tar.gz&quot;         &quot;human_genomic.02.tar.gz&quot;         &quot;human_genomic.03.tar.gz&quot;         &quot;human_genomic.04.tar.gz&quot;         &quot;human_genomic.05.tar.gz&quot;         &quot;human_genomic.06.tar.gz&quot;         &quot;human_genomic.07.tar.gz&quot;         &quot;human_genomic.08.tar.gz&quot;         &quot;human_genomic_transcript.tar.gz&quot; &quot;human_genomic.10.tar.gz&quot;         &quot;human_genomic.11.tar.gz&quot;         &quot;human_genomic.12.tar.gz&quot;         &quot;human_genomic.13.tar.gz&quot;         &quot;human_genomic.14.tar.gz&quot;         &quot;human_genomic.15.tar.gz&quot;         &quot;human_genomic.16.tar.gz&quot;         &quot;human_genomic.18.tar.gz&quot;         &quot;human_genomic.19.tar.gz&quot;         &quot;human_genomic.20.tar.gz&quot;</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show NCBI EST databases</span>
-<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;est&quot;</span>)</code></pre></div>
-<pre><code> [1] &quot;est.tar.gz&quot;           &quot;est_human.00.tar.gz&quot;  &quot;est_human.01.tar.gz&quot;  &quot;est_mouse.tar.gz&quot;    
- [5] &quot;est_others.00.tar.gz&quot; &quot;est_others.01.tar.gz&quot; &quot;est_others.02.tar.gz&quot; &quot;est_others.03.tar.gz&quot;
- [9] &quot;est_others.04.tar.gz&quot; &quot;est_others.05.tar.gz&quot; &quot;est_others.06.tar.gz&quot; &quot;est_others.07.tar.gz&quot;
-[13] &quot;est_others.08.tar.gz&quot; &quot;est_others.09.tar.gz&quot; &quot;est_others.10.tar.gz&quot;</code></pre>
+biomartr::<span class="kw">listDatabases</span>(<span class="dt">db =</span> <span class="st">&quot;est&quot;</span>)</code></pre></div>
+<pre><code>#&gt;  [1] &quot;est.tar.gz&quot;           &quot;est_human.00.tar.gz&quot;  &quot;est_human.01.tar.gz&quot;  &quot;est_mouse.tar.gz&quot;     &quot;est_others.00.tar.gz&quot; &quot;est_others.01.tar.gz&quot; &quot;est_others.02.tar.gz&quot; &quot;est_others.03.tar.gz&quot; &quot;est_others.04.tar.gz&quot; &quot;est_others.05.tar.gz&quot; &quot;est_others.06.tar.gz&quot; &quot;est_others.07.tar.gz&quot; &quot;est_others.08.tar.gz&quot; &quot;est_others.09.tar.gz&quot; &quot;est_others.10.tar.gz&quot;</code></pre>
 <p><strong>Please not that all lookup and retrieval function will only work properly when a sufficient internet connection is provided.</strong></p>
 <p>In a next step users can use the <code>listDatabases()</code> and <code>download.database.all()</code> functions to retrieve all files corresponding to a specific NCBI database.</p>
 </div>
@@ -176,20 +128,20 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>For downloading only single files users can type:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># select NCBI nr version 27 =  &quot;nr.27.tar.gz&quot;</span>
 <span class="co"># and download it into the folder</span>
-<span class="kw">download.database</span>(<span class="dt">db        =</span> <span class="st">&quot;nr.27.tar.gz&quot;</span>, 
+biomartr::<span class="kw">download.database</span>(<span class="dt">db        =</span> <span class="st">&quot;nr.27.tar.gz&quot;</span>, 
                   <span class="dt">path      =</span> <span class="st">&quot;nr&quot;</span>)</code></pre></div>
 <p>Using this command first a folder named <code>nr</code> is created and the file <code>nr.27.tar.gz</code> is downloaded to this folder. This command will download the pre-formatted (by makeblastdb formatted) database version is retrieved.</p>
 <p>Alternatively, users can retrieve all <code>nr</code> files with one command by typing:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the entire NCBI nr database</span>
-<span class="kw">download.database.all</span>(<span class="dt">db =</span> <span class="st">&quot;nr&quot;</span>, <span class="dt">path =</span> <span class="st">&quot;nr&quot;</span>)</code></pre></div>
+biomartr::<span class="kw">download.database.all</span>(<span class="dt">db =</span> <span class="st">&quot;nr&quot;</span>, <span class="dt">path =</span> <span class="st">&quot;nr&quot;</span>)</code></pre></div>
 <p>Using this command, all <code>NCBI nr</code> files are loaded into the <code>nr</code> folder (<code>path = &quot;nr&quot;</code>).</p>
 <p>The same approach can be applied to all other databases mentioned above, e.g.:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the entire NCBI nt database</span>
-<span class="kw">download.database.all</span>(<span class="dt">db =</span> <span class="st">&quot;nt&quot;</span>, <span class="dt">path =</span> <span class="st">&quot;nt&quot;</span>)</code></pre></div>
+biomartr::<span class="kw">download.database.all</span>(<span class="dt">db =</span> <span class="st">&quot;nt&quot;</span>, <span class="dt">path =</span> <span class="st">&quot;nt&quot;</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the entire NCBI refseq (protein) database</span>
-<span class="kw">download.database.all</span>(<span class="dt">db =</span> <span class="st">&quot;refseq_protein&quot;</span>, <span class="dt">path =</span> <span class="st">&quot;refseq_protein&quot;</span>)</code></pre></div>
+biomartr::<span class="kw">download.database.all</span>(<span class="dt">db =</span> <span class="st">&quot;refseq_protein&quot;</span>, <span class="dt">path =</span> <span class="st">&quot;refseq_protein&quot;</span>)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the entire NCBI PDB database</span>
-<span class="kw">download.database.all</span>(<span class="dt">db =</span> <span class="st">&quot;pdb&quot;</span>, <span class="dt">path =</span> <span class="st">&quot;pdb&quot;</span>)</code></pre></div>
+biomartr::<span class="kw">download.database.all</span>(<span class="dt">db =</span> <span class="st">&quot;pdb&quot;</span>, <span class="dt">path =</span> <span class="st">&quot;pdb&quot;</span>)</code></pre></div>
 <p><strong>Please notice that most of these databases are very large, so users should take of of providing a stable internect connection throughout the download process.</strong></p>
 </div>
 </div>
