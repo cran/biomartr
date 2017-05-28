@@ -4,14 +4,14 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2017-03-13" />
+<meta name="date" content="2017-05-28" />
 
 <title>Introduction to biomartr</title>
 
@@ -30,27 +30,28 @@
 
 
 <h1 class="title toc-ignore">Introduction to biomartr</h1>
-<h4 class="date"><em>2017-03-13</em></h4>
+<h4 class="date"><em>2017-05-28</em></h4>
 
 
 
 <div id="getting-started" class="section level2">
 <h2>Getting Started</h2>
-<p>A major problem in bioinformatics research is consistent data retrieval. The <code>biomartr</code> package therefore, aims to provide users with easy to use and diverse interfaces to well curated genomic databases such as:</p>
+<p>A major problem in bioinformatics research is consistent data retrieval. The <code>biomartr</code> package aims to fill this gap by providing users with easy to use and diverse interfaces to well curated genomic databases such as:</p>
 <ul>
 <li><a href="http://www.ncbi.nlm.nih.gov/">NCBI</a></li>
 <li><a href="http://www.ensembl.org/index.html">ENSEMBL</a></li>
 <li><a href="http://ensemblgenomes.org/">ENSEMBLGENOMES</a></li>
-<li><a href="http://www.biomart.org/">BioMart</a></li>
+<li><a href="http://ensemblgenomes.org/info/access/biomart">Ensembl Biomart</a></li>
 <li><a href="http://geneontology.org/">Gene Ontology</a></li>
 </ul>
-<p>The collection of functions implemented in <code>biomartr</code> enable fast functional annotation queries for a set of genes, entire genomes or meta-genome projects such as biological pathway analyses and genomic sequence retrieval.</p>
-<p>Users of the <a href="https://github.com/HajkD/myTAI">myTAI</a> and <a href="https://github.com/HajkD/orthologr">orthologr</a> packages will find additional functions allowing them to integrate <code>biomartr</code> to any workflow implemented using <code>myTAI</code> or <code>orthologr</code>. ## Workflow Design</p>
+<p>The collection of functions implemented in <code>biomartr</code> enable fast functional annotation queries for a set of genes, entire genomes or meta-genome projects such as biological pathway analyses and genomic sequence retrieval. Although, the name of this package <code>biomartr</code> is inspired by the Ensembl Biomart database it extends its functionality and service by providing additional interface functions to the most prominent databases for genome, proteime, CDS, GFF, etc. retrieval.</p>
+</div>
+<div id="workflow-design" class="section level2">
+<h2>Workflow Design</h2>
 <p>The <code>biomartr</code> package is designed to cover the following branches of biological data retrieval:</p>
 <ul>
 <li><strong>Biological Sequence Retrieval</strong></li>
 <li><strong>Functional Annotation Retrieval</strong></li>
-<li><strong>Enrichment Analyses</strong></li>
 </ul>
 <p>Hence, all functions implemented in <code>biomartr</code> serve to fulfill the above listed tasks.</p>
 </div>
@@ -73,7 +74,7 @@
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

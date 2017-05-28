@@ -1,7 +1,17 @@
 biomartr
 ========
 
+[![Travis-CI Build Status](https://travis-ci.org/HajkD/biomartr.svg?branch=master)](https://travis-ci.org/HajkD/biomartr)
+
 ## Genomic Data Retrieval with R
+
+### Motivation:
+
+This package is born out of my own frustration to automate the genomic data retrieval process to create computationally reproducible scripts for large-scale genomics studies. Since I couldn't find easy-to-use and fully reproducible software libraries that would allow others and me to write transparent and easy to reproduce code, I sat down and tried to implement a framework that would enable anyone to automate the genomic data retrieval process. Personally, I strongly support and believe in reproducible research, and I truly hope that this package might be useful to others as well and that it helps to promote reproducible research in genomics studies.
+
+I happily welcome anyone who wishes to contribute to this project :) Just drop me an email.
+
+### Short package description:
 
 The vastly growing number of sequenced genomes allows us to perform a new type of biological research.
 Using a comparative approach these genomes provide us with new insights on how biological information is encoded 
@@ -10,7 +20,7 @@ on the molecular level and how this information changes over evolutionary time.
 The first step, however, of any genome based study is to retrieve genomes from databases. To automate the
 retrieval process on a meta-genomic scale, the `biomartr` package provides useful interface functions for genomic sequence retrieval and functional annotation retrieval. The major aim of `biomartr` is to facilitate computational reproducibility and large-scale handling of genomic data for (meta-)genomic analyses.  
 
-In detail, `biomartr` aims to provide users with an easy to use framework to obtain genome, proteome, CDS, GFF (annotation), genome assembly quality, and metagenome project data. Furthermore, an interface to the [BioMart](http://www.biomart.org/) database allows users to retrieve functional annotation for genomic loci.
+In detail, `biomartr` aims to provide users with an easy to use framework to obtain genome, proteome, CDS, GFF (annotation), genome assembly quality, and metagenome project data. Furthermore, an interface to the [Ensembl Biomart](www.ensembl.org/biomart) database allows users to retrieve functional annotation for genomic loci.
 Users can [download entire databases](https://github.com/HajkD/biomartr/blob/master/vignettes/Database_Retrieval.Rmd) such as `NCBI RefSeq`, `NCBI nr`, `NCBI nt`, `NCBI Genbank`, etc. as well as `ENSEMBL` and `ENSEMBLGENOMES` with only one command.
 
 Hence, the `biomartr` package is designed to achieve the highest degree of computational reproducibility in genomics research.
@@ -20,7 +30,7 @@ Hence, the `biomartr` package is designed to achieve the highest degree of compu
 **Please cite the following paper when using `biomartr` for your own research. This will allow me to continue
 working on this software tool and will motivate me to extend its functionality and usability in the next years. Many thanks in advance :)**
 
-> Hajk-Georg Drost, Jerzy Paszkowski; [Biomartr: genomic data retrieval with R](https://academic.oup.com/bioinformatics/article/doi/10.1093/bioinformatics/btw821/2931816/Biomartr-genomic-data-retrieval-with-R). *Bioinformatics* 2017 btw821. doi: 10.1093/bioinformatics/btw821
+> Drost HG, Paszkowski J. __Biomartr: genomic data retrieval with R__. *Bioinformatics* (2017) 33(8): 1216-1217. [doi:10.1093/bioinformatics/btw821](https://academic.oup.com/bioinformatics/article/doi/10.1093/bioinformatics/btw821/2931816/Biomartr-genomic-data-retrieval-with-R).
 
 ### Platforms
 
@@ -54,13 +64,34 @@ Getting Started with `biomartr`:
 - [BioMart Examples](https://github.com/HajkD/biomartr/tree/master/vignettes/BioMart_Examples.Rmd)
 
 
+Users can also read the tutorials within ([RStudio](http://www.rstudio.com/)) :
+
+```r
+# source the biomartr package
+library(biomartr)
+
+# look for all tutorials (vignettes) available in the biomartr package
+# this will open your web browser
+browseVignettes("biomartr")
+```
+
 ## Installation
 
 ```r
-# install biomartr 0.3.0
+# install biomartr 0.4.0
 source("http://bioconductor.org/biocLite.R")
 biocLite('biomartr')
 ```
+
+## Install Developer Version
+Some bug fixes or new functionality will not be available on CRAN yet, but in the developer version here on GitHub. To download and install the most recent version of `biomartr` run:
+
+```r
+# install the current version of biomartr on your system
+source("http://bioconductor.org/biocLite.R")
+biocLite("HajkD/biomartr")
+```
+
 
 ## NEWS
 The current status of the package as well as a detailed history of the functionality of each version of `biomartr` can be found in the [NEWS](https://github.com/HajkD/biomartr/blob/master/NEWS.md) section.
@@ -87,7 +118,10 @@ The current status of the package as well as a detailed history of the functiona
 * `getGenome()` : Download a specific genome stored on NCBI and ENSEMBL servers
 * `getProteome()` : Download a specific proteome stored on NCBI and ENSEMBL servers
 * `getCDS()` : Download a specific CDS file (genome) stored on NCBI and ENSEMBL servers
-* `getGFF()` : Genome Annotation Retrieval (`*.gff`) from NCBI and ENSEMBL servers
+* `getRNA()` : Download a specific RNA file stored on NCBI and ENSEMBL servers
+* `getGFF()` : Genome Annotation Retrieval from NCBI (`*.gff`) and ENSEMBL (`*.gff3`) servers
+* `getGTF()` : Genome Annotation Retrieval (`*.gtf`) from ENSEMBL servers
+* `getRepeatMasker() :` Repeat Masker TE Annotation Retrieval
 * `getAssemblyStats()` : Genome Assembly Stats Retrieval from NCBI
 * `getKingdomAssemblySummary()` : Helper function to retrieve the assembly_summary.txt files from NCBI for all kingdoms
 * `getMetaGenomeSummary()` : Helper function to retrieve the assembly_summary.txt files from NCBI genbank metagenomes
@@ -100,11 +134,13 @@ The current status of the package as well as a detailed history of the functiona
 * `read_proteome()` : Import proteome as Biostrings or data.table object
 * `read_cds()` : Import CDS as Biostrings or data.table object
 * `read_gff()` : Import GFF file
+* `read_rna()` : Import RNA file
+* `read_rm()` : Import Repeat Masker output file
 * `read_assemblystats()` : Import Genome Assembly Stats File
 
 #### Database Retrieval
 
-* `listDatabases()` : Retrieve a list of available NCBI databases
+* `listNCBIDatabases()` : Retrieve a List of Available NCBI Databases for Download
 * `download.database()` : Download a NCBI database to your local hard drive
 * `download.database.all()` : Download a complete NCBI Database such as e.g. `NCBI nr` to your local hard drive
 
@@ -126,21 +162,7 @@ The current status of the package as well as a detailed history of the functiona
 * `getGO()` : Function to retrieve GO terms for a given set of genes
 
 
-## Download Developer Version
-
-The developer version of `biomartr` might include more functionality than the stable version on CRAN.
-
-### On Unix Based Systems
-
-Now you can use the `devtools` package to install biomartr from GitHub.
-
-```r
-# install the current version of biomartr on your system
-source("http://bioconductor.org/biocLite.R")
-biocLite("HajkD/biomartr")
-```
-
-### On Windows Systems
+## Download Developer Version On Windows Systems
 
 ```r
 # On Windows, this won't work - see ?build_github_devtools

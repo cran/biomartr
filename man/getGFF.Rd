@@ -2,26 +2,37 @@
 % Please edit documentation in R/getGFF.R
 \name{getGFF}
 \alias{getGFF}
-\title{Genome Annotation Retrieval}
+\title{Genome Annotation Retrieval (GFF3)}
 \usage{
 getGFF(db = "refseq", organism, path = file.path("_ncbi_downloads",
   "annotation"))
 }
 \arguments{
-\item{db}{a character string specifying the database from which the genome shall be retrieved: \code{db = "refseq"}, \code{db = "genbank"}, or \code{db = "ensembl"}.}
+\item{db}{a character string specifying the database from which the genome 
+shall be retrieved:
+\itemize{
+\item \code{db = "refseq"}
+\item \code{db = "genbank"}
+\item \code{db = "ensembl"}
+\item \code{db = "ensemblgenomes"}
+}}
 
-\item{organism}{a character string specifying the scientific name of the organism of interest, e.g. \code{organism = "Homo sapiens"}.}
+\item{organism}{a character string specifying the scientific name of the 
+organism of interest, e.g. \code{organism = "Homo sapiens"}.}
 
-\item{path}{a character string specifying the location (a folder) in which the corresponding
-annotation file shall be stored. Default is \code{path = file.path("_ncbi_downloads","genomes")}.}
+\item{path}{a character string specifying the location (a folder) in which 
+the corresponding annotation file shall be stored. Default is 
+\code{path = file.path("_ncbi_downloads","genomes")}.}
 }
 \value{
 File path to downloaded annotation file.
 }
 \description{
-Main retrieval function for GFF files of an organism of interest.
-By specifying the scientific name of an organism of interest the corresponding gff file storing the annotation  for the organism of interest
-can be downloaded and stored locally. GFF files can be retrieved from several databases.
+Main retrieval function for GFF files of an 
+organism of interest. By specifying the scientific name of an organism of 
+interest the corresponding gff file storing the annotation  for the organism 
+of interest can be downloaded and stored locally. GFF files can be retrieved 
+from several databases.
 }
 \details{
 Internally this function loads the the overview.txt file from NCBI:
@@ -38,7 +49,6 @@ no download process will be performed.
 }
 \examples{
 \dontrun{
-
 # download the annotation of Arabidopsis thaliana from refseq
 # and store the corresponding genome file in '_ncbi_downloads/annotation'
 getGFF( db       = "refseq", 
@@ -56,7 +66,8 @@ getGFF( db       = "genbank",
 
 }
 \seealso{
-\code{\link{getProteome}}, \code{\link{getCDS}}, \code{\link{getGenome}}, \code{\link{meta.retrieval}}
+\code{\link{getProteome}}, \code{\link{getCDS}}, 
+\code{\link{getGenome}}, \code{\link{getRNA}}, \code{\link{meta.retrieval}}
 }
 \author{
 Hajk-Georg Drost

@@ -1,20 +1,23 @@
 #' @title Helper function to retrieve the assembly_summary.txt file from NCBI
 #' @description Retrieval function of the assembly_summary.txt file from NCBI.
 #' @param db database name. E.g. \code{refseq} or \code{genbank}.
-#' @param kingdom kingdom for which assembly_summary.txt file shall be retrieved. See also \code{\link{getKingdoms}}.
+#' @param kingdom kingdom for which assembly_summary.txt file shall be 
+#' retrieved. See also \code{\link{getKingdoms}}.
 #' @author Hajk-Georg Drost
 #' @examples
 #' \dontrun{ 
 #' test <- getSummaryFile("refseq","plant")
 #' test
 #' }
-#' @seealso \code{\link{getKingdomAssemblySummary}}, \code{\link{getMetaGenomeSummary}}
+#' @seealso \code{\link{getKingdomAssemblySummary}}, 
+#' \code{\link{getMetaGenomeSummary}}
 #' @export
  
 getSummaryFile <- function(db,kingdom){
     
     if (!is.element(db, c("refseq", "genbank")))
-        stop("Please select one of the available data bases: 'refseq' or 'genbank'")
+        stop("Please select one of the available data bases: 'refseq' 
+             or 'genbank'")
     
     if (!is.element(kingdom, getKingdoms(db = db)))
         stop(paste0(
@@ -26,27 +29,34 @@ getSummaryFile <- function(db,kingdom){
         tempdir(),
         paste0("assembly_summary_", kingdom, "_", db, ".txt")
     ))) {
-        tryCatch({suppressMessages(downloader::download(
-            paste0(
-                "ftp://ftp.ncbi.nlm.nih.gov/genomes/",
-                db,
-                "/",
-                kingdom,
-                "/assembly_summary.txt"
-            ),
-            destfile = file.path(
-                tempdir(),
-                paste0("assembly_summary_", kingdom, "_", db, ".txt")
-            ), mode = "wb"
-        ))}, error = function(e)
-            stop(
-                "The FTP site 'ftp://ftp.ncbi.nlm.nih.gov/' cannot be reached. Are you connected to the internet? Is the the FTP site '",paste0(
+        tryCatch({
+            suppressMessages(downloader::download(
+                paste0(
                     "ftp://ftp.ncbi.nlm.nih.gov/genomes/",
                     db,
                     "/",
                     kingdom,
                     "/assembly_summary.txt"
-                ),"' currently available?", call. = FALSE
+                ),
+                destfile = file.path(
+                    tempdir(),
+                    paste0("assembly_summary_", kingdom, "_", db, ".txt")
+                ),
+                mode = "wb"
+            ))
+        }, error = function(e)
+            stop(
+                "The FTP site 'ftp://ftp.ncbi.nlm.nih.gov/' cannot be reached. 
+                Are you connected to the internet? Is the the FTP site '",
+                paste0(
+                    "ftp://ftp.ncbi.nlm.nih.gov/genomes/",
+                    db,
+                    "/",
+                    kingdom,
+                    "/assembly_summary.txt"
+                ),
+                "' currently available?",
+                call. = FALSE
             ))
         Sys.sleep(0.4)
     }
@@ -56,7 +66,8 @@ getSummaryFile <- function(db,kingdom){
                              readr::read_delim(
                                  file.path(
                                      tempdir(),
-                                     paste0("assembly_summary_", kingdom, "_", db, ".txt")
+                                     paste0("assembly_summary_", kingdom, "_", 
+                                            db, ".txt")
                                  ),
                                  comment = "#",
                                  delim = "\t",
@@ -86,7 +97,7 @@ getSummaryFile <- function(db,kingdom){
                                      "excluded_from_refseq"
                                  ),
                                  col_types = readr::cols(
-                                     assembly_accession = readr::col_character(),
+                                    assembly_accession = readr::col_character(),
                                      bioproject = readr::col_character(),
                                      biosample = readr::col_character(),
                                      wgs_master = readr::col_character(),
@@ -94,7 +105,7 @@ getSummaryFile <- function(db,kingdom){
                                      taxid = readr::col_integer(),
                                      species_taxid = readr::col_integer(),
                                      organism_name = readr::col_character(),
-                                     infraspecific_name = readr::col_character(),
+                                    infraspecific_name = readr::col_character(),
                                      isolate = readr::col_character(),
                                      version_status = readr::col_character(),
                                      assembly_level = readr::col_character(),
@@ -106,7 +117,7 @@ getSummaryFile <- function(db,kingdom){
                                      gbrs_paired_asm = readr::col_character(),
                                      paired_asm_comp = readr::col_character(),
                                      ftp_path = readr::col_character(),
-                                     excluded_from_refseq = readr::col_character()
+                                   excluded_from_refseq = readr::col_character()
                                  )
                              )
                          )
