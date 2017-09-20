@@ -52,7 +52,8 @@ read_rm <- function(file) {
     rm_file <-
         dplyr::mutate(
             rm_file,
-            qry_width = qry_end - qry_start + 1L)
+            qry_width = as.integer(qry_end - qry_start + 1L))
+
     return(rm_file)
 }
 

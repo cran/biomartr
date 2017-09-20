@@ -1,4 +1,12 @@
-biomartr 0.5.0
+biomartr 0.5.2
+===========
+
+### Bug fixes
+
+- fixing bug (https://github.com/ropensci/biomartr/issues/6) that caused incorrect filtering condition when more than one entry for an organism is present in the assemblysummary.txt file at NCBI (Thanks to @kalmeshv)
+
+
+biomartr 0.5.1
 ===========
 
 ### Bug fixes
