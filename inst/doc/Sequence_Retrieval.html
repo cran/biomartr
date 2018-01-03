@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2017-09-20" />
+<meta name="date" content="2018-01-02" />
 
 <title>Sequence Retrieval</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Sequence Retrieval</h1>
-<h4 class="date"><em>2017-09-20</em></h4>
+<h4 class="date"><em>2018-01-02</em></h4>
 
 
 
@@ -77,13 +77,52 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The <code>biomartr</code> package allows users to retrieve biological sequences in a very simple and intuitive way.</p>
 <p>Using <code>biomartr</code>, users can retrieve either genomes, proteomes, CDS, RNA, GFF, and genome assembly statistics data using the specialized functions:</p>
 <ul>
-<li><a href="#genome-retrieval">Genome retrieval with <code>getGenome()</code></a></li>
-<li><a href="#proteome-retrieval">Proteome retrieval with <code>getProteome()</code></a></li>
-<li><a href="#cds-retrieval">Coding sequence retrieval with <code>getCDS()</code></a></li>
-<li><a href="#rna-retrieval">RNA retrieval with <code>getRNA()</code></a></li>
-<li><a href="#retrieve-the-annotation-file-of-a-particular-genome">GFF retrieval with <code>getGFF()</code></a></li>
-<li><a href="#retrieve-the-annotation-file-of-a-particular-genome">GTF retrieval with <code>getGTF()</code></a></li>
-<li><a href="#repeat-masker-retrieval">Repeat Masker Annotation file retrieval with <code>getRepeatMasker()</code></a></li>
+<li><a href="#genome-retrieval">1. Genome retrieval with <code>getGenome()</code></a>
+<ul>
+<li><a href="#example-ncbi-refseq">1.1 from NCBI RefSeq</a></li>
+<li><a href="#example-ncbi-genbank">1.2 from NCBI Genbank</a></li>
+<li><a href="#example-ensembl">1.3 from ENSEMBL</a></li>
+<li><a href="#example-ensemblgenomes">1.4 from ENSEMBLGENOMES</a></li>
+</ul></li>
+<li><a href="#proteome-retrieval">2. Proteome retrieval with <code>getProteome()</code></a>
+<ul>
+<li><a href="#example-ncbi-refseq-1">2.1 from NCBI RefSeq</a></li>
+<li><a href="#example-ncbi-genbank-1">2.2 from NCBI Genbank</a></li>
+<li><a href="#example-ensembl-1">2.3 from ENSEMBL</a></li>
+<li><a href="#example-ensemblgenomes-1">2.4 from ENSEMBLGENOMES</a></li>
+</ul></li>
+<li><a href="#cds-retrieval">3. Coding sequence retrieval with <code>getCDS()</code></a>
+<ul>
+<li><a href="#example-ncbi-refseq-2">3.1 from NCBI RefSeq</a></li>
+<li><a href="#example-ncbi-genbank-2">3.2 from NCBI Genbank</a></li>
+<li><a href="#example-ensembl-2">3.3 from ENSEMBL</a></li>
+<li><a href="#example-ensemblgenomes-2">3.4 from ENSEMBLGENOMES</a></li>
+</ul></li>
+<li><a href="#rna-retrieval">4. RNA retrieval with <code>getRNA()</code></a>
+<ul>
+<li><a href="#example-ncbi-refseq-3">4.1 from NCBI RefSeq</a></li>
+<li><a href="#example-ncbi-genbank-3">4.2 from NCBI Genbank</a></li>
+<li><a href="#example-ensembl-3">4.3 from ENSEMBL</a></li>
+<li><a href="#example-ensemblgenomes-3">4.4 from ENSEMBLGENOMES</a></li>
+</ul></li>
+<li><a href="#retrieve-the-annotation-file-of-a-particular-genome">5. GFF retrieval with <code>getGFF()</code></a>
+<ul>
+<li><a href="#example-ncbi-refseq-4">5.1 from NCBI RefSeq</a></li>
+<li><a href="#example-ncbi-genbank-4">5.2 from NCBI Genbank</a></li>
+<li><a href="#example-ensembl-4">5.3 from ENSEMBL</a></li>
+<li><a href="#example-ensemblgenomes-4">5.4 from ENSEMBLGENOMES</a></li>
+</ul></li>
+<li><a href="#retrieve-the-annotation-file-of-a-particular-genome">6. GTF retrieval with <code>getGTF()</code></a>
+<ul>
+<li><a href="#example-ncbi-refseq-5">6.1 from NCBI RefSeq</a></li>
+<li><a href="#example-ncbi-genbank-5">6.2 from NCBI Genbank</a></li>
+<li><a href="#example-ensembl-5">6.3 from ENSEMBL</a></li>
+<li><a href="#example-ensemblgenomes-5">6.4 from ENSEMBLGENOMES</a></li>
+</ul></li>
+<li><a href="#repeat-masker-retrieval">7. Repeat Masker Annotation file retrieval with <code>getRepeatMasker()</code></a>
+<ul>
+<li><a href="#example-ncbi-refseq-6">7.1 from NCBI RefSeq</a></li>
+</ul></li>
 </ul>
 </div>
 <div id="getting-started-with-sequence-retrieval" class="section level2">
@@ -315,7 +354,9 @@ Apple fruit crinkle viroid
 <li><code>db = &quot;ensemblgenomes&quot;</code> for retrieval from <a href="http://ensemblgenomes.org/">ENSEMBLGENOMES</a></li>
 </ul>
 <p>Furthermore, users need to specify the scientific name of the organism of interest for which a genome assembly shall be downloaded, e.g. <code>organism = &quot;Homo sapiens&quot;</code>. Finally, the <code>path</code> argument specifies the folder path in which the corresponding assembly shall be locally stored. In case users would like to store the genome file at a different location, they can specify the <code>path = file.path(&quot;put&quot;,&quot;your&quot;,&quot;path&quot;,&quot;here&quot;)</code> argument.</p>
-<p>Example <code>RefSeq</code>:</p>
+</div>
+<div id="example-ncbi-refseq" class="section level3">
+<h3>Example NCBI RefSeq:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Homo sapiens from refseq</span>
 <span class="co"># and store the corresponding genome file in '_ncbi_downloads/genomes'</span>
 HS.genome.refseq &lt;-<span class="st"> </span><span class="kw">getGenome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
@@ -387,7 +428,9 @@ Human_Genome &lt;-<span class="st"> </span><span class="kw">getGenome</span>( <s
 [549]    170537 TCTACTCTCCCATGCTTGCCTCGG...GTCACAGGACTCATGGGGAATTC NT_187687.1 Homo ...
 [550]    177381 GATCTATCTGTATCTCCACAGGTG...GTCACAGGACTCATGGGGAATTC NT_113949.2 Homo ...
 [551]     16569 GATCACAGGTCTATCACCCTATTA...CCCTTAAATAAGACATCACGATG NC_012920.1 Homo ...</code></pre>
-<p>Example <code>Genbank</code>:</p>
+</div>
+<div id="example-ncbi-genbank" class="section level3">
+<h3>Example NCBI Genbank:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Homo sapiens from Genbank</span>
 <span class="co"># and store the corresponding genome file in '_ncbi_downloads/genomes'</span>
 HS.genome.genbank &lt;-<span class="st"> </span><span class="kw">getGenome</span>( <span class="dt">db       =</span> <span class="st">&quot;genbank&quot;</span>, 
@@ -411,7 +454,9 @@ Human_Genome</code></pre></div>
 [549]    170537 TCTACTCTCCCATGCTTGCCTCGG...GTCACAGGACTCATGGGGAATTC KI270933.1 Homo s...
 [550]    177381 GATCTATCTGTATCTCCACAGGTG...GTCACAGGACTCATGGGGAATTC GL000209.2 Homo s...
 [551]     16569 GATCACAGGTCTATCACCCTATTA...CCCTTAAATAAGACATCACGATG J01415.2 Homo sap...</code></pre>
-<p>Example <code>ENSEMBL</code>:</p>
+</div>
+<div id="example-ensembl" class="section level3">
+<h3>Example ENSEMBL:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Homo sapiens from ENSEMBL</span>
 <span class="co"># and store the corresponding genome file in '_ncbi_downloads/genomes'</span>
 HS.genome.ensembl &lt;-<span class="st"> </span><span class="kw">getGenome</span>( <span class="dt">db       =</span> <span class="st">&quot;ensembl&quot;</span>, 
@@ -435,7 +480,9 @@ Human_Genome</code></pre></div>
 [522]       981 AGATTTCGTTGGAACGGGATAAAC...TCAGCTTTCAAACACTCTTTTTG KI270423.1 dna:sc...
 [523]       971 ATTTGCGATGTGTGTTCTCAACTA...TTGGATAGCTTTGAAGTTTTCGT KI270392.1 dna:sc...
 [524]       970 AAGTGGATATTTGGATAGCTTTGA...TCCTCAATAACAGAGTTGAACCT KI270394.1 dna:sc...</code></pre>
-<p>Example <code>ENSEMBLGENOMES</code>:</p>
+</div>
+<div id="example-ensemblgenomes" class="section level3">
+<h3>Example ENSEMBLGENOMES:</h3>
 <p>Due to the unavailability of <code>&quot;Homo sapiens&quot;</code> at <code>db = &quot;ensemblgenomes&quot;</code> here we choose <code>&quot;Arabidopsis thaliana&quot;</code> as example.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Arabidopsis thaliana from ENSEMBLGENOMES</span>
 <span class="co"># and store the corresponding genome file in '_ncbi_downloads/genomes'</span>
@@ -469,7 +516,9 @@ Cress_Genome</code></pre></div>
 <li><code>db = &quot;ensemblgenomes&quot;</code> for retrieval from <a href="http://ensemblgenomes.org/">ENSEMBLGENOMES</a></li>
 </ul>
 <p>Furthermore, again users need to specify the scientific name of the organism of interest for which a proteomes shall be downloaded, e.g. <code>organism = &quot;Homo sapiens&quot;</code>. Finally, the <code>path</code> argument specifies the folder path in which the corresponding proteome shall be locally stored. In case users would like to store the proteome file at a different location, they can specify the <code>path = file.path(&quot;put&quot;,&quot;your&quot;,&quot;path&quot;,&quot;here&quot;)</code> argument.</p>
-<p>Example <code>RefSeq</code>:</p>
+</div>
+<div id="example-ncbi-refseq-1" class="section level3">
+<h3>Example <code>NCBI RefSeq</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the proteome of Homo sapiens from refseq</span>
 <span class="co"># and store the corresponding proteome file in '_ncbi_downloads/proteomes'</span>
 HS.proteome.refseq &lt;-<span class="st"> </span><span class="kw">getProteome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
@@ -515,7 +564,9 @@ Human_Proteome &lt;-<span class="st"> </span><span class="kw">getProteome</span>
 [109016]   603 MTMHTTMTTLTLTSLIPPILTTLV...QKGMIKLYFLSFFFPLILTLLLIT YP_003024036.1 NA...
 [109017]   174 MMYALFLLSVGLVMGFVGFSSKPS...WLVVVTGWTLFVGVYIVIEIARGN YP_003024037.1 NA...
 [109018]   380 MTPMRKTNPLMKLINHSFIDLPTP...LYFTTILILMPTISLIENKMLKWA YP_003024038.1 cy...</code></pre>
-<p>Example <code>Genbank</code>:</p>
+</div>
+<div id="example-ncbi-genbank-1" class="section level3">
+<h3>Example <code>NCBI Genbank</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the proteome of Homo sapiens from genbank</span>
 <span class="co"># and store the corresponding proteome file in '_ncbi_downloads/proteomes'</span>
 HS.proteome.genbank &lt;-<span class="st"> </span><span class="kw">getProteome</span>( <span class="dt">db       =</span> <span class="st">&quot;genbank&quot;</span>, 
@@ -538,7 +589,9 @@ Human_Proteome &lt;-<span class="st"> </span><span class="kw">read_proteome</spa
 [11]   603 MTMHTTMTTLTLTSLIPPILTTLVNP...STQKGMIKLYFLSFFFPLILTLLLIT AAB58953.1 NADH d...
 [12]   174 MMYALFLLSVGLVMGFVGFSSKPSPI...GRWLVVVTGWTLFVGVYIVIEIARGN AAB58954.1 NADH d...
 [13]   380 MTPMRKTNPLMKLINHSFIDLPTPSN...SVLYFTTILILMPTISLIENKMLKWA AAB58955.3 cytoch...</code></pre>
-<p>Example <code>ENSEMBL</code>:</p>
+</div>
+<div id="example-ensembl-1" class="section level3">
+<h3>Example <code>ENSEMBL</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the proteome of Homo sapiens from ENSEMBL</span>
 <span class="co"># and store the corresponding proteome file in '_ncbi_downloads/proteomes'</span>
 HS.proteome.ensembl &lt;-<span class="st"> </span><span class="kw">getProteome</span>( <span class="dt">db       =</span> <span class="st">&quot;ensembl&quot;</span>, 
@@ -561,7 +614,9 @@ Human_Proteome &lt;-<span class="st"> </span><span class="kw">read_proteome</spa
 [102913]   697 MLLPLLLSSLLGGSQAMDGRFWIR...GVRPRPEARMPKGTQADYAEVKFQ ENSP00000345243.4...
 [102914]   155 MLLPLLLSSLLGVLSFTPRPQDHN...SGRYTCRAENRLGSQQRALDLSVQ ENSP00000435281.1...
 [102915]   186 MRRCYCHCCCPRCWADWTGSTPAY...HFSVLSFTPRPQDHNTDLTCHVDF ENSP00000433838.1...</code></pre>
-<p>Example <code>ENSEMBLGENOMES</code>:</p>
+</div>
+<div id="example-ensemblgenomes-1" class="section level3">
+<h3>Example <code>ENSEMBLGENOMES</code>:</h3>
 <p>Due to the unavailability of <code>&quot;Homo sapiens&quot;</code> at <code>db = &quot;ensemblgenomes&quot;</code> here we choose <code>&quot;Arabidopsis thaliana&quot;</code> as example.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the proteome of Arabidopsis thaliana from ENSEMBLGENOMES</span>
 <span class="co"># and store the corresponding proteome file in '_ncbi_downloads/proteomes'</span>
@@ -598,7 +653,9 @@ Cress_Proteome &lt;-<span class="st"> </span><span class="kw">read_proteome</spa
 <li><code>db = &quot;ensemblgenomes&quot;</code> for retrieval from <a href="http://ensemblgenomes.org/">ENSEMBLGENOMES</a></li>
 </ul>
 <p>Furthermore, again users need to specify the scientific name of the organism of interest for which a proteomes shall be downloaded, e.g. <code>organism = &quot;Homo sapiens&quot;</code>. Finally, the <code>path</code> argument specifies the folder path in which the corresponding CDS file shall be locally stored. In case users would like to store the CDS file at a different location, they can specify the <code>path = file.path(&quot;put&quot;,&quot;your&quot;,&quot;path&quot;,&quot;here&quot;)</code> argument.</p>
-<p>Example <code>RefSeq</code>:</p>
+</div>
+<div id="example-ncbi-refseq-2" class="section level3">
+<h3>Example <code>NCBI RefSeq</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Homo sapiens from refseq</span>
 <span class="co"># and store the corresponding genome CDS file in '_ncbi_downloads/CDS'</span>
 HS.cds.refseq &lt;-<span class="st"> </span><span class="kw">getCDS</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
@@ -664,7 +721,9 @@ Human_CDS &lt;-<span class="st"> </span><span class="kw">getCDS</span>( <span cl
 [114965]   1812 ATAACCATGCACACTACTATAACC...TAACCCTACTCCTAATCACATAA lcl|NC_012920.1_c...
 [114966]    525 ATGATGTATGCTTTGTTTCTGTTG...TTGAGATTGCTCGGGGGAATAGG lcl|NC_012920.1_c...
 [114967]   1141 ATGACCCCAATACGCAAAACTAAC...AAACAAAATACTCAAATGGGCCT lcl|NC_012920.1_c...</code></pre>
-<p>Example <code>Genbank</code>:</p>
+</div>
+<div id="example-ncbi-genbank-2" class="section level3">
+<h3>Example <code>NCBI Genbank</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Homo sapiens from genbank</span>
 <span class="co"># and store the corresponding genome CDS file in '_ncbi_downloads/CDS'</span>
 HS.cds.genbank &lt;-<span class="st"> </span><span class="kw">getCDS</span>( <span class="dt">db       =</span> <span class="st">&quot;genbank&quot;</span>, 
@@ -688,7 +747,9 @@ Human_CDS</code></pre></div>
 [11]  1812 ATAACCATGCACACTACTATAACCAC...TCCTAACCCTACTCCTAATCACATAA lcl|J01415.2_cds_...
 [12]   525 ATGATGTATGCTTTGTTTCTGTTGAG...TAATTGAGATTGCTCGGGGGAATAGG lcl|J01415.2_cds_...
 [13]  1141 ATGACCCCAATACGCAAAACTAACCC...TGAAAACAAAATACTCAAATGGGCCT lcl|J01415.2_cds_...</code></pre>
-<p>Example <code>ENSEMBL</code>:</p>
+</div>
+<div id="example-ensembl-2" class="section level3">
+<h3>Example <code>ENSEMBL</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Homo sapiens from ensembl</span>
 <span class="co"># and store the corresponding genome CDS file in '_ncbi_downloads/CDS'</span>
 HS.cds.ensembl &lt;-<span class="st"> </span><span class="kw">getCDS</span>( <span class="dt">db       =</span> <span class="st">&quot;ensembl&quot;</span>, 
@@ -712,7 +773,9 @@ Human_CDS</code></pre></div>
 [102913]   2094 ATGCTACTGCCACTGCTGCTGTCC...ATGCAGAAGTCAAGTTCCAATGA ENST00000339313.9...
 [102914]    466 ATGCTACTGCCACTGCTGCTGTCC...AGCCCTGGACCTCTCTGTGCAGT ENST00000529627.1...
 [102915]    559 ATGCGGAGATGCTACTGCCACTGC...CCTCACCTGCCATGTGGACTTCT ENST00000530476.1...</code></pre>
-<p>Example <code>ENSEMBLGENOMES</code>:</p>
+</div>
+<div id="example-ensemblgenomes-2" class="section level3">
+<h3>Example <code>ENSEMBLGENOMES</code>:</h3>
 <p>Due to the inavailability of <code>&quot;Homo sapiens&quot;</code> at <code>db = &quot;ensemblgenomes&quot;</code> here we choose <code>&quot;Arabidopsis thaliana&quot;</code> as example.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Homo sapiens from ensemblgenomes</span>
 <span class="co"># and store the corresponding genome CDS file in '_ncbi_downloads/CDS'</span>
@@ -750,7 +813,9 @@ Cress_CDS</code></pre></div>
 <li><code>db = &quot;ensemblgenomes&quot;</code> for retrieval from <a href="http://ensemblgenomes.org/">ENSEMBLGENOMES</a></li>
 </ul>
 <p>Furthermore, again users need to specify the scientific name of the organism of interest for which a proteomes shall be downloaded, e.g. <code>organism = &quot;Homo sapiens&quot;</code>. Finally, the <code>path</code> argument specifies the folder path in which the corresponding RNA file shall be locally stored. In case users would like to store the RNA file at a different location, they can specify the <code>path = file.path(&quot;put&quot;,&quot;your&quot;,&quot;path&quot;,&quot;here&quot;)</code> argument.</p>
-<p>Example <code>RefSeq</code>:</p>
+</div>
+<div id="example-ncbi-refseq-3" class="section level3">
+<h3>Example <code>NCBI RefSeq</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the RNA of Homo sapiens from refseq</span>
 <span class="co"># and store the corresponding RNA file in '_ncbi_downloads/RNA'</span>
 HS.rna.refseq &lt;-<span class="st"> </span><span class="kw">getRNA</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
@@ -815,7 +880,9 @@ Human_rna &lt;-<span class="st"> </span><span class="kw">getRNA</span>( <span cl
 [164134]     69 GTTCTTGTAGTTGAAATACAACGATGGTTTTTCATATCATTGGTCGTGGTTGTAGTCCGTGCGAGAATA                     lcl|NC_012920.1_t...
 [164135]     66 GTCCTTGTAGTATAAACTAATACACCAGTCTTGTAAACCGGAGATGAAAACCTTTTTCCAAGGACA                        lcl|NC_012920.1_t...
 [164136]     68 CAGAGAATAGTTTAAATTAGAATCTTAGCTTTGGGTGCTAATGGTGGAGTTAAAGACTTTTTCTCTGA                      lcl|NC_012920.1_t...</code></pre>
-<p>Example <code>Genbank</code>:</p>
+</div>
+<div id="example-ncbi-genbank-3" class="section level3">
+<h3>Example <code>NCBI Genbank</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the RNA of Homo sapiens from genbank</span>
 <span class="co"># and store the corresponding genome RNA file in '_ncbi_downloads/RNA'</span>
 HS.rna.genbank &lt;-<span class="st"> </span><span class="kw">getRNA</span>( <span class="dt">db       =</span> <span class="st">&quot;genbank&quot;</span>, 
@@ -839,7 +906,9 @@ Human_rna</code></pre></div>
 [22]    69 GTTCTTGTAGTTGAAATACAACGATGGTTTTTCATATCATTGGTCGTGGTTGTAGTCCGTGCGAGAATA                          lcl|J01415.2_trna...
 [23]    66 GTCCTTGTAGTATAAACTAATACACCAGTCTTGTAAACCGGAGATGAAAACCTTTTTCCAAGGACA                             lcl|J01415.2_trna...
 [24]    68 CAGAGAATAGTTTAAATTAGAATCTTAGCTTTGGGTGCTAATGGTGGAGTTAAAGACTTTTTCTCTGA                           lcl|J01415.2_trna...</code></pre>
-<p>Example <code>ENSEMBL</code>:</p>
+</div>
+<div id="example-ensembl-3" class="section level3">
+<h3>Example <code>ENSEMBL</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the RNA of Homo sapiens from ensembl</span>
 <span class="co"># and store the corresponding genome RNA file in '_ncbi_downloads/RNA'</span>
 HS.rna.ensembl &lt;-<span class="st"> </span><span class="kw">getRNA</span>( <span class="dt">db       =</span> <span class="st">&quot;ensembl&quot;</span>, 
@@ -863,7 +932,9 @@ Human_rna</code></pre></div>
 [36699]    109 GGTGGGTCCAAAGGTAGCAAGTTATCTCAATTGATCACAGTCAG...CATTCTATCACCCCTTCTCATTACTGTACTTGACTAGTCTTTT ENST00000364501.1...
 [36700]    293 GGATATGAGGGCGATCTGGCAGGGACATCTGTCACCCCACTGAT...AAAATTAGCTGGGCATAGTGGCGTGCACCTGTCGTCCTAGCTA ENST00000365097.1...
 [36701]    172 TTGAAGGCGTGGAGACTGAAGTCCTCTCTATATCCACAGAACAG...AAGAGGGCTGTTCAGTCTCCATGCCCTTCAATCCTTGGCTACT ENST00000615087.1...</code></pre>
-<p>Example <code>ENSEMBLGENOMES</code>:</p>
+</div>
+<div id="example-ensemblgenomes-3" class="section level3">
+<h3>Example <code>ENSEMBLGENOMES</code>:</h3>
 <p>Due to the inavailability of <code>&quot;Homo sapiens&quot;</code> at <code>db = &quot;ensemblgenomes&quot;</code> here we choose <code>&quot;Arabidopsis thaliana&quot;</code> as example.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the genome of Arabidopsis thaliana from ensemblgenomes</span>
 <span class="co"># and store the corresponding genome RNA file in '_ncbi_downloads/RNA'</span>
@@ -892,7 +963,9 @@ Cress_rna</code></pre></div>
 <div id="retrieve-the-annotation-file-of-a-particular-genome" class="section level3">
 <h3>Retrieve the annotation file of a particular genome</h3>
 <p>Finally, users can download the corresponding annotation <code>.gff</code> files for particular genomes of interest using the <code>getGFF()</code> or alternatively for <code>ensembl</code> and <code>ensemblgenomes</code> the <code>getGTF()</code> function.</p>
-<p>Example <code>RefSeq</code>:</p>
+</div>
+<div id="example-ncbi-refseq-4" class="section level3">
+<h3>Example <code>NCBI RefSeq</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the GFF file of Homo sapiens from refseq</span>
 <span class="co"># and store the corresponding file in '_ncbi_downloads/annotation'</span>
 HS.gff.refseq &lt;-<span class="st"> </span><span class="kw">getGFF</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
@@ -914,7 +987,9 @@ Human_GFF &lt;-<span class="st"> </span><span class="kw">read_gff</span>(<span c
 8  NC_000001.11 BestRefSeq transcript 14362     29370     0      -     0
 9  NC_000001.11 BestRefSeq       exon 29321     29370     0      -     0
 10 NC_000001.11 BestRefSeq       exon 24738     24891     0      -     0</code></pre>
-<p>Example <code>Genbank</code>:</p>
+</div>
+<div id="example-ncbi-genbank-4" class="section level3">
+<h3>Example <code>NCBI Genbank</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the GFF file of Homo sapiens from genbank</span>
 <span class="co"># and store the corresponding file in '_ncbi_downloads/annotation'</span>
 HS.gff.genbank &lt;-<span class="st"> </span><span class="kw">getGFF</span>( <span class="dt">db       =</span> <span class="st">&quot;genbank&quot;</span>, 
@@ -938,7 +1013,9 @@ Human_GFF</code></pre></div>
 8  KI270711.1 Genbank     region         1     42210     0      +     0
 9  KI270712.1 Genbank     region         1    176043     0      +     0
 10 KI270713.1 Genbank     region         1     40745     0      +     0</code></pre>
-<p>Example <code>ENSEMBL</code>:</p>
+</div>
+<div id="example-ensembl-4" class="section level3">
+<h3>Example <code>ENSEMBL</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the GFF file of Homo sapiens from ENSEMBL</span>
 <span class="co"># and store the corresponding file in 'ensembl/annotation'</span>
 HS.gff.ensembl &lt;-<span class="st"> </span><span class="kw">getGFF</span>( <span class="dt">db       =</span> <span class="st">&quot;ensembl&quot;</span>, 
@@ -968,7 +1045,9 @@ Human_GFF</code></pre></div>
 HS.gtf.ensembl &lt;-<span class="st"> </span><span class="kw">getGTF</span>( <span class="dt">db       =</span> <span class="st">&quot;ensembl&quot;</span>, 
                          <span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>, 
                          <span class="dt">path =</span> <span class="kw">file.path</span>(<span class="st">&quot;ensembl&quot;</span>,<span class="st">&quot;annotation&quot;</span>))</code></pre></div>
-<p>Example <code>ENSEMBLGENOMES</code>:</p>
+</div>
+<div id="example-ensemblgenomes-4" class="section level3">
+<h3>Example <code>ENSEMBLGENOMES</code>:</h3>
 <p>Due to the inavailability of <code>&quot;Homo sapiens&quot;</code> at <code>db = &quot;ensemblgenomes&quot;</code> here we choose <code>&quot;Arabidopsis thaliana&quot;</code> as example.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download the GFF file of Arabidopsis thaliana from ENSEMBLGENOMES</span>
 <span class="co"># and store the corresponding file in 'ensemblgenomes/annotation'</span>
@@ -1005,6 +1084,8 @@ AT.gtf.ensemblgenomes &lt;-<span class="st"> </span><span class="kw">getGTF</spa
 <div id="repeat-masker-retrieval" class="section level2">
 <h2>Repeat Masker Retrieval</h2>
 <p>In addition to genome, proteome, CDS, etc. information NCBI RefSeq and NCBI Genbank store also transposon annotations files generated with Repeat Masker. To retrieve and import these transposon annotations files, <code>biomartr</code> implements the <code>getRepeatMasker()</code> and <code>read_rm()</code> functions.</p>
+<div id="example-ncbi-refseq-5" class="section level3">
+<h3>Example <code>NCBI RefSeq</code>:</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download repeat masker annotation file for A. thaliana</span>
 AT.rm.refseq &lt;-<span class="st"> </span><span class="kw">getRepeatMasker</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>, 
                                  <span class="dt">organism =</span> <span class="st">&quot;Arabidopsis thaliana&quot;</span>, 
@@ -1014,6 +1095,11 @@ AT.rm.refseq &lt;-<span class="st"> </span><span class="kw">getRepeatMasker</spa
 AT.rm.refseq.anno &lt;-<span class="st"> </span><span class="kw">read_rm</span>(AT.rm.refseq)
 <span class="co"># look at data</span>
 AT.rm.refseq.anno</code></pre></div>
+<p>For <code>NCBI Genbank</code>, <code>ENSEMBL</code>, and <code>ENSEMBLGENOMES</code> users can specify the <code>db</code> argument analogously as shown above.</p>
+</div>
+</div>
+<div id="genome-assembly-stats-retrieval" class="section level2">
+<h2>Genome Assembly Stats Retrieval</h2>
 </div>
 
 

@@ -1,3 +1,23 @@
+biomartr 0.6.0
+===========
+
+### Function changes
+
+- the function `meta.retrieval()` will now pick up the download at the organism
+where it left off and will report which species have already been retrieved 
+
+- all `get*()` functions and the `meta.retrieval()` function receive a new argument `reference` which allows users to retrieve not-reference or not-representative genome versions when downloading from NCBI RefSeq or NCBI Genbank
+
+- the argument order in `meta.retrieval()` changed from `meta.retrieval(kingdom, group, db, ...)` to `meta.retrieval(db,kingdom, group, ...)` to make the argument order more consistent with the `get*()` functions
+
+- the argument order in `getGroups()` changed from `getGroups(kingdom, db)` to `getGroups(db, kingdom)` to make the argument order more consistent with the `get*()` and `meta.retrieval()` functions
+
+
+### New Functions
+
+- new internal functions `existingOrganisms()` and `existingOrganisms_ensembl()`
+which check the organisms that have already been downloaded
+
 biomartr 0.5.2
 ===========
 
