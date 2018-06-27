@@ -4,16 +4,16 @@
 
 <head>
 
-<meta charset="utf-8" />
+<meta charset="utf-8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-06-27" />
+<meta name="date" content="2016-10-28" />
 
-<title>Ensembl BioMart Examples</title>
+<title>Combine Evolutionary Transcriptomics with biomartr</title>
 
 
 
@@ -67,11 +67,18 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Ensembl BioMart Examples</h1>
-<h4 class="date"><em>2018-06-27</em></h4>
+<h1 class="title toc-ignore">Combine Evolutionary Transcriptomics with <code>biomartr</code></h1>
+<h4 class="date"><em>2016-10-28</em></h4>
 
 
 
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Evolutionary Transcriptomics defines the concept of combining genetic sequence conservation information with gene expression levels to quantify transcriptome conservation throughout biological processes (Domazet-Loso and Tautz, 2010 Nature ; Quint, Drost et al., 2012 Nature ; Drost et al., 2015 Mol. Biol. Evol. ; Drost et al., 2016 Mol. Biol. Evol.).</p>
+<p>The <a href="https://github.com/HajkD/myTAI/blob/master/vignettes/Introduction.Rmd">Introduction to Evolutionary Transcriptomics</a> vignette provided by the <a href="https://github.com/HajkD/myTAI">myTAI</a> package will give users a broad overwiew of phylotranscriptomics as scientific discipline.</p>
+<p>The <code>biomartr</code> package aims to provide an interface for functional annotation queries. Hence, combining functional annotation with the detection of evolutionary signals in biological processes with <a href="https://github.com/HajkD/orthologr">orthologr</a> and <a href="https://github.com/HajkD/myTAI">myTAI</a> allows users to correlate biological functions and constraints with their evolutionary origin.</p>
+<p>This vignette aims to provide use cases for combining functional annotation of genes (<code>biomartr</code>) with their role in development (<code>myTAI</code>) in an evolutionary context (<code>orthologr</code>).</p>
+</div>
 <div id="use-case-1-functional-annotation-of-genes-sharing-a-common-evolutionary-history" class="section level2">
 <h2>Use Case #1: Functional Annotation of Genes Sharing a Common Evolutionary History</h2>
 <p>Evolutionary Transcriptomics aims to predict stages or periods of evolutionary conservation in biological processes on the transcriptome level. However, finding genes sharing a <a href="https://github.com/HajkD/myTAI/blob/master/vignettes/Enrichment.Rmd">common evolutionary history</a> could reveal how the the biological process might have evolved in the first place.</p>
@@ -101,7 +108,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 DrerioPhyloMap.MBEa &lt;-<span class="st"> </span><span class="kw">read_excel</span>(<span class="st">&quot;MBE_2015a_Drerio_PhyloMap.xlsx&quot;</span>, <span class="dt">sheet =</span> <span class="dv">1</span>, <span class="dt">skip =</span> <span class="dv">4</span>)
 
 <span class="co"># format Phylostratigraphic Map for use with myTAI</span>
-Drerio.PhyloMap &lt;-<span class="st"> </span>DrerioPhyloMap.MBEa[ , <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]
+Drerio.PhyloMap &lt;-<span class="st"> </span>DrerioPhyloMap.MBEa[ , <span class="dv">1</span>:<span class="dv">2</span>]
 
 <span class="co"># have a look at the final format</span>
 <span class="kw">head</span>(Drerio.PhyloMap)</code></pre></div>
@@ -138,7 +145,7 @@ Drerio.Brain.Genes &lt;-<span class="st"> </span><span class="kw">unlist</span>(
                             <span class="dt">use.only.map  =</span> <span class="ot">TRUE</span>)
 
 <span class="co"># select only brain genes originating in PS5</span>
-BrainGenes.PS5 &lt;-<span class="st"> </span>BrainGenes[<span class="kw">which</span>(BrainGenes[ , <span class="st">&quot;Phylostrata&quot;</span>] <span class="op">==</span><span class="st"> </span><span class="dv">5</span>), ]
+BrainGenes.PS5 &lt;-<span class="st"> </span>BrainGenes[<span class="kw">which</span>(BrainGenes[ , <span class="st">&quot;Phylostrata&quot;</span>] ==<span class="st"> </span><span class="dv">5</span>), ]
 
 <span class="co"># look at the results</span>
 <span class="kw">head</span>(BrainGenes.PS5)</code></pre></div>
@@ -330,7 +337,7 @@ GO_tbl.BrainGenes &lt;-<span class="st"> </span><span class="kw">biomart</span>(
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

@@ -12,8 +12,12 @@
 #' \item \code{db = "ensembl"}
 #' \item \code{db = "ensemblgenomes"}
 #' }
-#' @param organism a character string specifying the scientific name of the 
-#' organism of interest, e.g. \code{organism = "Homo sapiens"}.
+#' @param organism there are three options to characterize an organism: 
+#' \itemize{
+#' \item by \code{scientific name}: e.g. \code{organism = "Homo sapiens"}
+#' \item by \code{database specific accession identifier}: e.g. \code{organism = "GCF_000001405.37"} (= NCBI RefSeq identifier for \code{Homo sapiens})
+#' \item by \code{taxonomic identifier from NCBI Taxonomy}: e.g. \code{organism = "9606"} (= taxid of \code{Homo sapiens})
+#' }
 #' @param reference a logical value indicating whether or not a genome shall be downloaded if it isn't marked in the database as either a reference genome or a representative genome. 
 #' @param path a character string specifying the location (a folder) in which 
 #' the corresponding genome shall be stored. Default is 
@@ -73,8 +77,14 @@ getGenome <-
             stop("Please specify 'reference' as either TRUE or FALSE.", call. = FALSE)
                 
                 
-        message("Starting genome retrieval of '", organism, "' from ", db, " ...")
-        message("\n")
+        if (db == "ensemblgenomes") {
+            organism_name <- is.genome.available(db = db, organism = organism, details = TRUE)$display_name[1]
+            message("Starting genome retrieval of '", organism_name, "' from ", db, " ...")
+            message("\n")
+        } else {
+            message("Starting genome retrieval of '", organism, "' from ", db, " ...")
+            message("\n")
+        }
         
         if (is.element(db, c("refseq", "genbank"))) {
             # get Kingdom Assembly Summary file
@@ -82,14 +92,20 @@ getGenome <-
                 getKingdomAssemblySummary(db = db)
             
             # test wheter or not genome is available
-            is.genome.available(organism = organism, db = db)
+            if (!suppressMessages(is.genome.available(organism = organism, db = db))) {
+                    message(
+                            "Unfortunately no genome file could be found for organism '",
+                            organism, "'. Thus, the download of this organism has been omitted. Have you tried to specify 'reference = FALSE' ?"
+                    )
+                    return("Not available")
+            }
             
             if (!file.exists(path)) {
                 dir.create(path, recursive = TRUE)
             }
             
-            organism_name <-
-                refseq_category <- version_status <- NULL
+            organism_name <- taxid <-
+                refseq_category <- version_status <- assembly_accession <- NULL
             
             organism <-
                 stringr::str_replace_all(organism, "\\(", "")
@@ -97,22 +113,44 @@ getGenome <-
                 stringr::str_replace_all(organism, "\\)", "")
             
             if (reference) {
+                if (!is.taxid(organism)) {
                     FoundOrganism <-
-                            dplyr::filter(
-                                    AssemblyFilesAllKingdoms,
-                                    stringr::str_detect(organism_name, organism),
-                                    ((refseq_category == "representative genome") |
-                                             (refseq_category == "reference genome")
-                                    ),
-                                    (version_status == "latest")
-                            ) 
+                        dplyr::filter(
+                            AssemblyFilesAllKingdoms,
+                            stringr::str_detect(organism_name, organism) | 
+                                assembly_accession ==  organism,
+                            ((refseq_category == "representative genome") |
+                                 (refseq_category == "reference genome")
+                            ),
+                            (version_status == "latest")
+                        ) 
+                } else {
+                    FoundOrganism <-
+                        dplyr::filter(
+                            AssemblyFilesAllKingdoms,
+                            taxid == as.integer(organism),
+                            ((refseq_category == "representative genome") |
+                                 (refseq_category == "reference genome")
+                            ),
+                            (version_status == "latest"))
+                }
             } else {
+                if (!is.taxid(organism)) {
                     FoundOrganism <-
-                            dplyr::filter(
-                                    AssemblyFilesAllKingdoms,
-                                    stringr::str_detect(organism_name, organism),
-                                    (version_status == "latest")
-                            ) 
+                        dplyr::filter(
+                            AssemblyFilesAllKingdoms,
+                            stringr::str_detect(organism_name, organism) |
+                                assembly_accession == organism,
+                            (version_status == "latest")
+                        ) 
+                } else {
+                    FoundOrganism <-
+                        dplyr::filter(
+                            AssemblyFilesAllKingdoms,
+                            taxid == as.integer(organism),
+                            (version_status == "latest")
+                        ) 
+                }
             }
             
             if (nrow(FoundOrganism) == 0) {
@@ -120,15 +158,19 @@ getGenome <-
                     paste0(
                         "----------> No reference genome or representative genome was found for '",
                         organism, "'. Thus, download for this species has been omitted.",
-                        " Have you tried to specify 'reference = FALSE' ?"
+                        " Have you tried to specify getGenome(db = '",db,"', organism = '",organism,"' , reference = FALSE) ?",
+                        " Alternatively, you can retrieve genome assemblies using the NCBI accession ID or NCBI Taxonomy ID.",
+                        " See '?'is.genome.available' for examples."
                     )
                 )
                  return("Not available")
             } else {
                 if (nrow(FoundOrganism) > 1) {
-                    warnings(
+                    warning(
                         "More than one entry has been found for '",
-                        organism, "'. Only the first entry '", FoundOrganism[1, 1], "' has been used for subsequent genome retrieval."
+                        organism, "'. Only the first entry '", FoundOrganism$organism_name[1], "' has been used for subsequent genome retrieval.",
+                        " If you wish to download a different version, please use the NCBI accession ID when specifying the 'organism' argument.",
+                        " See ?is.genome.available for examples.", call. = FALSE
                     )
                     FoundOrganism <- FoundOrganism[1, ]
                 }
@@ -144,14 +186,7 @@ getGenome <-
                                "_genomic.fna.gz"
                            ))
                 
-                if (!exists.ftp.file(url = paste0(FoundOrganism$ftp_path, "/"),
-                                     file.path = download_url)) {
-                    message(
-                   "Unfortunately no genome file could be found for organism '",
-                        organism, "'. Thus, the download of this organism has been omitted. Have you tried to specify 'reference = FALSE' ?"
-                    )
-                    return(FALSE)
-                }
+                
                 
                 # download_url <- paste0(query$ftp_path,query$`
                 # assembly_accession`,"_",query$asm_name,"_genomic.fna.gz")
@@ -239,7 +274,7 @@ getGenome <-
                     }
                     
                     docFile(
-                        file.name = paste0(local.org, "_genomic_", db, 
+                        file.name = paste0(ifelse(is.taxid(organism), paste0("taxid_", local.org), local.org), "_genomic_", db, 
                                            ".fna.gz"),
                         organism  = organism,
                         url       = download_url,
@@ -260,7 +295,7 @@ getGenome <-
                     
                     
                     doc <- tibble::tibble(
-                            file_name = paste0(local.org, "_genomic_", db,
+                            file_name = paste0(ifelse(is.taxid(organism), paste0("taxid_", local.org), local.org), "_genomic_", db,
                                                ".fna.gz"),
                             organism  = organism,
                             url       = download_url,
@@ -319,30 +354,62 @@ getGenome <-
             # download genome sequence from ENSEMBL
             genome.path <-
                 getENSEMBL.Seq(organism, type = "dna", 
-                               id.type = "toplevel", path)
+                               id.type = "toplevel", path = path)
             
             if (is.logical(genome.path)) {
-                invisible(return(TRUE))
+                if (!genome.path)
+                    return(FALSE)
             } else {
-                new.organism <- stringr::str_replace_all(organism, " ", "_")
                 
-                # test proper API access
-                tryCatch({
-                    json.qry.info <-
-                        jsonlite::fromJSON(
-                            paste0(
-                                "http://rest.ensembl.org/info/assembly/",
-                                new.organism,
-                                "?content-type=application/json"
-                            )
-                        )
-                }, error = function(e)
-                    stop(
-                        "The API 'http://rest.ensembl.org' does not seem to work
-                        properly.","Are you connected to the internet?",  
-                        "Is the homepage 'http://rest.ensembl.org' currently available?",
-                        call. = FALSE
+                taxon_id <- assembly <- name <- accession <- NULL
+                
+                ensembl_summary <-
+                    suppressMessages(is.genome.available(
+                        organism = organism,
+                        db = "ensembl",
+                        details = TRUE
                     ))
+                
+                if (nrow(ensembl_summary) > 1) {
+                    if (is.taxid(organism)) {
+                        ensembl_summary <-
+                            dplyr::filter(ensembl_summary, taxon_id == as.integer(organism), !is.na(assembly))
+                    } else {
+                        
+                        ensembl_summary <-
+                            dplyr::filter(
+                                ensembl_summary,
+                                (name == stringr::str_to_lower(stringr::str_replace_all(organism, " ", "_"))) |
+                                    (accession == organism),
+                                    !is.na(assembly)
+                            )
+                    }
+                }
+            
+                new.organism <- ensembl_summary$name[1]
+                new.organism <-
+                    paste0(
+                        stringr::str_to_upper(stringr::str_sub(new.organism, 1, 1)),
+                        stringr::str_sub(new.organism, 2, nchar(new.organism))
+                    )
+                
+                url_api <- paste0(
+                    "http://rest.ensembl.org/info/assembly/",
+                    new.organism,
+                    "?content-type=application/json"
+                )
+                
+                # choose only first entry if not specified otherwise
+                if (length(url_api) > 1)
+                    url_api <- url_api[1]
+                
+                if (curl::curl_fetch_memory(url_api)$status_code != 200) {
+                    message("The API call '",url_api,"' did not work. This might be due to a non-existing organism that you specified or a corrupted internet or firewall connection.")
+                    return("Not available")
+                }
+                
+                # retrieve information from API
+                json.qry.info <- jsonlite::fromJSON(url_api)
                 
                 # generate Genome documentation
                 sink(file.path(
@@ -426,28 +493,62 @@ getGenome <-
             # download genome sequence from ENSEMBLGENOMES
             genome.path <-
                 getENSEMBLGENOMES.Seq(organism, type = "dna", 
-                                      id.type = "toplevel", path)
+                                      id.type = "toplevel", path = path)
             
             if (is.logical(genome.path)) {
-                invisible(return(TRUE))
+                if (!genome.path)
+                    return(FALSE)
             } else {
-                new.organism <- stringr::str_replace_all(organism, " ", "_")
                 
-                # test proper API access
-                tryCatch({
-                    json.qry.info <-
-                        jsonlite::fromJSON(
-                            paste0(
-                                "http://rest.ensemblgenomes.org/info/assembly/",
-                                new.organism,
-                                "?content-type=application/json"
-                            )
-                        )
-                }, error = function(e)
-                    stop(
-                        "The API 'http://rest.ensemblgenomes.org' does not seem to work properly. Are you connected to the internet? Is the homepage 'http://rest.ensemblgenomes.org' currently available?",
-                        call. = FALSE
+                taxon_id <- assembly <- name <- accession <- NULL
+                
+                ensembl_summary <-
+                    suppressMessages(is.genome.available(
+                        organism = organism,
+                        db = "ensemblgenomes",
+                        details = TRUE
                     ))
+                
+                if (nrow(ensembl_summary) > 1) {
+                    if (is.taxid(organism)) {
+                        ensembl_summary <-
+                            dplyr::filter(ensembl_summary, taxon_id == as.integer(organism), !is.na(assembly))
+                    } else {
+                        
+                        ensembl_summary <-
+                            dplyr::filter(
+                                ensembl_summary,
+                                (name == stringr::str_to_lower(stringr::str_replace_all(organism, " ", "_"))) |
+                                    (accession == organism),
+                                    !is.na(assembly)
+                            )
+                    }
+                }
+                
+                new.organism <- stringr::str_to_lower(stringr::str_replace_all(organism, " ", "_"))
+                new.organism <-
+                    paste0(
+                        stringr::str_to_upper(stringr::str_sub(new.organism, 1, 1)),
+                        stringr::str_sub(new.organism, 2, nchar(new.organism))
+                    ) 
+                
+                url_api <- paste0(
+                    "http://rest.ensemblgenomes.org/info/assembly/",
+                    new.organism,
+                    "?content-type=application/json"
+                )
+                
+                # choose only first entry if not specified otherwise
+                if (length(url_api) > 1)
+                    url_api <- url_api[1]
+                
+                if (curl::curl_fetch_memory(url_api)$status_code != 200) {
+                    message("The API call '",url_api,"' did not work. This might be due to a non-existing organism that you specified or a corrupted internet or firewall connection.")
+                    return("Not available")
+                }
+                
+                # retrieve information from API
+                json.qry.info <- jsonlite::fromJSON(url_api)
                 
                 # generate Genome documentation
                 sink(file.path(

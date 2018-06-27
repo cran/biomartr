@@ -1,4 +1,43 @@
-biomartr 0.6.0
+biomartr 0.8.0
+===========
+
+### New Functions
+
+- new function `getCollection()` for retrieval of a collection: the genome sequence,
+protein sequences, gff files, etc for a particular species
+
+### New Functionality of Existing Functions 
+
+- `getProteome()` can now retrieve proteomes from the [UniProt](http://www.uniprot.org/) database by specifying `getProteome(db = "uniprot")`.
+An example can be found [here](https://github.com/ropensci/biomartr/blob/master/vignettes/Sequence_Retrieval.Rmd#example-retrieval-uniprot)
+
+- `is.genome.available()` now prints out more useful interactive messages when searching for available organisms 
+
+- `is.genome.available()` can now handle `taxids` and `assembly_accession ids` in addition to the scientific name when
+specifying argument `organism`
+An example can be found [here](https://github.com/ropensci/biomartr/blob/master/vignettes/Sequence_Retrieval.Rmd#example-ncbi-refseq)
+
+- `is.genome.available()` can now check for organism availability in the UniProt database
+
+- `getGenome()`: users can now specify the NCBI Taxonomy ID or Accession ID in addition to the scientific name in argument 'organism' to retrieve genome assemblies 
+
+- `getProteome()`: users can now specify the NCBI Taxonomy ID or Accession ID in addition to the scientific name in argument 'organism' to retrieve proteomes 
+
+- `getCDS()`: users can now specify the NCBI Taxonomy ID or Accession ID in addition to the scientific name in argument 'organism' to retrieve CDS  
+
+- `getRNA()`: users can now specify the NCBI Taxonomy ID or Accession ID in addition to the scientific name in argument 'organism' to retrieve RNAs 
+
+- `is.genome.available()`: argument order was changed from is.genome.available(organism, details, db) to is.genome.available(db, organism, details) to be logically more consistent
+with all `get*()` functions
+- `meta.retrieval` receives a new argument `restart_at_last` to indicate whether or not the download process when re-running the `meta.retrieval` function
+shall pick up at the last species or whether it should crawl through all existing files to check the md5checksum
+- `meta.retrieval` now generates an csv overview file in the `doc` folder which stores genome version, date, origin, etc information for
+all downloaded organisms and can be directly used as Supplementary Data file in publications to increase computational and biological reproducibility of the genomics study
+- `download.database.all()` can now skip already downloaded files and internally removes corrupted files with non-matching md5checksum. Re-downloading of currupted
+files and be performed by simply re-running the `download.database.all()` command
+
+
+[biomartr 0.7.0](https://github.com/ropensci/biomartr/releases/tag/v0.7.0)
 ===========
 
 ### Function changes

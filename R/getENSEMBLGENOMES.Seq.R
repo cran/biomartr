@@ -19,114 +19,83 @@ getENSEMBLGENOMES.Seq <-
             stop("Please a 'type' argument supported by this function: 
                  'dna', 'cds', 'pep', 'ncrna'.")
         
-        new.organism <- stringr::str_replace_all(organism, " ", "_")
         name <- NULL
         # test if REST API is responding
         is.ensemblgenomes.alive()
         
-        if (file.exists(file.path(tempdir(), "ensemblgenomes_summary.txt"))) {
-            suppressWarnings(
-                ensembl.available.organisms <-
-                    readr::read_delim(
-                        file.path(tempdir(), "ensemblgenomes_summary.txt"),
-                        delim = "\t",
-                        quote = "\"",
-                        escape_backslash = FALSE,
-                        col_names = c(
-                            "division",
-                            "taxon_id",
-                            "name",
-                            "release",
-                            "display_name",
-                            "accession",
-                            "common_name",
-                            "assembly"
-                        ),
-                        col_types = readr::cols(
-                            division = readr::col_character(),
-                            taxon_id = readr::col_integer(),
-                            name = readr::col_character(),
-                            release = readr::col_integer(),
-                            display_name = readr::col_character(),
-                            accession = readr::col_character(),
-                            common_name = readr::col_character(),
-                            assembly = readr::col_character()
-                        ),
-                        comment = "#"
-                    )
-            )
-        }
+        if (is.taxid(organism))
+            stop("Unfortunately, taxid retrieval is not yet implemented for ENSEMBLGENOMES...", call. = FALSE)
+            
         
-        if (!file.exists(file.path(tempdir(), "ensemblgenomes_summary.txt"))) {
-            # check if organism is available on ENSEMBL
-            tryCatch({
-                ensembl.available.organisms <-
-                    jsonlite::fromJSON(
-     "http://rest.ensemblgenomes.org/info/species?content-type=application/json"
-                    )
-            }, error = function(e) {
-                warning(
-                    "The API 'http://rest.ensemblgenomes.org' does not seem to ",
-                    "work properly. Are you connected to the internet? ",
-                    "Is the homepage 'http://rest.ensemblgenomes.org' currently available?",
-                    call. = FALSE
-                )
-                return(FALSE)
-            })
-            
-            aliases <- groups <- NULL
-            
-            # transform list object returned by 'fromJSON' to tibble
-            ensembl.available.organisms <-
-                tibble::as_tibble(dplyr::select(
-                    ensembl.available.organisms$species,
-                    -aliases,
-                    -groups
-                ))
-            
-            readr::write_tsv(
-                ensembl.available.organisms,
-                file.path(tempdir(), "ensemblgenomes_summary.txt")
-            )
-        }
         
-        if (!is.element(stringr::str_to_lower(new.organism),
-                        ensembl.available.organisms$name)) {
-            warning(
-                "Unfortunately organism '",
-                organism,
-                "' is not available at ENSEMBLGENOMES. Please check whether or ",
-                "not the organism name is typed correctly or try db = 'ensembl'. ",
-                "Thus, download of this species has been omitted.", call. = FALSE
-            )
+        if ( !suppressMessages(is.genome.available(organism = organism, db = "ensemblgenomes", details = FALSE)) ) {
+            warning("Unfortunately organism '", organism, "' is not available at ENSEMBLGENOMES. ",
+                    "Please check whether or not the organism name is typed correctly or try db = 'ensembl'.",
+                    " Thus, download of this species has been omitted. ", call. = FALSE)
             return(FALSE)
+        } else {
+            
+            taxon_id <- assembly <- accession <- NULL
+            
+            new.organism <- stringr::str_to_lower(stringr::str_replace_all(organism, " ", "_"))
+            
+                ensembl_summary <-
+                        suppressMessages(is.genome.available(
+                                organism = organism,
+                                db = "ensemblgenomes",
+                                details = TRUE
+                        ))
+                
+                if (nrow(ensembl_summary) == 0) {
+                    message("Unfortunately, organism '",organism,"' does not exist in this database. Could it be that the organism name is misspelled? Thus, download has been omitted.")
+                    return(FALSE)
+                }
+                
+                if (nrow(ensembl_summary) > 1) {
+                        
+                        if (is.taxid(organism)) {
+                                ensembl_summary <-
+                                        dplyr::filter(ensembl_summary, taxon_id == as.integer(organism), !is.na(assembly))
+                        } else {
+                        
+                                ensembl_summary <-
+                                        dplyr::filter(ensembl_summary,
+                                                      (name == stringr::str_to_lower(new.organism)) |
+                                                              (accession == organism),
+                                                      !is.na(assembly)) }
+                        
+                        message("Several entries were found for '", organism, "'.")
+                        #    "... The first entry '", ensembl_summary$name[1],"' with accession id '",ensembl_summary$accession[1],"' was selected for download.")
+                        message("In case you wish to retrieve another genome version please consult is.genome.available(organism = '", organism,"', details = TRUE, db = 'ensemblgenomes') and specify another accession id as organism argument.")
+                        message("\n")
+                        # select only first entry
+                }
+            
+
+                new.organism <-
+                        paste0(
+                                stringr::str_to_upper(stringr::str_sub(ensembl_summary$name[1], 1, 1)),
+                                stringr::str_sub(ensembl_summary$name[1], 2, nchar(ensembl_summary$name[1]))
+                        )
+                
+                # retrieve detailed information for organism of interest
         }
         
-        # test proper API access
-        tryCatch({
-            json.qry.info <-
-                jsonlite::fromJSON(
-                    paste0(
-                        "http://rest.ensemblgenomes.org/info/assembly/",
-                        new.organism,
-                        "?content-type=application/json"
-                    )
-                )
-        }, error = function(e) {
-            warning(
-                "The API 'http://rest.ensemblgenomes.org' does not seem to work ",
-                "properly. Are you connected to the internet? Is the homepage ",
-                "'http://rest.ensemblgenomes.org' currently available?", call. = FALSE
-            )
+        get.org.info <- ensembl_summary
+        
+        rest_url <- paste0(
+            "http://rest.ensemblgenomes.org/info/assembly/",
+            new.organism,
+            "?content-type=application/json"
+        )
+        
+        rest_api_status <- test_url_status(url = rest_url, organism = organism)
+        
+        
+        if (is.logical(rest_api_status)) {
             return(FALSE)
-        })
-        
-        # retrieve detailed information for organism of interest
-        get.org.info <-
-            is.genome.available(organism = organism,
-                                details = TRUE,
-                                db = "ensemblgenomes")
-        
+        } else {
+            
         if (get.org.info$division == "EnsemblBacteria") {
             if (!file.exists(file.path(tempdir(), "EnsemblBacteria.txt"))) {
                 tryCatch({
@@ -140,10 +109,9 @@ getENSEMBLGENOMES.Seq <-
                         "The API 'http://rest.ensemblgenomes.org' does not seem ",
                         "to work properly. Are you connected to the internet? ",
                         "Is the homepage 'ftp://ftp.ensemblgenomes.org/pub/current/bacteria/species_EnsemblBacteria.txt' ",
-                        "currently available?",
+                        "currently available? Could it be that the scientific name is mis-spelled or includes special characters such as '.' or '('?",
                         call. = FALSE
                     )
-                    return(FALSE)
                 })
             }
             
@@ -204,15 +172,15 @@ getENSEMBLGENOMES.Seq <-
             organism <-
                 stringr::str_replace_all(organism, "\\)", "")
             
+            assembly <- NULL
             bacteria.info <-
                 dplyr::filter(bacteria.info,
-                              stringr::str_detect(name, 
-                              stringr::coll(organism, ignore_case = TRUE)))
+                              assembly == get.org.info$assembly)
             
             if (nrow(bacteria.info) == 0) {
                 warning(
                     "Unfortunately organism '",
-                    organism,
+                    ensembl_summary$display_name,
                     "' could not be found. Have you tried another database yet? ",
                     "E.g. db = 'ensembl'? Thus, download for this species is omitted.",
                     call. = FALSE
@@ -223,7 +191,7 @@ getENSEMBLGENOMES.Seq <-
             if (is.na(bacteria.info$core_db[1])) {
                 warning(
                     "Unfortunately organism '",
-                    organism,
+                    ensembl_summary$display_name,
                     "' was not assigned to a bacteria collection. 
                     Thus download for this species is omitted.",
                     call. = FALSE
@@ -246,7 +214,7 @@ getENSEMBLGENOMES.Seq <-
                     paste0(
                         new.organism,
                         ".",
-                        json.qry.info$default_coord_system_version,
+                        rest_api_status$default_coord_system_version,
                         ".",
                         type,
                         ifelse(id.type == "none", "", "."),
@@ -272,7 +240,7 @@ getENSEMBLGENOMES.Seq <-
                     paste0(
                         new.organism,
                         ".",
-                        json.qry.info$default_coord_system_version,
+                        rest_api_status$default_coord_system_version,
                         ".",
                         type,
                         ifelse(id.type == "none", "", "."),
@@ -282,23 +250,23 @@ getENSEMBLGENOMES.Seq <-
                 )
         }
         
-        if (!exists.ftp.file(url = ensembl.qry, file.path = ensembl.qry)) {
-            message(
-                "Unfortunately no ",
-                type,
-                " file could be found for organism '",
-                organism,
-                "'. Thus, the download of this organism has been omitted."
-            )
-            return(FALSE)
-        }
+        # if (!exists.ftp.file(url = ensembl.qry, file.path = ensembl.qry)) {
+        #     message(
+        #         "Unfortunately no ",
+        #         type,
+        #         " file could be found for organism '",
+        #         organism,
+        #         "'. Thus, the download of this organism has been omitted."
+        #     )
+        #     return(FALSE)
+        # }
         
         if (file.exists(file.path(
             path,
             paste0(
                 new.organism,
                 ".",
-                json.qry.info$default_coord_system_version,
+                rest_api_status$default_coord_system_version,
                 ".",
                 type,
                 ifelse(id.type == "none", "", "."),
@@ -313,7 +281,7 @@ getENSEMBLGENOMES.Seq <-
                     paste0(
                         new.organism,
                         ".",
-                        json.qry.info$default_coord_system_version,
+                        rest_api_status$default_coord_system_version,
                         ".",
                         type,
                         ifelse(id.type == "none", "", "."),
@@ -324,34 +292,20 @@ getENSEMBLGENOMES.Seq <-
                 " exists already. Thus, download has been skipped."
             )
         } else {
-            tryCatch({
-                custom_download(ensembl.qry,
+                custom_download(url = ensembl.qry,
                                 destfile = file.path(
                                     path,
                                     paste0(
                                         new.organism,
                                         ".",
-                                     json.qry.info$default_coord_system_version,
+                                        rest_api_status$default_coord_system_version,
                                         ".",
                                         type,
                                         ifelse(id.type == "none", "", "."),
                                         ifelse(id.type == "none", "", id.type),
                                         ".fa.gz"
                                     )
-                                ),
-                                mode = "wb")
-            }, error = function(e) {
-                warning(
-                    "The FTP site of ENSEMBLGENOMES ",
-                    "'ftp://ftp.ensemblgenomes.org/current/fasta' ",
-                    "does not seem to work properly. ",
-                    "Are you connected to the internet? ",
-                    "Is the site 'ftp://ftp.ensemblgenomes.org/current/fasta' or ",
-                    "'http://rest.ensemblgenomes.org' currently available?",
-                    call. = FALSE
-                )
-                return(FALSE)
-            })
+                                ))
         }
         
         return(file.path(
@@ -359,7 +313,7 @@ getENSEMBLGENOMES.Seq <-
             paste0(
                 new.organism,
                 ".",
-                json.qry.info$default_coord_system_version,
+                rest_api_status$default_coord_system_version,
                 ".",
                 type,
                 ifelse(id.type == "none", "", "."),
@@ -367,4 +321,5 @@ getENSEMBLGENOMES.Seq <-
                 ".fa.gz"
             )
         ))
+        }
     }

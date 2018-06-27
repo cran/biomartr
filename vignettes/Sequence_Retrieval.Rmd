@@ -33,6 +33,7 @@ Using `biomartr`, users can retrieve either genomes, proteomes, CDS, RNA, GFF, a
     - [2.2 from NCBI Genbank](#example-ncbi-genbank-1)
     - [2.3 from ENSEMBL](#example-ensembl-1)
     - [2.4 from ENSEMBLGENOMES](#example-ensemblgenomes-1)
+    - [2.5 from UniProt](#example-retrieval-uniprot)
 * [3. Coding sequence retrieval with `getCDS()`](#cds-retrieval)
     - [3.1 from NCBI RefSeq](#example-ncbi-refseq-2)
     - [3.2 from NCBI Genbank](#example-ncbi-genbank-2)
@@ -55,6 +56,14 @@ Using `biomartr`, users can retrieve either genomes, proteomes, CDS, RNA, GFF, a
     - [6.4 from ENSEMBLGENOMES](#example-ensemblgenomes-5)
 * [7. Repeat Masker Annotation file retrieval with `getRepeatMasker()`](#repeat-masker-retrieval)
     - [7.1 from NCBI RefSeq](#example-ncbi-refseq-6)
+* [8. Genome Assembly Stats Retrieval with `getAssemblyStats()`](#genome-assembly-stats-retrieval)
+    - [8.1 from NCBI RefSeq](#example-ncbi-refseq-7)
+    - [8.2 from NCBI Genbank](#example-ncbi-genbank-6)
+* [9. Collection (Genome, Proteome, CDS, RNA, GFF, Repeat Masker, AssemblyStats) retrieval with `getCollection()`](#collection-retrieval)
+    - [9.1 from NCBI RefSeq](#example-ncbi-refseq-8)
+    - [9.2 from NCBI Genbank](#example-ncbi-genbank-7)
+    - [9.3 from NCBI ENSEMBL](#example-ensembl-6)
+    - [9.4 from NCBI ENSEMBLGENOMES](#example-ensemblgenomes-6)
     
 
 ## Getting Started with Sequence Retrieval
@@ -68,29 +77,279 @@ Please note that the first time you run this command it might take a while, beca
 during the initial execution of this function all necessary information is retrieved from NCBI
 and then stored locally. All further runs are then much faster.
 
-Example `refseq`: 
+### Example `NCBI RefSeq` (?is.genome.available): 
 
-```{r,eval=FALSE}
+```r
 # checking whether or not the Homo sapiens 
 # genome is avaialable for download
-is.genome.available("Homo sapiens", db = "refseq")
+is.genome.available(db = "refseq", organism = "Homo sapiens")
 ```
 
 ```
+A reference or representative genome assembly is available for 'Homo sapiens'.
 [1] TRUE
 ```
 
-Example `genbank`: 
+In the case of the human genome, there are more than one entry in the NCBI RefSeq
+database (see message). By specifying the argument 'details = TRUE' users can
+retrieve all information for 'Homo sapiens' that is stored in NCBI RefSeq.
 
-```{r,eval=FALSE}
+```r
 # checking whether or not the Homo sapiens 
 # genome is avaialable for download
-is.genome.available("Homo sapiens", db = "genbank")
+is.genome.available(db = "refseq", organism = "Homo sapiens", details = TRUE)
 ```
 
 ```
+  assembly_accessi… bioproject biosample wgs_master refseq_category taxid
+  <chr>             <chr>      <chr>     <chr>      <chr>           <int>
+1 GCF_000001405.38  PRJNA168   NA        NA         reference geno…  9606
+# ... with 15 more variables: species_taxid <int>, organism_name <chr>,
+#   infraspecific_name <chr>, isolate <chr>, version_status <chr>,
+#   assembly_level <chr>, release_type <chr>, genome_rep <chr>,
+#   seq_rel_date <date>, asm_name <chr>, submitter <chr>,
+#   gbrs_paired_asm <chr>, paired_asm_comp <chr>, ftp_path <chr>,
+#   excluded_from_refseq <chr>
+```
+
+Here, we find one possible versions of the human genome having the `assembly_accession`
+ID `GCF_000001405.38`.
+
+When retrieving a genome with e.g. `getGenome()` the `organism` argument can
+also be specified using the `assembly_accession` ID instead of the scientific name of the 
+organism. This is true for all `get*()` functions. Hence, instead of writing
+`getGenome(db = "refseq", organism = "Homo sapiens")`, users can specify 
+`getGenome(db = "refseq", organism = "GCF_000001405.38")`. 
+This is particularly useful when more than one entry is available for one organism.
+
+__Please note that the `assembly_accession` id might change internally in external databases such as NCBI RefSeq. Thus when
+writing automated scripts using the `assembly_accession` id they might stop working due to the
+internal change of ids at RefSeq. Recently, I had the case where the `assembly_accession` id was changed
+at RefSeq from `GCF_000001405.37` to `GCF_000001405.38`. Thus, scripts based on screening for entries with `is.genome.available()`
+stopped working, because the id `GCF_000001405.37` couldn't be found anymore.__
+
+In some cases users will find several entries for the same scientific name.
+This might be due to the fact that ecotypes, strains, or other types of sub-species
+are available in the respective databases.
+
+For example. when we search for the bacterium `Mycobacterium tuberculosis` in NCBI RefSeq we get 5377 hits.
+
+
+```r
+is.genome.available(organism = "Mycobacterium tuberculosis", db = "refseq", details = TRUE)
+```
+
+```
+A tibble: 5,377 x 21
+   assembly_accessi… bioproject biosample wgs_master refseq_category  taxid
+   <chr>             <chr>      <chr>     <chr>      <chr>            <int>
+ 1 GCF_000008585.1   PRJNA2241… SAMN0260… NA         na               83331
+ 2 GCF_000016145.1   PRJNA2241… SAMN0260… NA         na              419947
+ 3 GCF_000016925.1   PRJNA2241… SAMN0010… NA         na              336982
+ 4 GCF_000023625.1   PRJNA2241… SAMN0076… NA         na              478434
+ 5 GCF_000152105.1   PRJNA2241… SAMN0259… ADHQ00000… na              675512
+ 6 GCF_000153685.2   PRJNA2241… SAMN0308… NA         na              395095
+ 7 GCF_000154585.2   PRJNA2241… SAMN0308… NA         na              478433
+ 8 GCF_000154605.2   PRJNA2241… SAMN0010… NA         na              478435
+ 9 GCF_000155795.1   PRJNA2241… SAMN0259… ABVM00000… na              555461
+10 GCF_000159755.1   PRJNA2241… SAMN0259… ACHP00000… na              611303
+# ... with 5,367 more rows, and 15 more variables: species_taxid <int>,
+#   organism_name <chr>, infraspecific_name <chr>, isolate <chr>,
+#   version_status <chr>, assembly_level <chr>, release_type <chr>,
+#   genome_rep <chr>, seq_rel_date <date>, asm_name <chr>, submitter <chr>,
+#   gbrs_paired_asm <chr>, paired_asm_comp <chr>, ftp_path <chr>,
+#   excluded_from_refseq <chr>
+```
+
+When looking at the names of these organisms we see that they consist of different strains of `Mycobacterium tuberculosis`.
+
+```r
+head(is.genome.available(organism = "Mycobacterium tuberculosis", 
+                         db = "refseq", 
+                         details = TRUE)$organism_name)
+```
+
+```
+[1] "Mycobacterium tuberculosis CDC1551"     
+[2] "Mycobacterium tuberculosis H37Ra"       
+[3] "Mycobacterium tuberculosis F11"         
+[4] "Mycobacterium tuberculosis KZN 1435"    
+[5] "Mycobacterium tuberculosis SUMu001"     
+[6] "Mycobacterium tuberculosis str. Haarlem"
+```
+
+Now we can use the `assembly_accession` id to retrieve the `Mycobacterium tuberculosis`
+strain we are interested in, e.g. `Mycobacterium tuberculosis CDC1551`.
+
+```r
+MtbCDC1551 <- getGenome(db = "refseq", 
+                        organism = "GCF_000008585.1",  
+                        path   = file.path("_ncbi_downloads","genomes"), 
+                        reference = FALSE)
+                        
+MtbCDC1551_genome <- read_genome(MtbCDC1551)
+
+MtbCDC1551_genome
+```
+
+```
+A DNAStringSet instance of length 1
+      width seq                             names               
+[1] 4403837 TTGACCGATGACCC...AGGGAGATACGTCG NC_002755.2 Mycob...
+```
+
+#### Using the NCBI Taxonomy ID instead of the scientific name to screen for organism availability 
+
+Instead of specifying the `scientific name` of the organism of interest users can specify the [NCBI Taxonomy](https://www.ncbi.nlm.nih.gov/taxonomy) identifier (= `taxid`)
+of the corresponding organism. For example, the `taxid` of `Homo sapiens` is `9606`.
+Now users can specify `organism = "9606"` to retrieve entries for `Homo sapiens`:
+
+```r
+# checking availability for Homo sapiens using its taxid
+is.genome.available(db = "refseq", organism = "9606", details = TRUE)
+```
+
+```
+  assembly_accession bioproject biosample wgs_master refseq_category  taxid
+  <chr>              <chr>      <chr>     <chr>      <chr>            <int>
+1 GCF_000001405.38   PRJNA168   NA        NA         reference genome  9606
+# ... with 15 more variables: species_taxid <int>, organism_name <chr>,
+#   infraspecific_name <chr>, isolate <chr>, version_status <chr>,
+#   assembly_level <chr>, release_type <chr>, genome_rep <chr>,
+#   seq_rel_date <date>, asm_name <chr>, submitter <chr>,
+#   gbrs_paired_asm <chr>, paired_asm_comp <chr>, ftp_path <chr>,
+#   excluded_from_refseq <chr>
+```
+
+#### Using the accession ID instead of the scientific name or taxid to screen for organism availability
+
+Finally, instead of specifying either the `scientific name` of the organism of interest nor the `taxid`,
+users can specify the accession ID of the organism of interest.
+In the following example we use the accession ID of `Homo sapiens` (= `GCF_000001405.38`):
+```r
+# checking availability for Homo sapiens using its taxid
+is.genome.available(db = "refseq", organism = "GCF_000001405.38", details = TRUE)
+```
+
+```
+assembly_accession bioproject biosample wgs_master refseq_category  taxid
+  <chr>              <chr>      <chr>     <chr>      <chr>            <int>
+1 GCF_000001405.38   PRJNA168   NA        NA         reference genome  9606
+# ... with 15 more variables: species_taxid <int>, organism_name <chr>,
+#   infraspecific_name <chr>, isolate <chr>, version_status <chr>,
+#   assembly_level <chr>, release_type <chr>, genome_rep <chr>,
+#   seq_rel_date <date>, asm_name <chr>, submitter <chr>,
+#   gbrs_paired_asm <chr>, paired_asm_comp <chr>, ftp_path <chr>,
+#   excluded_from_refseq <chr>
+```
+
+#### A small negative example
+
+In some cases your organism of interest will not be available in `NCBI RefSeq`.
+Here an example:
+
+```r
+# check genome availability for Candida glabrata
+is.genome.available(db = "refseq", organism = "Candida glabrata")
+```
+
+```r
+Unfortunatey, no entry for 'Candida glabrata' was found in the 'refseq' database. 
+Please consider specifying 'db = genbank' or 'db = ensembl' or 'db = ensemblgenomes 
+to check whether 'Candida glabrata' is availabe in these databases.
+[1] FALSE
+```
+
+When now checking the availability in `NCBI Genbank` we find that indeed
+'Candida glabrata' is availabe:
+
+```r
+# check genome availability for Candida glabrata
+is.genome.available(db = "genbank", organism = "Candida glabrata")
+```
+
+```
+Only a non-reference genome assembly is available for 'Candida glabrata'. 
+Please make sure to specify the argument 'reference = FALSE' when running any get*() function.
 [1] TRUE
 ```
+
+Although, an entry is available the `is.genome.available()` warns us that
+only a non-reference genome is available for 'Candida glabrata'.
+To then retrieve the e.g. genome etc. files users need to speficy the
+`reference = FALSE` argument in the `get*()` functions.
+
+For example:
+
+```r
+# retrieve non-reference genome 
+getGenome(db = "genbank", organism = "Candida glabrata", reference = FALSE)
+```
+
+```
+Only a non-reference genome assembly is available for 'Candida glabrata'. 
+Please make sure to specify the argument 'reference = FALSE' when running any get*() function.
+Genome download is completed!
+Checking md5 hash of file: _ncbi_downloads/genomes/Candida_glabrata_md5checksums.txt ...
+The md5 hash of file '_ncbi_downloads/genomes/Candida_glabrata_md5checksums.txt' matches!
+The genome of 'Candida_glabrata' has been downloaded to '_ncbi_downloads/genomes' 
+and has been named 'Candida_glabrata_genomic_genbank.fna.gz'.
+[1] "_ncbi_downloads/genomes/Candida_glabrata_genomic_genbank.fna.gz"
+```
+
+### Example `NCBI Genbank` (?is.genome.available): 
+
+Test whether or not the genome of `Homo sapiens` is present at NCBI Genbank.
+
+```r
+# checking whether or not the Homo sapiens 
+# genome is avaialable for download
+is.genome.available(db = "genbank", organism = "Homo sapiens")
+```
+
+```
+A reference or representative genome assembly is available for 'Homo sapiens'.
+More than one entry was found for 'Homo sapiens'. 
+Please consider to re-run this funtion and specify 'details = TRUE'. 
+This will allow you to select the 'assembly_accession' identifier 
+that can then be specified in all get*() functions.
+[1] TRUE
+```
+
+Now with `details = TRUE`.
+
+```r
+# checking whether or not the Homo sapiens 
+# genome is avaialable for download
+is.genome.available(db = "genbank", organism = "Homo sapiens", details = TRUE)
+```
+
+
+```
+ assembly_accessi… bioproject biosample   wgs_master  refseq_category taxid
+   <chr>             <chr>      <chr>       <chr>       <chr>           <int>
+ 1 GCA_000001405.27  PRJNA31257 NA          NA          reference geno…  9606
+ 2 GCA_000002115.2   PRJNA1431  SAMN029812… AADD000000… na               9606
+ 3 GCA_000002125.2   PRJNA19621 SAMN029812… ABBA000000… na               9606
+ 4 GCA_000002135.3   PRJNA10793 NA          NA          na               9606
+ 5 GCA_000004845.2   PRJNA42199 SAMN000033… ADDF000000… na               9606
+ 6 GCA_000005465.1   PRJNA42201 NA          DAAB000000… na               9606
+ 7 GCA_000181135.1   PRJNA28335 SAMN000016… ABKV000000… na               9606
+ 8 GCA_000185165.1   PRJNA59877 SAMN029812… AEKP000000… na               9606
+ 9 GCA_000212995.1   PRJNA19621 SAMN029812… ABSL000000… na               9606
+10 GCA_000252825.1   PRJNA19621 SAMN029812… ABBA000000… na               9606
+# ... with 70 more rows, and 15 more variables: species_taxid <int>,
+#   organism_name <chr>, infraspecific_name <chr>, isolate <chr>,
+#   version_status <chr>, assembly_level <chr>, release_type <chr>,
+#   genome_rep <chr>, seq_rel_date <date>, asm_name <chr>, submitter <chr>,
+#   gbrs_paired_asm <chr>, paired_asm_comp <chr>, ftp_path <chr>,
+#   excluded_from_refseq <chr>
+```
+
+As you can see there are several versions of the `Homo sapiens` genome
+available for download from NCBI Genbank. Using the `assembly_accession`
+id will now allow to specify which version shall be retrieved.
+
 
 ### Using `is.genome.available()` with ENSEMBL and ENSEMBLGENOMES
 
@@ -101,32 +360,64 @@ execution of this function in following runs. The corresponding information file
 and `file.path(tempdir(), "ensemblgenomes_summary.txt")`.
 
 
-Example `ENSEMBL`: 
+### Example `ENSEMBL` (?is.genome.available): 
 
-```{r,eval=FALSE}
+```r
 # cheking whether Homo sapiens is available in the ENSEMBL database
-is.genome.available("Homo sapiens", db = "ensembl")
+is.genome.available(db = "ensembl", organism = "Homo sapiens")
 ```
 
 ```
+A reference or representative genome assembly is available for 'Homo sapiens'.
 [1] TRUE
 ```
 
-```{r,eval=FALSE}
+```r
 # retrieve details for Homo sapiens
-is.genome.available("Homo sapiens", db = "ensembl", details = TRUE)
+is.genome.available(db = "ensembl", organism = "Homo sapiens", details = TRUE)
 ```
 
 ```
-  division taxon_id         name release display_name        accession common_name
-1  Ensembl     9606 homo_sapiens      86        Human GCA_000001405.22       human
-                                                                    aliases
-1 homo, homo sapiens, h_sapiens, enshs, human, hsap, 9606, homsap, hsapiens
-                                                       groups assembly
-1 core, cdna, vega, otherfeatures, rnaseq, variation, funcgen   GRCh38
+  division taxon_id name    release display_name accession   strain_collecti…
+  <chr>       <int> <chr>     <int> <chr>        <chr>       <chr>           
+1 Ensembl      9606 homo_s…      92 Human        GCA_000001… NA              
+# ... with 3 more variables: common_name <chr>, strain <chr>, assembly <chr>
 ```
 
-Example `ENSEMBLGENOMES`: 
+Again, users can either specify the `taxid` or `accession id` when searching for organism entries.
+
+```r
+# retrieve details for Homo sapiens using taxid
+is.genome.available(db = "ensembl", organism = "9606", details = TRUE)
+```
+
+```
+division taxon_id name    release display_name accession   strain_collecti…
+  <chr>       <int> <chr>     <int> <chr>        <chr>       <chr>           
+1 Ensembl      9606 homo_s…      92 Human        GCA_000001… NA              
+# ... with 3 more variables: common_name <chr>, strain <chr>, assembly <chr>
+> 
+```
+
+```r
+# retrieve details for Homo sapiens using accession id
+is.genome.available(organism = "GCA_000001405.27", db = "ensembl", details = TRUE)
+```
+
+```
+  division taxon_id name    release display_name accession  strain_collecti…
+  <chr>       <int> <chr>     <int> <chr>        <chr>      <chr>           
+1 Ensembl      9606 homo_s…      92 Human        GCA_00000… NA              
+# ... with 3 more variables: common_name <chr>, strain <chr>, assembly <chr>
+```
+
+__Please note that the `accession` id can change internally at ENSEMBL. E.g. in a recent case
+the `accession` id changed from `GCA_000001405.25` to `GCA_000001405.27`. Hence, please
+be careful and take this issue into account when you build automated retrieval scripts that are based
+on `accession` ids.__
+
+
+### Example `ENSEMBLGENOMES` (?is.genome.available): 
 
 For example, some species that cannot be found at `db = "ensembl"` might be available at `db = "ensemblgenomes"`
 and vice versa. So I recommend users to to check in both databases ENSEMBL and ESEMBLGENOMES whether or not a
@@ -135,64 +426,134 @@ __not__ at `db = "ensemblgenomes"` whereas the genome of `"Arabidopsis thaliana"
 but __not__ at `db = "ensembl"`.
 
 
-```{r,eval=FALSE}
+```r
 # cheking whether Homo sapiens is available in the ENSEMBLGENOMES database
-is.genome.available("Homo sapiens", db = "ensemblgenomes")
-    ```
-
-```
-Error: Unfortunately organism 'Homo sapiens' is not available at ENSEMBLGENOMES. 
-Please check whether or not the organism name is typed correctly.
+is.genome.available(db = "ensemblgenomes", organism = "Homo sapiens")
 ```
 
-```{r,eval=FALSE}
+```
+Unfortunatey, no entry for 'Homo sapiens' was found in the 'ensemblgenomes' database.
+Please consider specifying 'db = refseq' or 'db = genbank' or 'db = ensembl' or 'db = uniprot' 
+to check whether 'Homo sapiens' is available in these databases.
+[1] FALSE
+```
+
+```r
 # cheking whether Arabidopsis thaliana is available in the ENSEMBLGENOMES database
-is.genome.available("Arabidopsis thaliana", db = "ensemblgenomes")
+is.genome.available(db = "ensemblgenomes", organism = "Arabidopsis thaliana")
 ```
 
 ```
+A reference or representative genome assembly is available for 'Arabidopsis thaliana'.
 [1] TRUE
 ```
 
-```{r,eval=FALSE}
+```r
 # show details for Arabidopsis thaliana
-is.genome.available("Arabidopsis thaliana", db = "ensemblgenomes", details = TRUE)
+is.genome.available(db = "ensemblgenomes", organism = "Arabidopsis thaliana", details = TRUE)
 ```
 
 ```
-       division taxon_id                 name release         display_name
-          <chr>    <int>                <chr>   <int>                <chr>
-1 EnsemblPlants     3702 arabidopsis_thaliana      85 Arabidopsis thaliana
+ division  taxon_id name    release display_name accession strain_collecti…
+  <chr>        <int> <chr>     <int> <chr>        <chr>     <chr>           
+1 EnsemblP…     3702 arabid…      92 Arabidopsis… GCA_0000… NA              
+# ... with 3 more variables: common_name <chr>, strain <chr>, assembly <chr>
 ```
 
 Please note that the detailed information provided by ENSEMBL or ENSEMBL genomes differs from the information provided by NCBI. 
 
+Also for `ENSEMBLGENOMES` users can specify `taxid` or `accession id` instead of the `scientific name` in the argument `organism`:
 
-By specifying the `details = TRUE` argument, the genome file size as well as 
-additional information can be printed to the console.
-
-```{r,eval=FALSE}
-# printing details to the console
-is.genome.available("Homo sapiens", details = TRUE, db = "refseq")
+```r
+# retrieve information 
+is.genome.available(db = "ensemblgenomes", "3702", details = TRUE)
 ```
 
 ```
-  assembly_accession  bioproject    biosample     wgs_master
-               <chr>       <chr>        <chr>          <chr>
-1   GCF_000001405.35    PRJNA168         <NA>           <NA>
-2    GCF_000306695.2 PRJNA178030 SAMN02205338 AMYH00000000.2
- with 25 more variables: refseq_category <chr>, taxid <int>,
-   species_taxid <int>, organism_name <chr>, infraspecific_name <chr>,
-   isolate <chr>, version_status <chr>, assembly_level <chr>,
-   release_type <chr>, genome_rep <chr>, seq_rel_date <date>,
-   asm_name <chr>, submitter <chr>, gbrs_paired_asm <chr>,
-   paired_asm_comp <chr>, ftp_path <chr>, excluded_from_refseq <chr>,
-   kingdoms <chr>, group <chr>, subgroup <chr>, file_size_MB <dbl>,
-   chrs <int>, organelles <int>, plasmids <int>, bio_projects <int>
+  division  taxon_id name    release display_name accession strain_collecti…
+  <chr>        <int> <chr>     <int> <chr>        <chr>     <chr>           
+1 EnsemblP…     3702 arabid…      92 Arabidopsis… GCA_0000… NA              
+# ... with 3 more variables: common_name <chr>, strain <chr>, assembly <chr>
 ```
 
-The argument `db` specifies from which database (`refseq`, `genbank`, `ensembl` or `ensemblgenomes`) organism
-information shall be retrieved.
+### Example `UniProt` (?is.genome.available):
+
+Users can also check the availability of proteomes in the [UniProt database](http://www.uniprot.org)
+by specifying:
+
+
+```r
+# retrieve information from UniProt
+is.genome.available(db = "uniprot", "Homo sapiens", details = FALSE)
+```
+
+```
+A reference or representative genome assembly is available for 'Homo sapiens'.
+[1] TRUE
+```
+
+or with details:
+
+```r
+# retrieve information from UniProt
+is.genome.available(db = "uniprot", "Homo sapiens", details = TRUE)
+```
+
+```
+ name   description isReferenceProt… isRepresentativ… dbReference component
+* <chr>  <chr>       <lgl>            <lgl>            <list>      <list>   
+1 Homo … Homo sapie… TRUE             TRUE             <data.fram… <data.fr…
+# ... with 7 more variables: reference <list>, upid <chr>, modified <dbl>,
+#   taxonomy <int>, source <chr>, sourceTaxonomy <int>, superregnum <chr>
+```
+
+Users can also search available species at UniProt via `taxid` or `upid` id.
+
+Here `9606` defines the taxonomy id for `Homo sapiens`.
+
+```r
+# retrieve information from UniProt
+is.genome.available(db = "uniprot", "9606", details = TRUE)
+```
+
+```
+ name   description isReferenceProt… isRepresentativ… dbReference component
+* <chr>  <chr>       <lgl>            <lgl>            <list>      <list>   
+1 Homo … Homo sapie… TRUE             TRUE             <data.fram… <data.fr…
+# ... with 7 more variables: reference <list>, upid <chr>, modified <dbl>,
+#   taxonomy <int>, source <chr>, sourceTaxonomy <int>, superregnum <chr>
+```
+
+Here `UP000005640` defines the `upid` for `Homo sapiens`.
+
+```r
+# retrieve information from UniProt
+is.genome.available(db = "uniprot", "UP000005640", details = TRUE)
+```
+
+```
+ name   description isReferenceProt… isRepresentativ… dbReference component
+* <chr>  <chr>       <lgl>            <lgl>            <list>      <list>   
+1 Homo … Homo sapie… TRUE             TRUE             <data.fram… <data.fr…
+# ... with 7 more variables: reference <list>, upid <chr>, modified <dbl>,
+#   taxonomy <int>, source <chr>, sourceTaxonomy <int>, superregnum <chr>
+```
+
+
+
+In general, the argument `db` specifies from which database (`refseq`, `genbank`, `ensembl` or `ensemblgenomes`, `uniprot`) organism
+information shall be retrieved. Options are:
+
+- `db = 'refseq'`
+- `db = 'genbank'`
+- `db = 'ensembl'`
+- `db = 'ensemblgenomes'`
+- `db = 'uniprot'`
+
+
+### Listing the total number of available genomes 
+
+In some cases it might be useful to check how many genomes (in total) are available in the different databases.
 
 Users can determine the total number of available genomes using the `listGenomes()` function.
 
@@ -203,7 +564,7 @@ length(listGenomes(db = "refseq"))
 ```
 
 ```
-[1] 7879
+[1] 14264
 ```
 
 Example `genbank`: 
@@ -213,7 +574,7 @@ length(listGenomes(db = "genbank"))
 ```
 
 ```
-[1] 8568
+[1] 21770
 ```
 
 Example `ensembl`: 
@@ -223,7 +584,7 @@ length(listGenomes(db = "ensembl"))
 ```
 
 ```
-[1] 85
+[1] 113
 ```
 
 Example `ensemblgenomes`: 
@@ -233,10 +594,10 @@ length(listGenomes(db = "ensemblgenomes"))
 ```
 
 ```
-[1] 42529
+[1] 45172
 ```
 
-Hence, currently 7879 genomes (including all kingdoms of life) are stored on NCBI RefSeq.
+Hence, currently 14264 genomes (including all kingdoms of life) are stored on NCBI RefSeq (as of 31/05/2018).
 
 ### Retrieving kingdom, group and subgroup information
 
@@ -250,8 +611,8 @@ listKingdoms(db = "refseq")
 ```
 
 ```
-  Archaea  Bacteria Eukaryota   Viroids   Viruses 
-       78      1627       425        46      5703
+    Archaea  Bacteria Eukaryota   Viroids   Viruses 
+      169      6321       561        47      7166 
 ```
 
 Example `genbank`:
@@ -263,7 +624,7 @@ listKingdoms(db = "genbank")
 
 ```
   Archaea  Bacteria Eukaryota 
-      392      6651      1525
+     1249     18083      2438
 ```
 
 Example `ENSEMBL`:
@@ -275,7 +636,7 @@ listKingdoms(db = "ensembl")
 
 ```
 Ensembl 
-     85
+    113
 ```
 
 Example `ENSEMBLGENOMES`:
@@ -286,10 +647,8 @@ listKingdoms(db = "ensemblgenomes")
 ```
 
 ```
-EnsemblBacteria    EnsemblFungi  EnsemblMetazoa   EnsemblPlants 
-          41610             634              65              44 
-EnsemblProtists 
-            176
+EnsemblBacteria    EnsemblFungi  EnsemblMetazoa   EnsemblPlants EnsemblProtists 
+          44048             811              71              53             189 
 ```
 
 ### Analogous computations can be performed for `groups` and `subgroups`
@@ -306,66 +665,218 @@ listGroups(db = "refseq")
 ```
 
 ```
-                Acidobacteria                       Animals 
-                           11                           293 
-                Avsunviroidae                    Deltavirus 
-                            4                             1 
-  dsDNA viruses, no RNA stage                 dsRNA viruses 
-                         2572                           261 
-                Elusimicrobia                 Euryarchaeota 
-                            1                            64 
-                    FCB group                         Fungi 
-                          155                            34 
-                 Fusobacteria                   Nitrospirae 
-                            6                             3 
-                        Other                        Plants 
-                           10                            62 
-                Pospiviroidae                Proteobacteria 
-                           34                           774 
-                     Protists                     PVC group 
-                           34                            20 
-   Retro-transcribing viruses                    Satellites 
-                          135                           213 
-                 Spirochaetes                 ssDNA viruses 
-                           12                           864 
-                ssRNA viruses                 Synergistetes 
-                         1432                             1 
-                   TACK group           Terrabacteria group 
-                           13                           630 
-        Thermodesulfobacteria                   Thermotogae 
-                            3                             2 
-           unassigned viruses          unclassified Archaea 
-                            9                             1 
-unclassified archaeal viruses         unclassified Bacteria 
-                            3                             9 
-          unclassified phages          unclassified viroids 
-                           23                             8 
-      unclassified virophages          unclassified viruses 
-                            6                           176  
-```
-
-```{r,eval=FALSE}
-# the number of genomes available for each subgroup
-head(listSubgroups(db = "refseq"), 15)
-```
-
-```
-         Acidithiobacillia             Acidobacteriia 
-                         2                          8 
-            Actinobacteria               Adenoviridae 
-                       194                         55 
-         Alloherpesviridae          Alphaflexiviridae 
-                         7                         48 
-       Alphaproteobacteria          Alphatetraviridae 
-                       256                          3 
-            Alvernaviridae              Amalgaviridae 
-                         1                          4 
-                Amphibians             Ampullaviridae 
-                         3                          3 
-             Anelloviridae              Apicomplexans 
-                        53                         16 
-Apple fruit crinkle viroid 
-                         1 
+                 Abditibacteriota                                   Acidithiobacillia 
+                                                  1                                                   5 
+                                     Acidobacteriia                                    Ackermannviridae 
+                                                 16                                                  21 
+                                     Actinobacteria                                        Adenoviridae 
+                                               1226                                                  62 
+                                  Alloherpesviridae                                   Alphaflexiviridae 
+                                                  8                                                  56 
+                                Alphaproteobacteria                                   Alphasatellitidae 
+                                                857                                                  67 
+                                  Alphatetraviridae                                      Alvernaviridae 
+                                                  3                                                   1 
+                                      Amalgaviridae                                          Amphibians 
+                                                 10                                                   3 
+                                     Ampullaviridae                                       Anelloviridae 
+                                                  3                                                  61 
+                                      Apicomplexans                          Apple fruit crinkle viroid 
+                                                 18                                                   1 
+          Apple hammerhead viroid-like circular RNA                                         Apscaviroid 
+                                                  1                                                  12 
+                                          Aquificae                                        Archaeoglobi 
+                                                  6                                                   3 
+                                       Arenaviridae                                     Armatimonadetes 
+                                                 37                                                   4 
+                                      Arteriviridae                                         Ascomycetes 
+                                                 13                                                  45 
+                                        Ascoviridae                                        Asfarviridae 
+                                                  4                                                   1 
+                                        Aspiviridae                                        Astroviridae 
+                                                  3                                                  40 
+                                        Avsunviroid                                   Bacilladnaviridae 
+                                                  1                                                   7 
+                           Bacteria candidate phyla                        Bacteroidetes/Chlorobi group 
+                                                  3                                                 654 
+                                      Baculoviridae                                           Balneolia 
+                                                 66                                                   4 
+                                       Barnaviridae                                      Basidiomycetes 
+                                                  1                                                   5 
+                                        Benyviridae                                    Betaflexiviridae 
+                                                  3                                                  92 
+                                 Betaproteobacteria                                      Bicaudaviridae 
+                                                407                                                   4 
+                                              Birds                                        Birnaviridae 
+                                                 54                                                   8 
+                                     Blastocatellia                                        Bornaviridae 
+                                                  1                                                   5 
+                                       Bromoviridae                                       Caliciviridae 
+                                                 35                                                  26 
+                               Candidatus Kryptonia                            Candidatus Micrarchaeota 
+                                                  3                                                   1 
+                           Candidatus Tectomicrobia                                   Carmotetraviridae 
+                                                  1                                                   1 
+                                     Caulimoviridae Cherry leaf scorch small circular viroid-like RNA 1 
+                                                 67                                                   1 
+              Cherry small circular viroid-like RNA                                          Chlamydiae 
+                                                  1                                                  19 
+                                        Chloroflexi                                       Chrysoviridae 
+                                                 23                                                   9 
+                                       Circoviridae                                     Closteroviridae 
+                                                148                                                  40 
+                                        Cocadviroid                                          Coleviroid 
+                                                  4                                                   6 
+                               Coprothermobacterota                                       Coronaviridae 
+                                                  1                                                  47 
+                                     Corticoviridae                                       Crenarchaeota 
+                                                  1                                                   9 
+                Cyanobacteria/Melainabacteria group                                        Cystoviridae 
+                                                 22                                                   5 
+                                Deinococcus-Thermus                          delta/epsilon subdivisions 
+                                                 23                                                 142 
+                                  Deltaflexiviridae                                     Dicistroviridae 
+                                                  1                                                  27 
+                                          Elaviroid                                        Endomicrobia 
+                                                  1                                                   2 
+                                     Endornaviridae                                       Fibrobacteres 
+                                                 29                                                   2 
+                                        Filoviridae                                         Fimoviridae 
+                                                  7                                                   6 
+                                         Firmicutes                                              Fishes 
+                                               1378                                                  52 
+                                          Flatworms                                        Flaviviridae 
+                                                  4                                                 107 
+                                      Fusariviridae                                      Fuselloviridae 
+                                                  7                                                  10 
+                                      Fusobacteriia                                   Gammaflexiviridae 
+                                                 20                                                   1 
+                                Gammaproteobacteria                                       Geminiviridae 
+                                               1285                                                 406 
+                                   Gemmatimonadetes                                       Genomoviridae 
+                                                  2                                                  62 
+                                     Globuloviridae                             Grapevine latent viroid 
+                                                  2                                                   1 
+                                        Green Algae                                        Guttaviridae 
+                                                  8                                                   1 
+                                       Halobacteria                                        Hantaviridae 
+                                                 80                                                  24 
+                                     Hepadnaviridae                                         Hepeviridae 
+                                                 16                                                   3 
+                                      Herpesviridae                                         Hostuviroid 
+                                                 72                                                   2 
+                                  Hydrogenophilalia                                         Hypoviridae 
+                                                  1                                                  15 
+                                     Hytrosaviridae                                         Iflaviridae 
+                                                  2                                                  34 
+                                         Inoviridae                                             Insects 
+                                                 42                                                 110 
+                                       Iridoviridae                                        Kinetoplasts 
+                                                 20                                                   5 
+                                 Kiritimatiellaeota                                         Land Plants 
+                                                  1                                                  80 
+                                      Lavidaviridae                                       Lentisphaerae 
+                                                  2                                                   1 
+                                        Leviviridae                                    Lipothrixviridae 
+                                                 11                                                   8 
+                                       Luteoviridae                                 Malacoherpesviridae 
+                                                 48                                                   2 
+                                            Mammals                                        Marnaviridae 
+                                                100                                                   1 
+                                   Marseilleviridae                                    Megabirnaviridae 
+                                                  6                                                   3 
+                                      Mesoniviridae                                     Methanobacteria 
+                                                  7                                                  18 
+                                       Methanococci                                     Methanomicrobia 
+                                                  2                                                  21 
+                              Methanonatronarchaeia                                        Microviridae 
+                                                  1                                                  42 
+                                        Mimiviridae           Mulberry small circular viroid-like RNA 1 
+                                                  5                                                   1 
+                                      Mymonaviridae                                          Myoviridae 
+                                                  1                                                 516 
+                                       Nairoviridae                                         Nanoviridae 
+                                                 13                                                   8 
+                                       Narnaviridae                                         Nimaviridae 
+                                                 39                                                   1 
+                                         Nitrospira                                         Nodaviridae 
+                                                 10                                                  15 
+                                        Nudiviridae                                        Nyamiviridae 
+                                                  5                                                   4 
+                                        Oligoflexia                                    Orthomyxoviridae 
+                                                  3                                                   6 
+                                              Other                                       Other Animals 
+                                                988                                                  35 
+                                        Other Fungi                                      Other Protists 
+                                                  3                                                  16 
+                                   Papillomaviridae                                     Paramyxoviridae 
+                                                134                                                  54 
+                                     Partitiviridae                                        Parvoviridae 
+                                                 55                                                  90 
+                                       Pelamoviroid                                    Peribunyaviridae 
+                                                  2                                                  32 
+                                Permutotetraviridae                                    Persimmon viroid 
+                                                  1                                                   1 
+                                      Phasmaviridae                                       Phenuiviridae 
+                                                  4                                                  28 
+                                    Phycodnaviridae                                    Picobirnaviridae 
+                                                 26                                                   5 
+                                     Picornaviridae                                        Pithoviridae 
+                                                104                                                   2 
+                                     Planctomycetes                                       Plasmaviridae 
+                                                 18                                                   1 
+                                    Pleolipoviridae                                       Pneumoviridae 
+                                                  8                                                   7 
+                                        Podoviridae                                     Polycipiviridae 
+                                                343                                                   6 
+                                     Polydnaviridae                                      Polyomaviridae 
+                                                  5                                                  83 
+                                        Pospiviroid                                         Potyviridae 
+                                                 11                                                 146 
+                                         Poxviridae                                       Quadriviridae 
+                                                 47                                                   1 
+                                         Reoviridae                                            Reptiles 
+                                                 67                                                  11 
+                                       Retroviridae                                       Rhabdoviridae 
+                                                 52                                                 150 
+                                       Rhodothermia                                         Roniviridae 
+                                                  4                                                   1 
+                                         Roundworms                            Rubber viroid India/2009 
+                                                  8                                                   1 
+                                        Rudiviridae                                         Secoviridae 
+                                                 15                                                  53 
+                                       Siphoviridae                                       Solemoviridae 
+                                               1061                                                  20 
+                                       Solibacteres                                      Solinviviridae 
+                                                  3                                                   2 
+                                 Sphaerolipoviridae                                        Spirochaetia 
+                                                  7                                                  39 
+                                         Sunviridae                                         Synergistia 
+                                                  1                                                   4 
+                                       Tectiviridae                                         Tenericutes 
+                                                  5                                                  69 
+                                     Thaumarchaeota                                         Thermococci 
+                                                  8                                                  19 
+                              Thermodesulfobacteria                                      Thermoplasmata 
+                                                  4                                                   7 
+                                        Thermotogae                                         Togaviridae 
+                                                 10                                                  24 
+                                 Tolecusatellitidae                                       Tombusviridae 
+                                                101                                                  68 
+                                       Tospoviridae                                         Totiviridae 
+                                                 17                                                  66 
+                                   Tristromaviridae                                        Turriviridae 
+                                                  1                                                   2 
+                                        Tymoviridae                                        unclassified 
+                                                 37                                                 606 
+                         unclassified Acidobacteria               unclassified Bacteria (miscellaneous) 
+                                                  1                                                  13 
+                           unclassified Nitrospirae                         unclassified Proteobacteria 
+                                                  1                                                   2 
+                                    Verrucomicrobia                                        Virgaviridae 
+                                                 25                                                  52 
+                                 Zetaproteobacteria 
+                                                  5 
 ```
 
 Example `genbank`:
@@ -376,58 +887,139 @@ listGroups(db = "genbank")
 ```
 
 ```
-                   Acidobacteria                         Animals 
-                             47                             655 
-                    Caldiserica                 Deferribacteres 
-                              1                               1 
-                    DPANN group                   Elusimicrobia 
-                             27                              57 
-          environmental samples                   Euryarchaeota 
-                              6                             197 
-                      FCB group                           Fungi 
-                            545                             508 
-                   Fusobacteria Nitrospinae/Tectomicrobia group 
-                              7                              11 
-                    Nitrospirae                           Other 
-                             46                               7 
-                         Plants                  Proteobacteria 
-                            193                            1490 
-                       Protists                       PVC group 
-                            142                             180 
-                   Spirochaetes                   Synergistetes 
-                             26                              12 
-                     TACK group             Terrabacteria group 
-                             73                            1072 
-          Thermodesulfobacteria                     Thermotogae 
-                              3                               9 
-           unclassified Archaea           unclassified Bacteria 
-                             48                            1407
+                       Abditibacteriota                       Acidithiobacillia 
+                                      1                                       8 
+                         Acidobacteriia                          Actinobacteria 
+                                     24                                    1596 
+                    Alphaproteobacteria                              Amphibians 
+                                   1604                                       6 
+                          Apicomplexans                               Aquificae 
+                                     47                                       7 
+                           Archaeoglobi                         Armatimonadetes 
+                                      5                                      38 
+                            Ascomycetes                Bacteria candidate phyla 
+                                    689                                    3532 
+           Bacteroidetes/Chlorobi group                               Balneolia 
+                                   2247                                      44 
+                         Basidiomycetes                      Betaproteobacteria 
+                                    204                                     751 
+                                  Birds                          Blastocatellia 
+                                     80                                       2 
+                           Caldisericia                  candidate division WS1 
+                                      1                                       1 
+        candidate division Zixibacteria               Candidatus Aegiribacteria 
+                                     17                                       1 
+             Candidatus Aenigmarchaeota               Candidatus Bathyarchaeota 
+                                     14                                      42 
+               Candidatus Cloacimonetes               Candidatus Diapherotrites 
+                                     88                                      11 
+            Candidatus Fermentibacteria            Candidatus Geothermarchaeota 
+                                      8                                       3 
+           Candidatus Heimdallarchaeota              Candidatus Hydrogenedentes 
+                                      4                                      10 
+                Candidatus Korarchaeota                    Candidatus Kryptonia 
+                                      1                                       4 
+        Candidatus Lambdaproteobacteria              Candidatus Latescibacteria 
+                                      6                                      13 
+               Candidatus Lokiarchaeota               Candidatus Marinimicrobia 
+                                      2                                      92 
+               Candidatus Marsarchaeota                Candidatus Micrarchaeota 
+                                     15                                      35 
+                Candidatus Moduliflexus             Candidatus Muproteobacteria 
+                                      1                                      14 
+           Candidatus Nanohaloarchaeota                Candidatus Odinarchaeota 
+                                     16                                       1 
+                Candidatus Omnitrophica                Candidatus Pacearchaeota 
+                                    126                                      41 
+               Candidatus Parvarchaeota                Candidatus Tectomicrobia 
+                                     11                                       6 
+               Candidatus Thorarchaeota                 Candidatus Vecturithrix 
+                                      7                                       1 
+         Candidatus Verstraetearchaeota               Candidatus Woesearchaeota 
+                                      5                                      36 
+                             Chlamydiae                             Chloroflexi 
+                                     43                                     403 
+                         Chrysiogenetes                    Coprothermobacterota 
+                                      1                                       1 
+                          Crenarchaeota     Cyanobacteria/Melainabacteria group 
+                                     54                                     172 
+                        Deferribacteres                     Deinococcus-Thermus 
+                                      8                                      27 
+             delta/epsilon subdivisions                            Dictyoglomia 
+                                    615                                       1 
+                          Elusimicrobia                            Endomicrobia 
+                                      1                                       2 
+                  environmental samples                           Fibrobacteres 
+                                      3                                      15 
+                             Firmicutes                                  Fishes 
+                                   2663                                     168 
+                              Flatworms                           Fusobacteriia 
+                                     35                                      29 
+                    Gammaproteobacteria                        Gemmatimonadetes 
+                                   2041                                      82 
+                            Green Algae                            Hadesarchaea 
+                                     30                                       5 
+                           Halobacteria                              Holophagae 
+                                    162                                       9 
+                      Hydrogenophilalia                                 Insects 
+                                     32                                     280 
+                           Kinetoplasts                      Kiritimatiellaeota 
+                                     33                                       3 
+                            Land Plants                           Lentisphaerae 
+                                    282                                      32 
+                                Mammals                         Methanobacteria 
+                                    145                                      31 
+                           Methanococci                         Methanomicrobia 
+                                      2                                      77 
+                  Methanonatronarchaeia                             Methanopyri 
+                                      2                                       1 
+                          Nanoarchaeota nitrifying bacterium enrichment culture 
+                                     11                                       1 
+                            Nitrospinae                              Nitrospira 
+                                     19                                      31 
+                            Oligoflexia                                   Other 
+                                     87                                      15 
+                          Other Animals                             Other Fungi 
+                                    125                                      58 
+                           Other Plants                          Other Protists 
+                                      1                                     128 
+                         Planctomycetes                                Reptiles 
+                                    171                                      21 
+                           Rhodothermia                              Roundworms 
+                                      4                                      91 
+                           Solibacteres                            Spirochaetia 
+                                      7                                     115 
+                            Synergistia                             Tenericutes 
+                                     43                                     141 
+                         Thaumarchaeota                           Theionarchaea 
+                                     92                                       2 
+                            Thermococci                   Thermodesulfobacteria 
+                                     21                                       7 
+                         Thermoplasmata                             Thermotogae 
+                                    135                                      23 
+             unclassified Acidobacteria    unclassified Archaea (miscellaneous) 
+                                     94                                      52 
+  unclassified Bacteria (miscellaneous)                unclassified Caldiserica 
+                                    197                                      11 
+           unclassified Calditrichaeota              unclassified Elusimicrobia 
+                                      2                                     101 
+             unclassified Euryarchaeota                unclassified Nitrospirae 
+                                    348                                      90 
+            unclassified Proteobacteria            unclassified Rhodothermaeota 
+                                    130                                       4 
+              unclassified Spirochaetes              unclassified Synergistetes 
+                                     37                                       3 
+               unclassified Thermotogae                     uncultured archaeon 
+                                      1                                       1 
+            uncultured archaeon A07HB70             uncultured archaeon A07HN63 
+                                      1                                       1 
+            uncultured archaeon A07HR60             uncultured archaeon A07HR67 
+                                      1                                       1 
+                   uncultured bacterium                         Verrucomicrobia 
+                                      1                                     296 
+                     Zetaproteobacteria 
+                                     41 
 ```
-
-```{r,eval=FALSE}
-# the number of genomes available for each subgroup
-head(listSubgroups(db = "genbank"), 15)
-```
-
-```
-           Acidithiobacillia               Acidobacteriia 
-                           5                            9 
-              Actinobacteria          Alphaproteobacteria 
-                         313                          411 
-                  Amphibians                Apicomplexans 
-                           4                           32 
-     Archaea candidate phyla                 Archaeoglobi 
-                          25                            3 
-             Armatimonadetes                  Ascomycetes 
-                          10                          361 
-    Bacteria candidate phyla Bacteroidetes/Chlorobi group 
-                        1372                          405 
-              Basidiomycetes           Betaproteobacteria 
-                         122                          268 
-                       Birds 
-                          59 
-```
-
 
 __Note__ that when running the `listGenomes()` function for the first time, it might take a while until
 the function returns any results, because necessary information need to be downloaded from NCBI and ENSEMBL databases. All subsequent executions of `listGenomes()`
@@ -464,9 +1056,9 @@ Options are:
 - `db = "ensembl"` for retrieval from [ENSEMBL](http://www.ensembl.org/index.html)
 - `db = "ensemblgenomes"` for retrieval from [ENSEMBLGENOMES](http://ensemblgenomes.org/)
 
-Furthermore, users need to specify the scientific name of the organism of interest for which a genome assembly shall be downloaded, e.g. `organism = "Homo sapiens"`.
+Furthermore, users need to specify the `scientific name`, the `taxid` (= [NCBI Taxnonomy](https://www.ncbi.nlm.nih.gov/taxonomy) identifier), or the `accession identifier` of the organism of interest for which a genome assembly shall be downloaded, e.g. `organism = "Homo sapiens"` or `organism = "9606"` or `organism = "GCF_000001405.37"`.
 Finally, the `path` argument specifies the folder path in which the corresponding assembly shall be locally stored. In case users would like to store the genome file at a different location,
-they can specify the `path = file.path("put","your","path","here")` argument.
+they can specify the `path = file.path("put","your","path","here")` argument (e.g. `file.path("_ncbi_downloads","genomes")`).
 
 ### Example NCBI RefSeq:
 
@@ -496,8 +1088,7 @@ Subsequently, users can use the `read_genome()` function to import the genome in
 
 ```{r,eval=FALSE}
 # import downloaded genome as Biostrings object
-Human_Genome <- read_genome(file     = HS.genome.refseq, 
-                            obj.type = "Biostrings")
+Human_Genome <- read_genome(file = HS.genome.refseq)
 
 ```
 
@@ -558,7 +1149,7 @@ library(magrittr)
 Human_Genome <- getGenome( db       = "refseq", 
                            organism = "Homo sapiens",
                            path     = file.path("_ncbi_downloads","genomes")) %>%
-    read_genome(obj.type = "Biostrings")
+    read_genome()
 ```
 
 ```{r,eval=FALSE}
@@ -581,7 +1172,84 @@ Human_Genome
 [551]     16569 GATCACAGGTCTATCACCCTATTA...CCCTTAAATAAGACATCACGATG NC_012920.1 Homo ...
 ```
 
+#### Use `taxid` id for genome retrieval
+
+Alternatively, instead of specifying the scientific name in the argument `organism`
+users can specify the `taxonomy` id of the corresponding organism. Here, we specify
+the taxonomy id `559292` which encodes the species `Saccharomyces cerevisiae`.
+
+
+```{r,eval=FALSE}
+# install.packages("magrittr")
+library(magrittr)
+# import genome as Biostrings object
+Scerevisiae_Genome <- getGenome(
+            db       = "refseq",
+            organism = "559292") %>%
+    read_genome()
+```
+
+```{r,eval=FALSE}
+Scerevisiae_Genome
+```
+
+
+```
+A DNAStringSet instance of length 17
+       width seq                                      names               
+ [1]  230218 CCACACCACACCCACACAC...GGGTGTGGTGTGTGTGGG NC_001133.9 Sacch...
+ [2]  813184 AAATAGCCCTCATGTACGT...TGTGGTGTGTGGGTGTGT NC_001134.8 Sacch...
+ [3]  316620 CCCACACACCACACCCACA...GTGGGTGTGGTGTGTGTG NC_001135.5 Sacch...
+ [4] 1531933 ACACCACACCCACACCACA...GTAGTAAGTAGCTTTTGG NC_001136.10 Sacc...
+ [5]  576874 CGTCTCCTCCAAGCCCTGT...ATTTTCATTTTTTTTTTT NC_001137.3 Sacch...
+ ...     ... ...
+[13]  924431 CCACACACACACCACACCC...TGTGGTGTGTGTGTGGGG NC_001145.3 Sacch...
+[14]  784333 CCGGCTTTCTGACCGAAAT...TGTGGGTGTGGTGTGGGT NC_001146.8 Sacch...
+[15] 1091291 ACACCACACCCACACCACA...TGTGTGGGTGTGGTGTGT NC_001147.6 Sacch...
+[16]  948066 AAATAGCCCTCATGTACGT...TTTAATTTCGGTCAGAAA NC_001148.4 Sacch...
+[17]   85779 TTCATAATTAATTTTTTAT...TATAATATAATATCCATA NC_001224.1 Sacch...
+```
+
+#### Use `assembly_accession` id for genome retrieval
+
+Alternatively, instead of specifying the scientific name or taxonomy in the argument `organism`
+users can specify the `assembly_accession` id of the corresponding organism. Here, we specify
+the `assembly_accession` id `GCF_000146045.2` which encodes the species `Saccharomyces cerevisiae`.
+
+
+```{r,eval=FALSE}
+# install.packages("magrittr")
+library(magrittr)
+# import genome as Biostrings object
+Scerevisiae_Genome <- getGenome(
+            db       = "refseq",
+            organism = "GCF_000146045.2") %>%
+    read_genome()
+```
+
+```{r,eval=FALSE}
+Scerevisiae_Genome
+```
+
+```
+ A DNAStringSet instance of length 17
+       width seq                                                    names               
+ [1]  230218 CCACACCACACCCACACACCCACACA...GTGGTGTGGGTGTGGTGTGTGTGGG NC_001133.9 Sacch...
+ [2]  813184 AAATAGCCCTCATGTACGTCTCCTCC...GTGTGGGTGTGGTGTGTGGGTGTGT NC_001134.8 Sacch...
+ [3]  316620 CCCACACACCACACCCACACCACACC...GGGTGTGGTGGGTGTGGTGTGTGTG NC_001135.5 Sacch...
+ [4] 1531933 ACACCACACCCACACCACACCCACAC...AATAAAGGTAGTAAGTAGCTTTTGG NC_001136.10 Sacc...
+ [5]  576874 CGTCTCCTCCAAGCCCTGTTGTCTCT...GGGTTTCATTTTCATTTTTTTTTTT NC_001137.3 Sacch...
+ ...     ... ...
+[13]  924431 CCACACACACACCACACCCACACCAC...GTGTGGGTGTGGTGTGTGTGTGGGG NC_001145.3 Sacch...
+[14]  784333 CCGGCTTTCTGACCGAAATTAAAAAA...GGGTGTGTGTGGGTGTGGTGTGGGT NC_001146.8 Sacch...
+[15] 1091291 ACACCACACCCACACCACACCCACAC...GAGAGAGTGTGTGGGTGTGGTGTGT NC_001147.6 Sacch...
+[16]  948066 AAATAGCCCTCATGTACGTCTCCTCC...TTTTTTTTTTAATTTCGGTCAGAAA NC_001148.4 Sacch...
+[17]   85779 TTCATAATTAATTTTTTATATATATA...GCTTAATTATAATATAATATCCATA NC_001224.1 Sacch...
+```
+
 ### Example NCBI Genbank:
+
+Genome retrieval from `NCBI Genbank`.
 
 ```{r,eval=FALSE}
 # download the genome of Homo sapiens from Genbank
@@ -593,8 +1261,7 @@ HS.genome.genbank <- getGenome( db       = "genbank",
 
 ```{r,eval=FALSE}
 # import downloaded genome as Biostrings object
-Human_Genome <- read_genome(file     = HS.genome.genbank, 
-                            obj.type = "Biostrings")
+Human_Genome <- read_genome(file = HS.genome.genbank)
 ```
 
 ```{r,eval=FALSE}
@@ -619,6 +1286,82 @@ Human_Genome
 ```
 
 
+#### Use `taxonomy` id for genome retrieval
+
+Alternatively, instead of specifying the scientific name in the argument `organism`
+users can specify the `taxonomy` id of the corresponding organism. Here, we specify
+the taxonomy id `559292` which encodes the species `Saccharomyces cerevisiae`.
+
+
+```{r,eval=FALSE}
+# install.packages("magrittr")
+library(magrittr)
+# import genome as Biostrings object
+Scerevisiae_Genome <- getGenome(
+            db       = "genbank",
+            organism = "559292") %>%
+    read_genome()
+```
+
+```{r,eval=FALSE}
+Scerevisiae_Genome
+```
+
+```
+A DNAStringSet instance of length 16
+       width seq                                names               
+ [1]  230218 CCACACCACACCCACA...TGTGGTGTGTGTGGG BK006935.2 TPA_in...
+ [2]  813184 AAATAGCCCTCATGTA...GGTGTGTGGGTGTGT BK006936.2 TPA_in...
+ [3]  316620 CCCACACACCACACCC...GGTGTGGTGTGTGTG BK006937.2 TPA_in...
+ [4] 1531933 ACACCACACCCACACC...GTAAGTAGCTTTTGG BK006938.2 TPA_in...
+ [5]  576874 CGTCTCCTCCAAGCCC...TTCATTTTTTTTTTT BK006939.2 TPA_in...
+ ...     ... ...
+[12] 1078177 CACACACACACACCAC...ACATGAGGGCTATTT BK006945.2 TPA_in...
+[13]  924431 CCACACACACACCACA...GGTGTGTGTGTGGGG BK006946.2 TPA_in...
+[14]  784333 CCGGCTTTCTGACCGA...GGGTGTGGTGTGGGT BK006947.3 TPA_in...
+[15] 1091291 ACACCACACCCACACC...GTGGGTGTGGTGTGT BK006948.2 TPA_in...
+[16]  948066 AAATAGCCCTCATGTA...AATTTCGGTCAGAAA BK006949.2 TPA_in...
+```
+
+#### Use `assembly_accession` id for genome retrieval
+
+
+Alternatively, instead of specifying the scientific name or taxonomy in the argument `organism`
+users can specify the `assembly_accession` id of the corresponding organism. Here, we specify
+the `assembly_accession` id `GCA_000146045.2` which encodes the species `Saccharomyces cerevisiae`.
+
+
+```{r,eval=FALSE}
+# install.packages("magrittr")
+library(magrittr)
+# import genome as Biostrings object
+Scerevisiae_Genome <- getGenome(
+            db       = "genbank",
+            organism = "GCA_000146045.2") %>%
+    read_genome()
+```
+
+```{r,eval=FALSE}
+Scerevisiae_Genome
+```
+
+```
+A DNAStringSet instance of length 16
+       width seq                                  names               
+ [1]  230218 CCACACCACACCCACAC...GTGTGGTGTGTGTGGG BK006935.2 TPA_in...
+ [2]  813184 AAATAGCCCTCATGTAC...TGGTGTGTGGGTGTGT BK006936.2 TPA_in...
+ [3]  316620 CCCACACACCACACCCA...GGGTGTGGTGTGTGTG BK006937.2 TPA_in...
+ [4] 1531933 ACACCACACCCACACCA...AGTAAGTAGCTTTTGG BK006938.2 TPA_in...
+ [5]  576874 CGTCTCCTCCAAGCCCT...TTTCATTTTTTTTTTT BK006939.2 TPA_in...
+ ...     ... ...
+[12] 1078177 CACACACACACACCACC...TACATGAGGGCTATTT BK006945.2 TPA_in...
+[13]  924431 CCACACACACACCACAC...TGGTGTGTGTGTGGGG BK006946.2 TPA_in...
+[14]  784333 CCGGCTTTCTGACCGAA...TGGGTGTGGTGTGGGT BK006947.3 TPA_in...
+[15] 1091291 ACACCACACCCACACCA...TGTGGGTGTGGTGTGT BK006948.2 TPA_in...
+[16]  948066 AAATAGCCCTCATGTAC...TAATTTCGGTCAGAAA BK006949.2 TPA_in...
+```
+
+
 ### Example ENSEMBL:
 
 ```{r,eval=FALSE}
@@ -631,8 +1374,7 @@ HS.genome.ensembl <- getGenome( db       = "ensembl",
 
 ```{r,eval=FALSE}
 # import downloaded genome as Biostrings object
-Human_Genome <- read_genome(file     = HS.genome.ensembl, 
-                            obj.type = "Biostrings")
+Human_Genome <- read_genome(file = HS.genome.ensembl)
 ```
 
 ```{r,eval=FALSE}
@@ -656,6 +1398,83 @@ Human_Genome
 [524]       970 AAGTGGATATTTGGATAGCTTTGA...TCCTCAATAACAGAGTTGAACCT KI270394.1 dna:sc...
 ```
 
+#### Use `taxonomy` id for genome retrieval
+
+Alternatively, instead of specifying the scientific name in the argument `organism`
+users can specify the `taxonomy` id of the corresponding organism. Here, we specify
+the taxonomy id `4932` which encodes the species `Saccharomyces cerevisiae`.
+
+
+```{r,eval=FALSE}
+# install.packages("magrittr")
+library(magrittr)
+# import genome as Biostrings object
+Scerevisiae_Proteome <- getProteome(
+            db       = "ensembl",
+            organism = "4932") %>%
+    read_proteome()
+```
+
+```{r,eval=FALSE}
+Scerevisiae_Proteome
+```
+
+```
+  A AAStringSet instance of length 6692
+       width seq                                names               
+   [1]    61 MFSELINFQNEGHECQ...GNKSEETKKSCCSGK YHR055C pep chrom...
+   [2]   657 MSDNGSPAVLPKTEFN...DESKEFQNSDIADLY YPR161C pep chrom...
+   [3]  1341 MSLSPHVENASIPKGS...NEQECPGGCPGVAFI YOL138C pep chrom...
+   [4]   944 MVQEQAILSCIEQTMV...KRDSLQVILEFVSQH YDR395W pep chrom...
+   [5]   215 MDFYKLDEKLKELKRK...KQFNEKLSRESKGSE YGR129W pep chrom...
+   ...   ... ...
+[6688]   869 MTESAIDDQRFNLTKE...EQYIFCTLFIHTQIL YPL268W pep chrom...
+[6689]   166 MSRYGKNLVHYIIVEH...TSQTRRVAARKGKLS YEL035C pep chrom...
+[6690]   106 MSTLLKSAKSIVPLMD...ILFRDAEILAKIAKD YOR020C pep chrom...
+[6691]   152 MWFPQIIAGMAAGGAA...TYVNAEKAAGQKKED YLL053C pep chrom...
+[6692]   692 MAKRLLESSQNDQANR...EYGNVGNNEETLDDH YDR314C pep chrom...
+```
+
+#### Use `assembly_accession` id for genome retrieval
+
+
+Alternatively, instead of specifying the scientific name or taxonomy in the argument `organism`
+users can specify the `assembly_accession` id of the corresponding organism. Here, we specify
+the `assembly_accession` id `GCA_000146045.2` which encodes the species `Saccharomyces cerevisiae`.
+
+
+```{r,eval=FALSE}
+# install.packages("magrittr")
+library(magrittr)
+# import genome as Biostrings object
+Scerevisiae_Genome <- getGenome(
+            db       = "ensembl",
+            organism = "GCA_000146045.2") %>%
+    read_genome()
+```
+
+```{r,eval=FALSE}
+Scerevisiae_Genome
+```
+
+```
+  A DNAStringSet instance of length 17
+       width seq                                names               
+ [1]  230218 CCACACCACACCCACA...TGTGGTGTGTGTGGG I dna:chromosome ...
+ [2]  813184 AAATAGCCCTCATGTA...GGTGTGTGGGTGTGT II dna:chromosome...
+ [3]  316620 CCCACACACCACACCC...GGTGTGGTGTGTGTG III dna:chromosom...
+ [4] 1531933 ACACCACACCCACACC...GTAAGTAGCTTTTGG IV dna:chromosome...
+ [5]  439888 CACACACACCACACCC...GTGTGGTGTGTGTGT IX dna:chromosome...
+ ...     ... ...
+[13] 1078177 CACACACACACACCAC...ACATGAGGGCTATTT XII dna:chromosom...
+[14]  924431 CCACACACACACCACA...GGTGTGTGTGTGGGG XIII dna:chromoso...
+[15]  784333 CCGGCTTTCTGACCGA...GGGTGTGGTGTGGGT XIV dna:chromosom...
+[16] 1091291 ACACCACACCCACACC...GTGGGTGTGGTGTGT XV dna:chromosome...
+[17]  948066 AAATAGCCCTCATGTA...AATTTCGGTCAGAAA XVI dna:chromosom...
+```
+
+
+
 ### Example ENSEMBLGENOMES:
 
 Due to the unavailability of `"Homo sapiens"` at `db = "ensemblgenomes"` here we choose `"Arabidopsis thaliana"`
@@ -671,8 +1490,7 @@ AT.genome.ensemblgenomes <- getGenome( db       = "ensemblgenomes",
 
 ```{r,eval=FALSE}
 # import downloaded genome as Biostrings object
-Cress_Genome <- read_genome(file     = AT.genome.ensemblgenomes, 
-                            obj.type = "Biostrings")
+Cress_Genome <- read_genome(file = AT.genome.ensemblgenomes)
 ```
 
 ```{r,eval=FALSE}
@@ -695,7 +1513,7 @@ Cress_Genome
 ### Proteome Retrieval
 
 The `getProteome()` function is an interface function to the [NCBI RefSeq](http://www.ncbi.nlm.nih.gov/refseq/about/), [NCBI Genbank](http://www.ncbi.nlm.nih.gov/genbank/about/),
-[ENSEMBL](http://www.ensembl.org/index.html) and [ENSEMBLGENOMES](http://ensemblgenomes.org/) databases from
+[ENSEMBL](http://www.ensembl.org/index.html), [ENSEMBLGENOMES](http://ensemblgenomes.org/), and [UniProt](http://uniprot.org/) databases from
 which corresponding proteomes can be retrieved. It works analogous to `getGenome()`. 
 
 The `db` argument specifies from which database proteomes in `*.fasta` file format shall be retrieved.
@@ -706,6 +1524,8 @@ Options are:
 - `db = "genbank"` for retrieval from [NCBI Genbank](http://www.ncbi.nlm.nih.gov/genbank/about/)
 - `db = "ensembl"` for retrieval from [ENSEMBL](http://www.ensembl.org/index.html)
 - `db = "ensemblgenomes"` for retrieval from [ENSEMBLGENOMES](http://ensemblgenomes.org/)
+- `db = "uniprot" ` for retrieval from [UniProt](http://uniprot.org/)
+
 
 Furthermore, again users need to specify the scientific name of the organism of interest for which a proteomes shall be downloaded, e.g. `organism = "Homo sapiens"`.
 Finally, the `path` argument specifies the folder path in which the corresponding proteome shall be locally stored. In case users would like to store the proteome file at a different location,
@@ -729,8 +1549,7 @@ Subsequently, users can use the `read_proteome()` function to import the proteom
 
 ```{r,eval=FALSE}
 # import proteome as Biostrings object
-Human_Proteome <- read_proteome(file = HS.proteome.refseq, 
-                                obj.type = "Biostrings")
+Human_Proteome <- read_proteome(file = HS.proteome.refseq)
 ```
 
 ```{r,eval=FALSE}
@@ -738,19 +1557,19 @@ Human_Proteome
 ```
 
 ```
-  A AAStringSet instance of length 109018
-         width seq                                                 names               
-     [1]  1474 MGKNKLLHPSLVLLLLVLLPTDAS...DYYETDEFAIAEYNAPCSKDLGNA NP_000005.2 alpha...
-     [2]   290 MDIEAYFERIGYKNSRNKLDLETL...LRNIFKISLGRNLVPKPGDGSLTI NP_000006.2 aryla...
-     [3]   421 MAAGFGRCCRVLRSISRFHWRSQH...QIYEGTSQIQRLIVAREHIDKYKN NP_000007.1 mediu...
-     [4]   412 MAAALLARASGPARRALCPRAWRQ...EIYEGTSEIQRLVIAGHLLRSYRS NP_000008.1 short...
-     [5]   655 MQAARMAASLGRQLLRLGGGSSRL...RNFKSISKALVERGGVVTSNPLGF NP_000009.1 very ...
+A AAStringSet instance of length 113620
+         width seq                          names               
+     [1]  1474 MGKNKLLHPSLVL...YNAPCSKDLGNA NP_000005.2 alpha...
+     [2]   290 MDIEAYFERIGYK...LVPKPGDGSLTI NP_000006.2 aryla...
+     [3]   421 MAAGFGRCCRVLR...IVAREHIDKYKN NP_000007.1 mediu...
+     [4]   412 MAAALLARASGPA...VIAGHLLRSYRS NP_000008.1 short...
+     [5]   655 MQAARMAASLGRQ...RGGVVTSNPLGF NP_000009.1 very ...
      ...   ... ...
-[109014]    98 MPLIYMNIMLAFTISLLGMLVYRS...LALLVSISNTYGLDYVHNLNLLQC YP_003024034.1 NA...
-[109015]   459 MLKLIVPTIMLLPLTWLSKKHMIW...LMFMHLSPILLLSLNPDIITGFSS YP_003024035.1 NA...
-[109016]   603 MTMHTTMTTLTLTSLIPPILTTLV...QKGMIKLYFLSFFFPLILTLLLIT YP_003024036.1 NA...
-[109017]   174 MMYALFLLSVGLVMGFVGFSSKPS...WLVVVTGWTLFVGVYIVIEIARGN YP_003024037.1 NA...
-[109018]   380 MTPMRKTNPLMKLINHSFIDLPTP...LYFTTILILMPTISLIENKMLKWA YP_003024038.1 cy...
+[113616]    98 MPLIYMNIMLAFT...LDYVHNLNLLQC YP_003024034.1 NA...
+[113617]   459 MLKLIVPTIMLLP...SLNPDIITGFSS YP_003024035.1 NA...
+[113618]   603 MTMHTTMTTLTLT...FFPLILTLLLIT YP_003024036.1 NA...
+[113619]   174 MMYALFLLSVGLV...GVYIVIEIARGN YP_003024037.1 NA...
+[113620]   380 MTPMRKTNPLMKL...ISLIENKMLKWA YP_003024038.1 cy...
 ```
 
 Alternatively, users can perform the pipeline logic of the [magrittr](https://github.com/smbache/magrittr) package:
@@ -762,7 +1581,7 @@ library(magrittr)
 Human_Proteome <- getProteome( db       = "refseq", 
                                organism = "Homo sapiens",
                                path     = file.path("_ncbi_downloads","proteomes")) %>%
-    read_proteome(obj.type = "Biostrings")
+    read_proteome()
 ```
 
 ```{r,eval=FALSE}
@@ -770,19 +1589,19 @@ Human_Proteome
 ```
 
 ```
-  A AAStringSet instance of length 109018
-         width seq                                                 names               
-     [1]  1474 MGKNKLLHPSLVLLLLVLLPTDAS...DYYETDEFAIAEYNAPCSKDLGNA NP_000005.2 alpha...
-     [2]   290 MDIEAYFERIGYKNSRNKLDLETL...LRNIFKISLGRNLVPKPGDGSLTI NP_000006.2 aryla...
-     [3]   421 MAAGFGRCCRVLRSISRFHWRSQH...QIYEGTSQIQRLIVAREHIDKYKN NP_000007.1 mediu...
-     [4]   412 MAAALLARASGPARRALCPRAWRQ...EIYEGTSEIQRLVIAGHLLRSYRS NP_000008.1 short...
-     [5]   655 MQAARMAASLGRQLLRLGGGSSRL...RNFKSISKALVERGGVVTSNPLGF NP_000009.1 very ...
+ A AAStringSet instance of length 113620
+         width seq                          names               
+     [1]  1474 MGKNKLLHPSLVL...YNAPCSKDLGNA NP_000005.2 alpha...
+     [2]   290 MDIEAYFERIGYK...LVPKPGDGSLTI NP_000006.2 aryla...
+     [3]   421 MAAGFGRCCRVLR...IVAREHIDKYKN NP_000007.1 mediu...
+     [4]   412 MAAALLARASGPA...VIAGHLLRSYRS NP_000008.1 short...
+     [5]   655 MQAARMAASLGRQ...RGGVVTSNPLGF NP_000009.1 very ...
      ...   ... ...
-[109014]    98 MPLIYMNIMLAFTISLLGMLVYRS...LALLVSISNTYGLDYVHNLNLLQC YP_003024034.1 NA...
-[109015]   459 MLKLIVPTIMLLPLTWLSKKHMIW...LMFMHLSPILLLSLNPDIITGFSS YP_003024035.1 NA...
-[109016]   603 MTMHTTMTTLTLTSLIPPILTTLV...QKGMIKLYFLSFFFPLILTLLLIT YP_003024036.1 NA...
-[109017]   174 MMYALFLLSVGLVMGFVGFSSKPS...WLVVVTGWTLFVGVYIVIEIARGN YP_003024037.1 NA...
-[109018]   380 MTPMRKTNPLMKLINHSFIDLPTP...LYFTTILILMPTISLIENKMLKWA YP_003024038.1 cy...
+[113616]    98 MPLIYMNIMLAFT...LDYVHNLNLLQC YP_003024034.1 NA...
+[113617]   459 MLKLIVPTIMLLP...SLNPDIITGFSS YP_003024035.1 NA...
+[113618]   603 MTMHTTMTTLTLT...FFPLILTLLLIT YP_003024036.1 NA...
+[113619]   174 MMYALFLLSVGLV...GVYIVIEIARGN YP_003024037.1 NA...
+[113620]   380 MTPMRKTNPLMKL...ISLIENKMLKWA YP_003024038.1 cy...
 ```
 
 ### Example `NCBI Genbank`:
@@ -798,8 +1617,7 @@ HS.proteome.genbank <- getProteome( db       = "genbank",
 
 ```{r,eval=FALSE}
 # import proteome as Biostrings object
-Human_Proteome <- read_proteome(file = HS.proteome.genbank, 
-                                obj.type = "Biostrings")
+Human_Proteome <- read_proteome(file = HS.proteome.genbank)
 ```
 
 ```{r,eval=FALSE}
@@ -807,19 +1625,19 @@ Human_Proteome
 ```
 
 ```
-  A AAStringSet instance of length 13
-     width seq                                                     names               
- [1]   318 MPMANLLLLIVPILIAMAFLMLTERK...FLPLTLALLMWYVSMPITISSIPPQT AAB58943.1 NADH d...
- [2]   347 MNPLAQPVIYSTIFAGTLITALSSHW...PTPFLPTLIALTTLLLPISPFMLMIL AAB58944.1 NADH d...
- [3]   513 MFADRWLFSTNHKDIGTLYLLFGAWA...PSMNLEWLYGCPPPYHTFEEPVYMKS AAB58945.1 cytoch...
- [4]   227 MAHAAQVGLQDATSPIMEELITFHDH...ANHSFMPIVLELIPLKIFEMGPVFTL AAB58946.1 cytoch...
- [5]    68 MPQLNTTVWPTMITPMLLTLFLITQL...KMKNYNKPWEPKWTKICSLHSLPPQS AAB58947.1 ATPase...
+A AAStringSet instance of length 13
+     width seq                              names               
+ [1]   318 MPMANLLLLIVPILI...VSMPITISSIPPQT AAB58943.1 NADH d...
+ [2]   347 MNPLAQPVIYSTIFA...TLLLPISPFMLMIL AAB58944.1 NADH d...
+ [3]   513 MFADRWLFSTNHKDI...PPYHTFEEPVYMKS AAB58945.1 cytoch...
+ [4]   227 MAHAAQVGLQDATSP...IPLKIFEMGPVFTL AAB58946.1 cytoch...
+ [5]    68 MPQLNTTVWPTMITP...WTKICSLHSLPPQS AAB58947.1 ATPase...
  ...   ... ...
- [9]    98 MPLIYMNIMLAFTISLLGMLVYRSHL...VGLALLVSISNTYGLDYVHNLNLLQC AAB58951.1 NADH d...
-[10]   459 MLKLIVPTIMLLPLTWLSKKHMIWIN...NTLMFMHLSPILLLSLNPDIITGFSS AAB58952.1 NADH d...
-[11]   603 MTMHTTMTTLTLTSLIPPILTTLVNP...STQKGMIKLYFLSFFFPLILTLLLIT AAB58953.1 NADH d...
-[12]   174 MMYALFLLSVGLVMGFVGFSSKPSPI...GRWLVVVTGWTLFVGVYIVIEIARGN AAB58954.1 NADH d...
-[13]   380 MTPMRKTNPLMKLINHSFIDLPTPSN...SVLYFTTILILMPTISLIENKMLKWA AAB58955.3 cytoch...
+ [9]    98 MPLIYMNIMLAFTIS...YGLDYVHNLNLLQC AAB58951.1 NADH d...
+[10]   459 MLKLIVPTIMLLPLT...LLSLNPDIITGFSS AAB58952.1 NADH d...
+[11]   603 MTMHTTMTTLTLTSL...SFFFPLILTLLLIT AAB58953.1 NADH d...
+[12]   174 MMYALFLLSVGLVMG...FVGVYIVIEIARGN AAB58954.1 NADH d...
+[13]   380 MTPMRKTNPLMKLIN...PTISLIENKMLKWA AAB58955.3 cytoch...
 ```
 
 ### Example `ENSEMBL`:
@@ -834,8 +1652,7 @@ HS.proteome.ensembl <- getProteome( db       = "ensembl",
 
 ```{r,eval=FALSE}
 # import proteome as Biostrings object
-Human_Proteome <- read_proteome(file = HS.proteome.ensembl, 
-                                obj.type = "Biostrings")
+Human_Proteome <- read_proteome(file = HS.proteome.ensembl)
 ```
 
 ```{r,eval=FALSE}
@@ -843,19 +1660,19 @@ Human_Proteome
 ```
 
 ```
-  A AAStringSet instance of length 102915
-         width seq                                                 names               
-     [1]     4 TGGY                                                ENSP00000452494.1...
-     [2]     4 GTGG                                                ENSP00000488240.1...
-     [3]     4 GTGG                                                ENSP00000487941.1...
-     [4]     3 PSY                                                 ENSP00000451515.1...
-     [5]     2 EI                                                  ENSP00000451042.1...
+  A AAStringSet instance of length 107844
+         width seq                          names               
+     [1]     3 PSY                          ENSP00000451515.1...
+     [2]     4 TGGY                         ENSP00000452494.1...
+     [3]     2 EI                           ENSP00000451042.1...
+     [4]     4 GTGG                         ENSP00000487941.1...
+     [5]     4 GTGG                         ENSP00000488240.1...
      ...   ... ...
-[102911]   554 MLLPLLLSSLLGGSQAMDGRFWIR...GVRPRPEARMPKGTQADYAEVKFQ ENSP00000414324.2...
-[102912]   639 MLLPLLLSSLLGGSQAMDGRFWIR...GVRPRPEARMPKGTQADYAEVKFQ ENSP00000389132.2...
-[102913]   697 MLLPLLLSSLLGGSQAMDGRFWIR...GVRPRPEARMPKGTQADYAEVKFQ ENSP00000345243.4...
-[102914]   155 MLLPLLLSSLLGVLSFTPRPQDHN...SGRYTCRAENRLGSQQRALDLSVQ ENSP00000435281.1...
-[102915]   186 MRRCYCHCCCPRCWADWTGSTPAY...HFSVLSFTPRPQDHNTDLTCHVDF ENSP00000433838.1...
+[107840]   135 MLQKKIEEKDLKV...LNHICKVPLAIK ENSP00000495237.1...
+[107841]   166 MEHAFTPLEPLLS...IIQEESLIYLLQ ENSP00000496198.1...
+[107842]    42 MEVPTAYMISPKE...GLKSENTMLLRC ENSP00000495723.1...
+[107843]   508 MPSMLERISKNLV...GTLSLLQQLAEA ENSP00000496548.1...
+[107844]   508 MPSMLERISKNLV...GTLSLLQQLAEA ENSP00000494855.1...
 ```
 
 
@@ -875,8 +1692,7 @@ AT.proteome.ensemblgenomes <- getProteome( db       = "ensemblgenomes",
 
 ```{r,eval=FALSE}
 # import proteome as Biostrings object
-Cress_Proteome <- read_proteome(file = AT.proteome.ensemblgenomes, 
-                                obj.type = "Biostrings")
+Cress_Proteome <- read_proteome(file = AT.proteome.ensemblgenomes)
 ```
 
 ```{r,eval=FALSE}
@@ -884,20 +1700,59 @@ Cress_Proteome
 ```
 
 ```
-  A AAStringSet instance of length 35386
-        width seq                                                  names               
-    [1]   415 MGRDETETYITVPSFFKCPISLDVM...IKVLKFNSSALAAYETKTTHIMPF AT3G18710.1 pep:k...
-    [2]   855 MATENPIRISGSNERWSNSRKVSVP...YTYGKHIVSRLEQPSIEENQELRR AT4G25880.2 pep:k...
-    [3]   858 MATENPIRISGSNERWSNSRKVSVP...GKHIVSRLEQPSIEGMKFPNKTKN AT4G25880.3 pep:k...
-    [4]   861 MATENPIRISGSNERWSNSRKVSVP...YTYGKHIVSRLEQPSIEENQELRR AT4G25880.1 pep:k...
-    [5]   358 MTKAYSTRVLTFLILISLMAVTLNL...CSARNTQSFMSVLEEGIEEAISMI AT1G71695.1 pep:k...
+  A AAStringSet instance of length 48321
+        width seq                           names               
+    [1]   924 MMPKRFNTSGFDT...YEKIFDLAFNYDH AT3G05780.1 pep c...
+    [2]    61 MDSGLSWADQWDY...GFKWMKLGKKSDK AT1G24405.1 pep c...
+    [3]   232 MRIVGLTGGIASG...LGLSVCKQLKIGS AT2G27490.4 pep c...
+    [4]   232 MRIVGLTGGIASG...LGLSVCKQLKIGS AT2G27490.1 pep c...
+    [5]   232 MRIVGLTGGIASG...LGLSVCKQLKIGS AT2G27490.3 pep c...
     ...   ... ...
-[35382]   374 MHSRSALLYRFLRPASRCFSSSSAV...YKAGEYYIKSMIEADRVASPSTSP AT2G20860.1 pep:k...
-[35383]   392 MADNLNLVSVLGVLLVLTIFHNPII...WEPNNLAIRRRPSRDFYLGLAAYY AT3G14210.1 pep:k...
-[35384]   495 MASLLSPATPTATSAAFHSCSTAGF...LRHPYFLLGGDQAAAVLSKLSFSK AT5G01920.1 pep:k...
-[35385]   563 MSLTKKASEPKLSGTSIKPTTLNPH...VAVQRYLLEEEGLDYSEPQAGLLR AT2G26280.1 pep:k...
-[35386]   453 MGVSLLKQQHRITNQADTFSRFMER...NHQQQQQQQRSELRVENGLANNVI AT4G32600.1 pep:k...
+[48317]   305 MKDHERAILEERI...DKTEEAGNKKIRL AT1G30814.1 pep c...
+[48318]   321 MRAAINRANSLGG...KNGFEMAKYWRSQ AT2G43120.1 pep c...
+[48319]   372 MAHNQFKDSLDPL...KNGFEMAKYWRSQ AT2G43120.2 pep c...
+[48320]   345 MTATNKQVILKDY...KNVGKQVVVVARE AT5G16970.1 pep c...
+[48321]   122 MATNACKFLCLVL...FDLKVVDGYIACS AT4G32100.1 pep c...
 ```
+
+### Example Retrieval `Uniprot`:
+
+Another  way of retrieving proteome sequences is from the [UniProt](http://www.uniprot.org/) database.
+
+```{r,eval=FALSE}
+# download the proteome of Mus musculus from UniProt
+# and store the corresponding proteome file in '_uniprot_downloads/proteomes'
+Mm.proteome.uniprot<- getProteome( db       = "uniprot", 
+                                   organism = "Mus musculus",
+                                   path     = file.path("_uniprot_downloads","proteomes"))
+```
+
+
+```{r,eval=FALSE}
+# import proteome as Biostrings object
+Mouse_Proteome <- read_proteome(file = Mm.proteome.uniprot)
+```
+
+```{r,eval=FALSE}
+Mouse_Proteome
+```
+
+```
+A AAStringSet instance of length 84522
+        width seq                                  names               
+    [1]   781 MATQADLMELDMAMEPD...LPPGDSNQLAWFDTDL sp|Q02248|CTNB1_M...
+    [2]  2531 MPRLLTPLLCLTLLPAL...PTTMPSQITHIPEAFK sp|Q01705|NOTC1_M...
+    [3]   437 MLLLLARCFLVILASSL...LDSETMHPLGMAVKSS sp|Q62226|SHH_MOU...
+    [4]   380 MKKPIGILSPGVALGTA...VKCKKCTEIVDQFVCK sp|P22725|WNT5A_M...
+    [5]   387 MEESQSDISLELPLSQE...SRHKKTMVKKVGPDSD sp|P02340|P53_MOU...
+    ...   ... ...
+[84518]   459 MLKIILPSLMLLPLTWL...LILLTTSPKLITGLTM tr|A0A0F6PZ84|A0A...
+[84519]   380 MTNMRKTHPLFKIINHS...LMPISGIIEDKMLKLY tr|U3TEV9|U3TEV9_...
+[84520]   381 MTNMRKTHPLFKIINHS...MPISGIIEDKMLKLYP tr|A0A0F6PXN8|A0A...
+[84521]   172 MNNYIFVLSSLFLVGCL...WSLFAGIFIIIEITRD tr|A0A0F6PXK9|A0A...
+[84522]   381 MTNMRKTHPLFKIINHS...MPISGIIEDKMLKLYP tr|A0A0F6PYR5|A0A...
+```
+
 
 ### CDS Retrieval
 
@@ -1559,16 +2414,15 @@ corresponding `.gff` or `gtf` annotation file to make sure that they both have t
 
 ## Repeat Masker Retrieval
 
-In addition to genome, proteome, CDS, etc. information NCBI RefSeq and NCBI Genbank store also 
-transposon annotations files generated with Repeat Masker. To retrieve and import
-these transposon annotations files, `biomartr` implements the `getRepeatMasker()`
-and `read_rm()` functions.
+[Repeat Masker](http://www.repeatmasker.org) is a tool for screening DNA sequences for interspersed repeats and low complexity DNA sequences.
+NCBI stores the `Repeat Masker` for sevel species in their databases and can be retrieved using `getRepeatMasker()` and imported
+via `read_rm()`.
 
 ### Example `NCBI RefSeq`:
 ```{r,eval=FALSE}
-# download repeat masker annotation file for A. thaliana
-AT.rm.refseq <- getRepeatMasker( db       = "refseq", 
-                                 organism = "Arabidopsis thaliana", 
+# download repeat masker annotation file for Homo sapiens
+Hsapiens_rm <- getRepeatMasker( db       = "refseq", 
+                                 organism = "Homo sapiens", 
                                  path = file.path("refseq","TEannotation"))
 ```
 
@@ -1576,17 +2430,172 @@ Now users can import the TE annotation file using `read_rm()`.
 
 ```{r,eval=FALSE}
 # import TE annotation file
-AT.rm.refseq.anno <- read_rm(AT.rm.refseq)
+Hsapiens_rm_import <- read_rm("refseq/TEannotation/Homo_sapiens_rm_refseq.out.gz")
 # look at data
-AT.rm.refseq.anno
+Hsapiens_rm_import
 ```
 
-For `NCBI Genbank`, `ENSEMBL`, and `ENSEMBLGENOMES` users can specify the `db` argument analogously as shown above.
 
 
 ## Genome Assembly Stats Retrieval
 
+By specifying the scientific name of an organism of interest the corresponding genome assembly stats file storing the assembly statistics of the organism of interest can be downloaded and stored locally. 
 
+### Example `NCBI RefSeq`:
+```{r,eval=FALSE}
+# download genome assembly stats file for Homo sapiens
+Hsapiens_stats <- getAssemblyStats( db       = "refseq", 
+                                 organism = "Homo sapiens", 
+                                 path = file.path("refseq","AssemblyStats"))
+```
+
+Now users can import the TE annotation file using `read_rm()`.
+
+```{r,eval=FALSE}
+# import TE annotation file
+Hsapiens_stats_import <- read_assemblystats(Hsapiens_stats)
+# look at data
+Hsapiens_stats_import
+```
+
+```
+ A tibble: 1,196 x 6
+   unit_name molecule_name molecule_type sequence_type statistic         value
+   <chr>     <chr>         <chr>         <chr>         <chr>             <int>
+ 1 all       all           all           all           total-length         NA
+ 2 all       all           all           all           spanned-gaps        661
+ 3 all       all           all           all           unspanned-gaps      349
+ 4 all       all           all           all           region-count        317
+ 5 all       all           all           all           scaffold-count      875
+ 6 all       all           all           all           scaffold-N50   59364414
+ 7 all       all           all           all           scaffold-L50         17
+ 8 all       all           all           all           scaffold-N75   31699399
+ 9 all       all           all           all           scaffold-N90    7557127
+10 all       all           all           all           contig-count       1536
+```
+
+### Example `NCBI Genbank`:
+```{r,eval=FALSE}
+# download genome assembly stats file for Homo sapiens
+Hsapiens_stats <- getAssemblyStats( db       = "genbank", 
+                                 organism = "Homo sapiens", 
+                                 path = file.path("genbank","AssemblyStats"))
+```
+
+Now users can import the TE annotation file using `read_rm()`.
+
+```{r,eval=FALSE}
+# import TE annotation file
+Hsapiens_stats_import <- read_assemblystats(Hsapiens_stats)
+# look at data
+Hsapiens_stats_import
+```
+
+
+```
+ A tibble: 1,196 x 6
+   unit_name molecule_name molecule_type sequence_type statistic         value
+   <chr>     <chr>         <chr>         <chr>         <chr>             <int>
+ 1 all       all           all           all           total-length         NA
+ 2 all       all           all           all           spanned-gaps        661
+ 3 all       all           all           all           unspanned-gaps      349
+ 4 all       all           all           all           region-count        317
+ 5 all       all           all           all           scaffold-count      875
+ 6 all       all           all           all           scaffold-N50   59364414
+ 7 all       all           all           all           scaffold-L50         17
+ 8 all       all           all           all           scaffold-N75   31699399
+ 9 all       all           all           all           scaffold-N90    7557127
+10 all       all           all           all           contig-count       1536
+```
+
+## Collection Retrieval
+
+The automated retrieval of collections (= Genome, Proteome, CDS, RNA, GFF, Repeat Masker, AssemblyStats)
+will make sure that the genome file of an organism will match the CDS, proteome, RNA, GFF, etc file
+and was generated using the same genome assembly version. One aspect of why genomics studies
+fail in computational and biological reproducibility is that it is not clear whether CDS, proteome, RNA, GFF, etc files
+used in a proposed analysis were generated using the same genome assembly file denoting the same genome assembly version.
+To avoid this seemingly trivial mistake we encourage users to retrieve
+genome file collections using the `biomartr` function `getCollection()`
+and attach the corresponding output as Supplementary Data
+to the respective genomics study to ensure computational and biological reproducibility.
+
+
+By specifying the scientific name of an organism of interest a collection consisting of the genome file, proteome file, CDS file, RNA file, GFF file, Repeat Masker file, AssemblyStats file of the organism of interest can be downloaded and stored locally.
+
+
+### Example `NCBI RefSeq`:
+
+
+```{r,eval=FALSE}
+# download collection for Saccharomyces cerevisiae
+getCollection( db = "refseq", 
+               organism = "Saccharomyces cerevisiae", 
+               path = file.path("refseq","Collections"))
+```
+
+Internally, the `getCollection()` function will now generate a folder named `refseq/Collection/Saccharomyces_erevisiae`
+and will store all genome and annotation files for `Saccharomyces cerevisiae` in the same folder.
+In addition, the exact genoem and annotation version will be logged in the `doc` folder.
+
+```
+Genome download is completed!
+Checking md5 hash of file: refseq/Collections/Saccharomyces_cerevisiae_md5checksums.txt ...
+The md5 hash of file 'refseq/Collections/Saccharomyces_cerevisiae_md5checksums.txt' matches!
+The genome of 'Saccharomyces_cerevisiae' has been downloaded to 'refseq/Collections' and has been named 'Saccharomyces_cerevisiae_genomic_refseq.fna.gz'.
+Starting proteome retrieval of 'Saccharomyces cerevisiae' from refseq ...
+
+
+Proteome download is completed!
+Checking md5 hash of file: refseq/Collections/Saccharomyces_cerevisiae_md5checksums.txt ...
+The md5 hash of file 'refseq/Collections/Saccharomyces_cerevisiae_md5checksums.txt' matches!
+The proteome of 'Saccharomyces_cerevisiae' has been downloaded to 'refseq/Collections' and has been named 'Saccharomyces_cerevisiae_protein_refseq.faa.gz' .
+Starting CDS retrieval of 'Saccharomyces cerevisiae' from refseq ...
+
+
+CDS download is completed!
+Checking md5 hash of file: refseq/Collections/Saccharomyces_cerevisiae_md5checksums.txt ...
+The md5 hash of file 'refseq/Collections/Saccharomyces_cerevisiae_md5checksums.txt' matches!
+The genomic CDS of 'Saccharomyces_cerevisiae' has been downloaded to 'refseq/Collections' and has been named 'Saccharomyces_cerevisiae_cds_from_genomic_refseq.fna.gz' .
+Starting GFF retrieval of 'Saccharomyces cerevisiae' from refseq ...
+
+
+GFF download is completed!
+Checking md5 hash of file: refseq/Collections/Saccharomyces_cerevisiae_md5checksums.txt ...
+The md5 hash of file 'refseq/Collections/Saccharomyces_cerevisiae_md5checksums.txt' matches!
+The *.gff annotation file of 'Saccharomyces_cerevisiae' has been downloaded to 'refseq/Collections' and has been named 'Saccharomyces_cerevisiae_genomic_refseq.gff.gz'.
+Starting RNA retrieval of 'Saccharomyces cerevisiae' from refseq ...
+
+
+RNA download is completed!
+Checking md5 hash of file: refseq/Collections/Saccharomyces_cerevisiae_md5checksums.txt ...
+The md5 hash of file 'refseq/Collections/Saccharomyces_cerevisiae_md5checksums.txt' matches!
+The genomic RNA of 'Saccharomyces_cerevisiae' has been downloaded to 'refseq/Collections' and has been named 'Saccharomyces_cerevisiae_rna_from_genomic_refseq.fna.gz' .
+Starting Repeat Masker retrieval of 'Saccharomyces cerevisiae' from refseq ...
+
+
+RepeatMasker download is completed!
+Checking md5 hash of file: refseq/Collections/Saccharomyces_cerevisiae_md5checksums.txt ...
+The md5 hash of file 'refseq/Collections/Saccharomyces_cerevisiae_md5checksums.txt' matches!
+The Repeat Masker output file of 'Saccharomyces_cerevisiae' has been downloaded to 'refseq/Collections' and has been named 'Saccharomyces_cerevisiae_rm_refseq.out.gz'.
+Starting assembly quality stats retrieval of 'Saccharomyces cerevisiae' from refseq ...
+
+
+Genome assembly quality stats file download completed!
+The assembly statistics file of 'Saccharomyces_cerevisiae' has been downloaded to 'refseq/Collections' and has been named 'Saccharomyces_cerevisiae_assembly_stats_refseq.txt'.
+Collection retrieval finished successfully!
+
+
+We retrieved the genome assembly and checked the annotation for 'Saccharomyces cerevisiae' (taxid: 559292, strain=S288C) from 'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/146/045/GCF_000146045.2_R64/GCF_000146045.2_R64_assembly_stats.txt' (accession: GCF_000146045.2, bioproject: PRJNA128, biosample: NA) using the biomartr R package (Drost and Paszkowski, 2017).
+```
+
+Users can now simply attach the output folder `` as supplementary data in their study
+and state in the materials sections:
+
+> We retrieved the genome assembly and checked the annotation for 'Saccharomyces cerevisiae' (taxid: 559292, strain=S288C) from 'ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/146/045/GCF_000146045.2_R64/GCF_000146045.2_R64_assembly_stats.txt' (accession: GCF_000146045.2, bioproject: PRJNA128, biosample: NA) using the biomartr R package (Drost and Paszkowski, 2017).
+
+This way, computational and biological reproducibility can be standardized and indeed will become trivial
+in the context of genome version and annotation version.
 
 
 

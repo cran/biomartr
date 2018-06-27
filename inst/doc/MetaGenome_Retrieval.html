@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-01-02" />
+<meta name="date" content="2018-06-27" />
 
 <title>Meta-Genome Retrieval</title>
 
@@ -68,7 +68,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Meta-Genome Retrieval</h1>
-<h4 class="date"><em>2018-01-02</em></h4>
+<h4 class="date"><em>2018-06-27</em></h4>
 
 
 
@@ -127,12 +127,13 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="perform-meta-genome-retrieval" class="section level2">
 <h2>Perform Meta-Genome Retrieval</h2>
 <p>The number of genome assemblies generated and stored in sequence databases is growing exponentially every year. With the availability of this growing amount of genomic data, meta-genomics studies become more and more popular. By using this bulk of genomes for comparing them to thousands of other genomes new structural patterns and evolutionary insights can be obtained. However, the first step in any meta-genomics study is the retrieval of the genomes, proteomes, coding sequences or annotation files that shall be compared and investigated. For this purpose, the <code>meta.retrieval()</code> and <code>meta.retrieval.all()</code> functions allows users to perform straightforward meta-genome retrieval of hundreds of genomes, proteomes, CDS, etc in R.</p>
+<p>The <code>meta.retrieval()</code> function generates an <code>*.csv</code> overview file in the <code>doc</code> folder which stores genome version, date, origin, etc information for all downloaded organisms and can be directly used as Supplementary Data file in publications to increase computational and biological reproducibility in genomics studies.</p>
 <div id="getting-started" class="section level4">
 <h4>Getting Started</h4>
 <p>The <code>meta.retrieval()</code> and <code>meta.retrieval.all()</code> functions aim to simplify the genome retrieval process for subsequent meta-genomics studies. Both functions allow to either download genomes, proteomes, CDS, etc for species within a specific kinngdom or subgroup of life (<code>meta.retrieval()</code>) or of all species of all kingdoms. Usually this step is performed with <code>shell</code> scripts. However, since many meta-genomics packages exist for the R programming language, I implemented this functionality for easy integration into existing workflows.</p>
 <p>For example, the pipeline logic of the <a href="https://github.com/smbache/magrittr">magrittr</a> package can be used with <code>meta.retrieval()</code> and <code>meta.retrieval.all()</code> as follows.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># download all vertebrate genomes, then apply ...</span>
-<span class="kw">meta.retrieval</span>(<span class="dt">kingdom =</span> <span class="st">&quot;vertebrate_mammalian&quot;</span>, <span class="dt">db =</span> <span class="st">&quot;refseq&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;genome&quot;</span>) %&gt;%<span class="st"> </span>...</code></pre></div>
+<span class="kw">meta.retrieval</span>(<span class="dt">kingdom =</span> <span class="st">&quot;vertebrate_mammalian&quot;</span>, <span class="dt">db =</span> <span class="st">&quot;refseq&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;genome&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>...</code></pre></div>
 <p>Here <code>...</code> denotes any subsequent meta-genomics analysis. Hence, <code>meta.retrieval()</code> enables the pipelining methodology for meta-genomics.</p>
 </div>
 <div id="retrieve-genomic-sequences" class="section level3">

@@ -1,15 +1,24 @@
 #' @title Check Genome Availability
 #' @description This function checks the availability of a given genome on the 
 #' NBCI servers specified as scientific name.
-#' @param organism a character string specifying the scientific name of the 
-#' organism of interest, e.g. \code{organism = "Homo sapiens"}.
+#' @param db a character string specifying the database from which the genome 
+#' shall be retrieved:
+#' \itemize{
+#' \item \code{db = "refseq"}
+#' \item \code{db = "genbank"}
+#' \item \code{db = "ensembl"}
+#' \item \code{db = "ensemblgenomes"}
+#' \item \code{db = "uniprot"}
+#' }
+#' @param organism there are three options to characterize an organism: 
+#' \itemize{
+#' \item by \code{scientific name}: e.g. \code{organism = "Homo sapiens"}
+#' \item by \code{database specific accession identifier}: e.g. \code{organism = "GCF_000001405.37"} (= NCBI RefSeq identifier for \code{Homo sapiens})
+#' \item by \code{taxonomic identifier from NCBI Taxonomy}: e.g. \code{organism = "9606"} (= taxid of \code{Homo sapiens})
+#' }
 #' @param details a logical value specifying whether or not details on genome 
 #' size, kingdom, etc. shall be printed to the console intead of a 
 #' boolean value.
-#' @param db a character string specifying the database for which genome 
-#' availability shall be checked,
-#' e.g. \code{db = "refseq"},\code{db = "genbank"}, \code{db = "ensembl"}, 
-#' \code{db = "ensemblgenomes"}, or \code{db =  "all"}.
 #' @details
 #' Internally this function calls the \code{\link{listGenomes}} function to 
 #' detect all available genomes and checks whether or not the specified organism
@@ -36,19 +45,20 @@
 #' @export
 
 is.genome.available <-
-    function(organism,
-             details = FALSE,
-             db = "refseq") {
+    function(
+             db = "refseq",
+             organism,
+             details = FALSE
+             ) {
         if (!is.element(db, c("refseq", "genbank", 
-                              "ensembl", "ensemblgenomes")))
+                              "ensembl", "ensemblgenomes","uniprot")))
             stop(
                 "Please select one of the available data bases: 
-                'refseq', 'genbank', or 'ensembl'",
+                'refseq', 'genbank', 'ensembl', 'ensemblgenomes', or 'uniprot'",
                 call. = FALSE
             )
         
         if (is.element(db, c("refseq", "genbank"))) {
-            aliases <- groups <- NULL
             # if AssemblyFilesAllKingdoms.txt file was already 
             # generated/downloaded then use the local version
             # stored in temp()
@@ -136,7 +146,7 @@ is.genome.available <-
                                  ))
             }
             
-            organism_name <- NULL
+            organism_name <- assembly_accession <- taxid <- NULL
             
             orgs <-
                 stringr::str_replace_all(AssemblyFilesAllKingdoms$organism_name,
@@ -151,114 +161,121 @@ is.genome.available <-
             organism <-
                 stringr::str_replace_all(organism, "\\)", "")
             
-            FoundOrganism <-
-                dplyr::filter(AssemblyFilesAllKingdoms,
-                              stringr::str_detect(organism_name, organism))
+            # test if organism specification could be a taxid
+            if (!is.taxid(organism)) {
+                FoundOrganism <-
+                    dplyr::filter(AssemblyFilesAllKingdoms,
+                                  stringr::str_detect(organism_name, organism) |
+                                      assembly_accession == organism)
+                
+            } else {
+                FoundOrganism <-
+                    dplyr::filter(AssemblyFilesAllKingdoms,
+                                  taxid == as.integer(organism))
+            }
             
             if (nrow(FoundOrganism) == 0) {
+                message(
+                    "Unfortunatey, no entry for '",
+                    organism,
+                    "' was found in the '",
+                    db,
+                    "' database. ",
+                    "Please consider specifying ",
+                    paste0("'db = ", dplyr::setdiff(
+                        c("refseq", "genbank", "ensembl", "ensemblgenomes", "uniprot"), db
+                    ), collapse = "' or "),
+                    "' to check whether '",organism,"' is available in these databases."
+                )
                 return(FALSE)
             }
             
             if (nrow(FoundOrganism) > 0) {
-                if (!details)
+                if (!details) {
+                    
+                    if (all(FoundOrganism$refseq_category == "na")) {
+                        message("Only a non-reference genome assembly is available for '", organism, "'.",
+                                " Please make sure to specify the argument 'reference = FALSE' when running any get*() function.")
+                    } else {
+                        message("A reference or representative genome assembly is available for '", organism, "'.")
+                    }
+                    
+                    if (nrow(FoundOrganism) > 1) {
+                        message("More than one entry was found for '", organism, "'.",
+                                " Please consider to run the function 'is.genome.available()' and specify 'is.genome.available(organism = ",
+                                organism, ", db = ",db, ", details = TRUE)'.",
+                                " This will allow you to select the 'assembly_accession' identifier that can then be ",
+                                "specified in all get*() functions.")
+                    }
                     return(TRUE)
+                }
+                    
                 
-                if (details)
+                if (details) {
+                    if (all(FoundOrganism$refseq_category == "na")) {
+                        message("Only a non-reference genome assembly is available for '", organism, "'.",
+                                " Please make sure to specify the argument 'reference = FALSE' when running any get*() function.")
+                    }
                     return(FoundOrganism)
+                }
             }
         }
         
         if (db == "ensembl") {
+            name <- accession <- accession <- assembly <- taxon_id <- NULL
+            
             new.organism <- stringr::str_replace_all(organism, " ", "_")
             
-            if (file.exists(file.path(tempdir(), "ensembl_summary.txt"))) {
-                suppressWarnings(
-                    ensembl.available.organisms <-
-                        readr::read_tsv(
-                            file.path(tempdir(), "ensembl_summary.txt"),
-                            col_names = c(
-                                "division",
-                                "taxon_id",
-                                "name",
-                                "release",
-                                "display_name",
-                                "accession",
-                                "common_name",
-                                "assembly"
-                            ),
-                            col_types = readr::cols(
-                                division = readr::col_character(),
-                                taxon_id = readr::col_integer(),
-                                name = readr::col_character(),
-                                release = readr::col_integer(),
-                                display_name = readr::col_character(),
-                                accession = readr::col_character(),
-                                common_name = readr::col_character(),
-                                assembly = readr::col_character()
-                            ),
-                            comment = "#"
-                        )
-                )
-            }
-            
-            if (!file.exists(file.path(tempdir(), "ensembl_summary.txt"))) {
-                # check if organism is available on ENSEMBL
-                tryCatch({
-                    ensembl.available.organisms <-
-                        jsonlite::fromJSON(
-            "http://rest.ensembl.org/info/species?content-type=application/json"
-                        )
-                }, error = function(e)
-                    stop(
-                        "The API 'http://rest.ensembl.org' does not seem to work ",
-                        "properly. Are you connected to the internet? Is the ",
-                       "homepage 'http://rest.ensembl.org' currently available?",
-                        call. = FALSE
-                    ))
-                
-                # transform list object returned by 'fromJSON' to tibble
-                ensembl.available.organisms <-
-                    tibble::as_tibble(
-                        dplyr::select(
-                            ensembl.available.organisms$species,
-                            -aliases,
-                            -groups
-                        )
+            ensembl.available.organisms <- get.ensembl.info()
+            ensembl.available.organisms <- dplyr::filter(ensembl.available.organisms, !is.na(assembly))
+
+            if (!is.taxid(organism)) {
+                selected.organism <-
+                    dplyr::filter(
+                        ensembl.available.organisms,
+                        stringr::str_detect(name, 
+                                            stringr::str_to_lower(new.organism)) |
+                            accession == organism, !is.na(assembly)
                     )
+            } else {
+                selected.organism <-
+                    dplyr::filter(
+                        ensembl.available.organisms, taxon_id == as.integer(organism), !is.na(assembly))
                 
-                readr::write_tsv(
-                    ensembl.available.organisms,
-                    file.path(tempdir(), "ensembl_summary.txt")
-                )
             }
             
-            if (!any(unlist(
-                lapply(ensembl.available.organisms$name, function(x)
-                    stringr::str_detect(x, stringr::str_to_lower(new.organism)))
-            )))
-                stop(
-                    "Unfortunately organism '",
-                    organism,
-                    "' is not available at ENSEMBL. Please check whether or not ",
-                    "the organism name is typed correctly or try to use ",
-                    "db = 'ensemblgenomes'.",
-                    call. = FALSE
-                )
-            
-            name <- NULL
-            selected.organism <-
-                dplyr::filter(
-                    ensembl.available.organisms,
-                    stringr::str_detect(name, 
-                                        stringr::str_to_lower(new.organism))
-                )
             
             if (!details) {
-                if (nrow(selected.organism) > 0)
-                    return(TRUE)
                 
-                if (nrow(selected.organism) == 0)
+                if (nrow(selected.organism) == 0) {
+                    message(
+                        "Unfortunatey, no entry for '",
+                        organism,
+                        "' was found in the '",
+                        db,
+                        "' database. ",
+                        "Please consider specifying ",
+                        paste0("'db = ", dplyr::setdiff(
+                            c("refseq", "genbank", "ensembl", "ensemblgenomes", "uniprot"), db
+                        ), collapse = "' or "),
+                        "' to check whether '",organism,"' is available in these databases."
+                    )
                     return(FALSE)
+                }
+                    
+                
+                if (nrow(selected.organism) > 0) {
+                    message("A reference or representative genome assembly is available for '", organism, "'.")
+                    if (nrow(selected.organism) > 1) {
+                        message("More than one entry was found for '", organism, "'.",
+                                " Please consider to run the function 'is.genome.available()' and specify 'is.genome.available(organism = ",
+                                organism, ", db = ",db, ", details = TRUE)'.",
+                                " This will allow you to select the 'assembly_accession' identifier that can then be ",
+                                "specified in all get*() functions.")
+                    }
+                    return(TRUE)
+                }
+                    
             }
             
             if (details)
@@ -268,98 +285,180 @@ is.genome.available <-
         if (db == "ensemblgenomes") {
             new.organism <- stringr::str_replace_all(organism, " ", "_")
             
-            if (file.exists(file.path(tempdir(), 
-                                      "ensemblgenomes_summary.txt"))) {
-                suppressWarnings(
-                    ensembl.available.organisms <-
-                        readr::read_tsv(
-                            file.path(tempdir(), "ensemblgenomes_summary.txt"),
-                            col_names = c(
-                                "division",
-                                "taxon_id",
-                                "name",
-                                "release",
-                                "display_name",
-                                "accession",
-                                "common_name",
-                                "assembly"
-                            ),
-                            col_types = readr::cols(
-                                division = readr::col_character(),
-                                taxon_id = readr::col_integer(),
-                                name = readr::col_character(),
-                                release = readr::col_integer(),
-                                display_name = readr::col_character(),
-                                accession = readr::col_character(),
-                                common_name = readr::col_character(),
-                                assembly = readr::col_character()
-                            ),
-                            comment = "#"
-                        )
-                )
-            }
+            name <- accession <- assembly <- taxon_id <- NULL
             
-            if (!file.exists(file.path(tempdir(), 
-                                       "ensemblgenomes_summary.txt"))) {
-                # check if organism is available on ENSEMBL
-                tryCatch({
-                    ensembl.available.organisms <-
-                        jsonlite::fromJSON(
-     "http://rest.ensemblgenomes.org/info/species?content-type=application/json"
-                        )
-                }, error = function(e)
-                    stop(
-                        "The API 'http://rest.ensemblgenomes.org' does not seem ",
-                        "to work properly. Are you connected to the internet? ",
-                        "Is the homepage 'http://rest.ensemblgenomes.org' ",
-                        "currently available?", call. = FALSE
-                    ))
-                
-                # transform list object returned by 'fromJSON' to tibble
-                ensembl.available.organisms <-
-                    tibble::as_tibble(
-                        dplyr::select(
-                            ensembl.available.organisms$species,
-                            -aliases,
-                            -groups
-                        )
+            ensembl.available.organisms <- get.ensemblgenome.info()
+            ensembl.available.organisms <- dplyr::filter(ensembl.available.organisms, !is.na(assembly))
+            
+            if (!is.taxid(organism)) {
+                selected.organism <-
+                    dplyr::filter(
+                        ensembl.available.organisms,
+                        stringr::str_detect(name, 
+                                            stringr::str_to_lower(new.organism)) |
+                            accession == organism, !is.na(assembly)
                     )
+            } else {
+                selected.organism <-
+                    dplyr::filter(
+                        ensembl.available.organisms, taxon_id == as.integer(organism), !is.na(assembly))
                 
-                readr::write_tsv(
-                    ensembl.available.organisms,
-                    file.path(tempdir(), "ensemblgenomes_summary.txt")
-                )
             }
-            
-            if (!any(unlist(
-                lapply(ensembl.available.organisms$name, function(x)
-                    stringr::str_detect(x, stringr::str_to_lower(new.organism)))
-            )))
-                stop(
-                    "Unfortunately organism '",
-                    organism,
-                    "' is not available at ENSEMBLGENOMES. Please check whether ",
-                    "or not the organism name is typed correctly.",
-                    call. = FALSE
-                )
-            
-            name <- NULL
-            selected.organism <-
-                dplyr::filter(
-                    ensembl.available.organisms,
-                    stringr::str_detect(name, 
-                                        stringr::str_to_lower(new.organism))
-                )
             
             if (!details) {
-                if (nrow(selected.organism) > 0)
-                    return(TRUE)
                 
-                if (nrow(selected.organism) == 0)
+                if (nrow(selected.organism) == 0) {
+                    message(
+                        "Unfortunatey, no entry for '",
+                        organism,
+                        "' was found in the '",
+                        db,
+                        "' database. ",
+                        "Please consider specifying ",
+                        paste0("'db = ", dplyr::setdiff(
+                            c("refseq", "genbank", "ensembl", "ensemblgenomes", "uniprot"), db
+                        ), collapse = "' or "),
+                        "' to check whether '",organism,"' is available in these databases."
+                    )
                     return(FALSE)
+                }
+
+                if (nrow(selected.organism) > 0) {
+                    message("A reference or representative genome assembly is available for '", organism, "'.")
+                    if (nrow(selected.organism) > 1) {
+                        message("More than one entry was found for '", organism, "'.",
+                                " Please consider to run the function 'is.genome.available()' and specify 'is.genome.available(organism = ",
+                                organism, ", db = ",db, ", details = TRUE)'.",
+                                " This will allow you to select the 'assembly_accession' identifier that can then be ",
+                                "specified in all get*() functions.")
+                    }
+                    return(TRUE)
+                }
+                
             }
             
             if (details)
                 return(selected.organism)
         }
+        
+        if (db == "uniprot") {
+        
+            if (is.taxid(organism)) {
+                unipreot_rest_url <- paste0(
+                    "https://www.ebi.ac.uk/proteins/api/proteomes?offset=0&size=-1&taxid=",
+                    as.integer(organism)
+                )
+                
+                rest_status_test <- curl_fetch_memory(unipreot_rest_url)
+                
+                if (rest_status_test$status_code != 200) {
+                    stop(
+                        "The API 'https://www.ebi.ac.uk/proteins/api/proteomes'",
+                        " does not seem to work properly. Are you connected to the ", " internet? Is the homepage 'https://www.ebi.ac.uk/' currently available?",
+                        call. = FALSE
+                    )
+                }
+                uniprot_species_info <-
+                    tibble::as_tibble(jsonlite::fromJSON(
+                        unipreot_rest_url 
+                    ))
+                
+            } else {
+                
+                organism_new <- stringr::str_replace_all(organism, " ", "%20")
+                
+                unipreot_rest_url_name <- paste0(
+                    "https://www.ebi.ac.uk/proteins/api/proteomes?offset=0&size=-1&name=",
+                    organism_new
+                )
+                
+                rest_status_test_name <- curl_fetch_memory(unipreot_rest_url_name)
+                
+                
+                unipreot_rest_url_upid <- paste0(
+                    "https://www.ebi.ac.uk/proteins/api/proteomes?offset=0&size=-1&upid=",
+                    organism
+                )
+                
+                rest_status_test_upid <- curl_fetch_memory(unipreot_rest_url_upid)
+                
+                if ((rest_status_test_upid$status_code != 200) & (rest_status_test_name$status_code != 200)) {
+                    stop(
+                        "The API 'https://www.ebi.ac.uk/proteins/api/proteomes'",
+                        " does not seem to work properly. Are you connected to the ", " internet? Is the homepage 'https://www.ebi.ac.uk/' currently available?",
+                        call. = FALSE
+                    )
+                }
+                
+                if (rest_status_test_name$status_code == 200) {
+                    uniprot_species_info <-
+                        tibble::as_tibble(jsonlite::fromJSON(
+                            unipreot_rest_url_name 
+                        ))
+                }
+                
+                if (rest_status_test_upid$status_code == 200) {
+                    uniprot_species_info <-
+                        tibble::as_tibble(jsonlite::fromJSON(
+                            unipreot_rest_url_upid 
+                        ))
+                }
+            }
+
+         
+            if (!details) {
+                if (nrow(uniprot_species_info) == 0) {
+                    message(
+                        "Unfortunatey, no entry for '",
+                        organism,
+                        "' was found in the '",
+                        db,
+                        "' database. ",
+                        "Please consider specifying ",
+                        paste0("'db = ", dplyr::setdiff(
+                            c(
+                                "refseq",
+                                "genbank",
+                                "ensembl",
+                                "ensemblgenomes",
+                                "uniprot"
+                            ),
+                            db
+                        ), collapse = "' or "),
+                        "' to check whether '",
+                        organism,
+                        "' is available in these databases."
+                    )
+                    return(FALSE)
+                }
+                
+                if (nrow(uniprot_species_info) > 0) {
+                    message(
+                        "A reference or representative genome assembly is available for '",
+                        organism,
+                        "'."
+                    )
+                    if (nrow(uniprot_species_info) > 1) {
+                        message(
+                            "More than one entry was found for '",
+                            organism,
+                            "'.",
+                            " Please consider to run the function 'is.genome.available()' and specify 'is.genome.available(organism = ",
+                            organism,
+                            ", db = ",
+                            db,
+                            ", details = TRUE)'.",
+                            " This will allow you to select the 'assembly_accession' identifier that can then be ",
+                            "specified in all get*() functions."
+                        )
+                    }
+                    return(TRUE)
+                }
+                
+            }
+        }
+        
+        if (details)
+            return(uniprot_species_info)
+        
     }

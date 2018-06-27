@@ -78,7 +78,7 @@ getRepeatMasker <-
                 getKingdomAssemblySummary(db = db)
             
             # test wheter or not genome is available
-            is.genome.available(organism = organism, db = db)
+            suppressMessages(is.genome.available(organism = organism, db = db))
             
             if (!file.exists(path)) {
                 dir.create(path, recursive = TRUE)
@@ -92,23 +92,47 @@ getRepeatMasker <-
             organism <-
                 stringr::str_replace_all(organism, "\\)", "")
             
+            assembly_accession <- taxid <- NULL
+            
             if (reference) {
+                if (!is.taxid(organism)) {
                     FoundOrganism <-
-                            dplyr::filter(
-                                    AssemblyFilesAllKingdoms,
-                                    stringr::str_detect(organism_name, organism),
-                                    ((refseq_category == "representative genome") |
-                                             (refseq_category == "reference genome")
-                                    ),
-                                    (version_status == "latest")
-                            ) 
+                        dplyr::filter(
+                            AssemblyFilesAllKingdoms,
+                            stringr::str_detect(organism_name, organism) | 
+                                stringr::str_detect(assembly_accession, organism),
+                            ((refseq_category == "representative genome") |
+                                 (refseq_category == "reference genome")
+                            ),
+                            (version_status == "latest")
+                        ) 
+                } else {
+                    FoundOrganism <-
+                        dplyr::filter(
+                            AssemblyFilesAllKingdoms,
+                            taxid == as.integer(organism),
+                            ((refseq_category == "representative genome") |
+                                 (refseq_category == "reference genome")
+                            ),
+                            (version_status == "latest"))
+                }
             } else {
+                if (!is.taxid(organism)) {
                     FoundOrganism <-
-                            dplyr::filter(
-                                    AssemblyFilesAllKingdoms,
-                                    stringr::str_detect(organism_name, organism),
-                                    (version_status == "latest")
-                            ) 
+                        dplyr::filter(
+                            AssemblyFilesAllKingdoms,
+                            stringr::str_detect(organism_name, organism) |
+                                stringr::str_detect(assembly_accession, organism),
+                            (version_status == "latest")
+                        ) 
+                } else {
+                    FoundOrganism <-
+                        dplyr::filter(
+                            AssemblyFilesAllKingdoms,
+                            taxid == as.integer(organism),
+                            (version_status == "latest")
+                        ) 
+                }
             }
             
             if (nrow(FoundOrganism) == 0) {
@@ -143,15 +167,15 @@ getRepeatMasker <-
                                "_rm.out.gz"
                            ))
                 
-                if (!exists.ftp.file(url = paste0(FoundOrganism$ftp_path, "/"),
-                                     file.path = download_url)) {
-                    message(
-                        "Unfortunately no genome file could be found for organism '",
-                        organism,
-                        "'. Thus, the download of this organism has been omitted."
-                    )
-                    return(FALSE)
-                }
+                # if (!exists.ftp.file(url = paste0(FoundOrganism$ftp_path, "/"),
+                #                      file.path = download_url)) {
+                #     message(
+                #         "Unfortunately no genome file could be found for organism '",
+                #         organism,
+                #         "'. Thus, the download of this organism has been omitted."
+                #     )
+                #     return(FALSE)
+                # }
                 
                 # download_url <- paste0(query$ftp_path,query$`
                 # assembly_accession`,"_",query$asm_name,"_genomic.fna.gz")
@@ -261,6 +285,29 @@ getRepeatMasker <-
                         seq_rel_date = FoundOrganism$seq_rel_date,
                         submitter = FoundOrganism$submitter
                     )
+                    
+                    doc <- tibble::tibble(
+                        file_name = paste0(ifelse(is.taxid(organism), paste0("taxid_", local.org), local.org), "_genomic_", db,
+                                           ".fna.gz"),
+                        organism  = organism,
+                        url       = download_url,
+                        database  = db,
+                        path      = path,
+                        refseq_category = FoundOrganism$refseq_category,
+                        assembly_accession = FoundOrganism$assembly_accession,
+                        bioproject = FoundOrganism$bioproject,
+                        biosample = FoundOrganism$biosample,
+                        taxid = FoundOrganism$taxid,
+                        infraspecific_name = FoundOrganism$infraspecific_name,
+                        version_status = FoundOrganism$version_status,
+                        release_type = FoundOrganism$release_type,
+                        genome_rep = FoundOrganism$genome_rep,
+                        seq_rel_date = FoundOrganism$seq_rel_date,
+                        submitter = FoundOrganism$submitter
+                        
+                    )
+                    
+                    readr::write_tsv(doc, path = file.path(path,paste0("doc_",local.org,"_db_",db,".tsv")))
                     
                     message(
                         paste0(

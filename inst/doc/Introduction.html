@@ -4,14 +4,14 @@
 
 <head>
 
-<meta charset="utf-8" />
+<meta charset="utf-8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-01-02" />
+<meta name="date" content="2016-10-28" />
 
 <title>Introduction to biomartr</title>
 
@@ -30,21 +30,20 @@
 
 
 <h1 class="title toc-ignore">Introduction to biomartr</h1>
-<h4 class="date"><em>2018-01-02</em></h4>
+<h4 class="date"><em>2016-10-28</em></h4>
 
 
 
 <div id="getting-started" class="section level2">
 <h2>Getting Started</h2>
-<p>A major problem in bioinformatics research is consistent data retrieval. The <code>biomartr</code> package aims to fill this gap by providing users with easy to use and diverse interfaces to well curated genomic databases such as:</p>
+<p>A major problem in bioinformatics research is consistent data retrieval. The <code>biomartr</code> package therefore, aims to provide users with easy to use and diverse interfaces to well curated biological databases such as:</p>
 <ul>
-<li><a href="http://www.ncbi.nlm.nih.gov/">NCBI</a></li>
-<li><a href="http://www.ensembl.org/index.html">ENSEMBL</a></li>
-<li><a href="http://ensemblgenomes.org/">ENSEMBLGENOMES</a></li>
-<li><a href="http://ensemblgenomes.org/info/access/biomart">Ensembl Biomart</a></li>
+<li><a href="http://www.ncbi.nlm.nih.gov/refseq/about/">NCBI refseq</a></li>
+<li><a href="http://www.biomart.org/">BioMart</a></li>
 <li><a href="http://geneontology.org/">Gene Ontology</a></li>
 </ul>
-<p>The collection of functions implemented in <code>biomartr</code> enable fast functional annotation queries for a set of genes, entire genomes or meta-genome projects such as biological pathway analyses and genomic sequence retrieval. Although, the name of this package <code>biomartr</code> is inspired by the Ensembl Biomart database it extends its functionality and service by providing additional interface functions to the most prominent databases for genome, proteime, CDS, GFF, etc. retrieval.</p>
+<p>The collection of functions implemented in <code>biomartr</code> enable fast functional annotation queries for a set of genes or entire genomes such as biological pathway analyses and biological sequence retrieval.</p>
+<p>Users of the <a href="https://github.com/HajkD/myTAI">myTAI</a> and <a href="https://github.com/HajkD/orthologr">orthologr</a> packages will find additional functions allowing them to integrate <code>biomartr</code> to any workflow implemented using <code>myTAI</code> or <code>orthologr</code>. The <code>biomartr</code> package is designed to achieve the highest degree of reproducible research from data retrieval to data visualization.</p>
 </div>
 <div id="workflow-design" class="section level2">
 <h2>Workflow Design</h2>
@@ -52,19 +51,25 @@
 <ul>
 <li><strong>Biological Sequence Retrieval</strong></li>
 <li><strong>Functional Annotation Retrieval</strong></li>
+<li><strong>Enrichment Analyses</strong></li>
 </ul>
 <p>Hence, all functions implemented in <code>biomartr</code> serve to fulfill the above listed tasks.</p>
 </div>
 <div id="biological-sequence-retrieval" class="section level2">
 <h2>Biological Sequence Retrieval</h2>
 <p>In the post-genomic era, biological sequences are used to investigate most phenomena of molecular biology. The growing number of databases and their entries allows us to design meta-studies in a new dimension and to re-investigate known phenomena from a new perspective. Neverthless, from a data science point of view this vast amount of heterogenous data, coming from very different data resources and data standards is very hard to transform from heterogenous to homogenous data. The detection of significant patterns within meta-analyses, therefore relies on high quality data analysis and data science.</p>
-<p>Another aspect is reproducibility. Even in cases where a high degree of data homogeneity is achieved, the aspect of scientific reproducibility adds up to a new layer of complexity. Much effort is now being invested to enable high standards of reproducibility in data driven sciences (e.g. <a href="http://ropensci.org">ROpenSci</a>). The <code>biomartr</code> package aims to be a part of this data science movement. It’s functions implement interfaces (Application Programming Interfaces, short <em>APIs</em>) to major databases such as <a href="http://www.ncbi.nlm.nih.gov">NCBI</a>, <a href="http://www.ensembl.org/index.html">ENSEMBL</a>, and <a href="http://ensemblgenomes.org/">ENSEMBLGENOMES</a> allowing users to access curated data from major genome data sources.</p>
-<p>The <a href="https://github.com/HajkD/biomartr/blob/master/vignettes/Sequence_Retrieval.Rmd">Sequence Retrieval</a> and <a href="https://github.com/HajkD/biomartr/blob/master/vignettes/MetaGenome_Retrieval.Rmd">Metagenome Retrieval</a> vignettes will introduce users to the process of genomic sequence retrieval using <code>biomartr</code>. All functions were designed to allow users to achieve the highest (yet possible) degree of reproducibility and transparency for their own analyses.</p>
+<p>Another aspect is reproducibility. Even in cases where a high degree of data homogeneity is achieved, the aspect of scientific reproducibility adds up to a new layer of complexity. Much effort is now being invested to enable high standards of reproducibility in data driven sciences (e.g. <a href="http://ropensci.org">ROpenSci</a>). The <code>biomartr</code> package aims to be a part of this data science movement. It’s functions implement interfaces (Application Programming Interfaces, short <em>APIs</em>) to major databases such as <a href="http://www.ncbi.nlm.nih.gov">NCBI</a> allowing users to access curated data from a single data source.</p>
+<p>The <a href="https://github.com/HajkD/biomartr/blob/master/vignettes/Sequence_Retrieval.Rmd">Sequence Retrieval</a> vignette will introduce users to the process of biological sequence retrieval using <code>biomartr</code>. All functions were designed to allow users to achieve the highest (yet possible) degree of reproducibility and transparency for their own analyses.</p>
 </div>
 <div id="functional-annotation-retrieval" class="section level2">
 <h2>Functional Annotation Retrieval</h2>
 <p>Most phenomena in molecular biology are based on the interaction of genes and their products (proteins). So in case patterns can be found by investigating biological sequences, in most cases it is of interest to map this pattern to a biological function. The <a href="http://geneontology.org/">Gene Ontology</a> and <a href="http://www.genome.jp/kegg/kegg1a.html">Kegg</a> consortia provide extensive information on gene functions and pathway memberships.</p>
 <p>The <code>biomartr</code> packages provides powerful interfaces to functional annotation for specific genes. Here, users can consult the <a href="https://github.com/HajkD/biomartr/blob/master/vignettes/Functional_Annotation.Rmd">Functional Annotation</a> vignette which introduces them to the process of functional information retrieval.</p>
+</div>
+<div id="enrichment-analyses" class="section level2">
+<h2>Enrichment Analyses</h2>
+<p>Successfully mapping patterns to functions is the first analytical step in biological research. The next step is to statistically quantify the significance of the observed pattern. Enrichment Analyses statistically quantify the significance of gene functions that correspond to an observed pattern.</p>
+<p>The <code>biomartr</code> package provides useful interfaces to gene enrichment analyses to enable the statistical validation of oberved patterns.</p>
 </div>
 
 
@@ -74,7 +79,7 @@
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

@@ -4,8 +4,10 @@
 #' This files stores all available metagenome projects on NCBI Genbank.
 #' @author Hajk-Georg Drost
 #' @examples
+#' \dontrun{
 #' meta.summary <- getMetaGenomeSummary()
 #' meta.summary
+#' }
 #' @seealso \code{\link{getKingdomAssemblySummary}}, 
 #' \code{\link{getSummaryFile}}
 #' @export
@@ -32,7 +34,6 @@ getMetaGenomeSummary <- function() {
                 " Please try to re-run this function and see if it works then ...",
                 call. = FALSE
             ))
-        Sys.sleep(0.33)
     }
     
     suppressWarnings(summary.file <-
