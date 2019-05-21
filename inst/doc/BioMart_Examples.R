@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 #  library(readxl)
 #  
 #  # read expression data (organ specific genes) from Sestak and Domazet-Loso, 2015
-#  Drerio.OrganSpecificExpression <- read_excel("MBE_2015a_Drerio_PhyloMap.xlsx", sheet = 2, skip = 3)
+#  Drerio.OrganSpecificExpression <- read_excel("TableS3-2.xlsx", sheet = 2, skip = 3)
 #  
 #  # select only brain specific genes
 #  Drerio.Brain.Genes <- unlist(unique(na.omit(Drerio.OrganSpecificExpression[ , "brain"])))

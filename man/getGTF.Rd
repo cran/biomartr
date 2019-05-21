@@ -4,14 +4,14 @@
 \alias{getGTF}
 \title{Genome Annotation Retrieval (GTF)}
 \usage{
-getGTF(db = "ensembl", organism, path = file.path("ensembl", "annotation"))
+getGTF(db = "ensembl", organism, path = file.path("ensembl",
+  "annotation"))
 }
 \arguments{
 \item{db}{a character string specifying the database from which the genome 
 shall be retrieved:
 \itemize{
 \item \code{db = "ensembl"}
-\item \code{db = "ensemblgenomes"}
 }}
 
 \item{organism}{a character string specifying the scientific name of the 
@@ -32,12 +32,7 @@ of interest can be downloaded and stored locally. GTF files can be retrieved
 from several databases.
 }
 \details{
-Internally this function loads the the overview.txt file from NCBI:
-
- refseq: ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/
-
- genbank: ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/
- 
+Internally this function loads the the overview.txt file from ENSEMBL:
 and creates a directory 'ensembl/annotation' to store
 the genome of interest as fasta file for future processing.
 In case the corresponding fasta file already exists within the
@@ -57,7 +52,8 @@ getGTF( db       = "ensembl",
 }
 \seealso{
 \code{\link{getProteome}}, \code{\link{getCDS}}, 
-\code{\link{getGenome}}, \code{\link{getRNA}}, \code{\link{meta.retrieval}},
+\code{\link{getGenome}}, \code{\link{getRNA}}, \code{\link{getRepeatMasker}}, 
+\code{\link{getAssemblyStats}}, \code{\link{meta.retrieval}},
 \code{\link{getGFF}}
 }
 \author{

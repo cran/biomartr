@@ -1,4 +1,52 @@
-biomartr 0.8.0
+[biomartr 0.9.0](https://github.com/ropensci/biomartr/releases/tag/v0.9.0)
+===========
+
+__Please be aware that as of April 2019, ENSEMBLGENOMES
+was retired ([see details here](http://www.ensembl.info/2019/03/08/joint-rest-server-for-ensembl-and-ensembl-genomes-in-ensembl-96/)). Hence, all `biomartr` functions were updated
+and won't support data retrieval from `ENSEMBLGENOMES` servers anymore.__
+
+### New Functions
+
+- New function `clean.retrieval()` enables formatting and automatic unzipping of meta.retrieval output (find out more here: https://ropensci.github.io/biomartr/articles/MetaGenome_Retrieval.html#un-zipping-downloaded-files)
+- New function `getGenomeSet()` allows users to easily retrieve genomes of multiple specified species. 
+In addition, the genome summary statistics for all retrieved species will be stored as well to provide
+users with insights regarding the genome assembly quality of each species. This file can be used as Supplementary Information file
+in publications to facilitate reproducible research.
+- New function `getProteomeSet()` allows users to easily retrieve proteomes of multiple specified species
+- New function `getCDSSet()` allows users to easily retrieve coding sequences of multiple specified species
+- New function `getGFFSet()` allows users to easily retrieve GFF annotation files of multiple specified species
+- New function `getRNASet()` allows users to easily retrieve RNA sequences of multiple specified species
+- New function `summary_genome()` allows users to retrieve summary statistics for a genome assembly file to assess 
+the influence of genome assembly qualities when performing comparative genomics tasks
+- New function `summary_cds()` allows users to retrieve summary statistics for a coding sequence (CDS) file.
+We noticed, that many CDS files stored in NCBI or ENSEMBL databases contain sequences that aren't divisible by 3 (division into codons).
+This makes it difficult to divide CDS into codons for e.g. codon alignments or translation into protein sequences. In
+addition, some CDS files contain a significant amount of sequences that do not start with AUG (start codon).
+This function enables users to quantify how many of these sequences exist in a downloaded CDS file to process
+these files according to the analyses at hand.
+
+
+### New Features of Existing Functions 
+
+- the default value of argument `reference` in `meta.retrieval()` changed from `reference = TRUE` to `reference = FALSE`.
+This way all genomes (reference AND non-reference) genomes will be downloaded by default. This is what users seem to prefer.
+- `getCollection()` now also retrieves `GTF` files when `db = 'ensembl'`
+- `getAssemblyStats()` now also performs md5 checksum test
+- all md5 checksum tests now retrieve the new md5checkfile format from NCBI RefSeq and Genbank
+- `getGTF()`: users can now specify the NCBI Taxonomy ID or Accession ID in addition to the scientific name in argument 'organism' to retrieve genome assemblies 
+- `getGFF()`: users can now specify the NCBI Taxonomy ID or Accession ID for ENSEMBL in addition to the scientific name in argument 'organism' to retrieve genome assemblies 
+- `getMarts()` will now throw an error when BioMart servers cannot be reached (#36)
+- `getGenome()` now also stores the genome summary statistics (see `?summary_genome()`) for the retrieved species in the `documentation` folder to provide
+users with insights regarding the genome assembly quality
+- In all get*() functions the default for argument `reference` is now set from `reference = TRUE` to `reference = FALSE` (= new default)
+- all `get*()` functions now received a new argument `release` which allows users to retrieve
+specific release versions of genomes, proteomes, etc from `ENSEMBL` and `ENSEMBLGENOMES`
+- all `get*()` functions received two new arguments `clean_retrieval` and  `gunzip` which
+allows users to upzip the downloaded files directly in the `get*()` function call and rename
+the file for more convenient downstream analyses
+
+
+[biomartr 0.8.0](https://github.com/ropensci/biomartr/releases/tag/v0.8.0)
 ===========
 
 ### New Functions

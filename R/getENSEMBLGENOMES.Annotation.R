@@ -4,6 +4,7 @@
 #' @param organism scientific name of the query organism
 #' @param type type of biological sequence
 #' @param id.type ENSEMBLGENOMES id type
+#' @param release the ENSEMBLGENOMES release. Default is \code{release = NULL} meaning that the current (most recent) version is used.
 #' @param path where shall file be saved?
 #' @author Hajk-Georg Drost
 #' @noRd
@@ -12,97 +13,49 @@ getENSEMBLGENOMES.Annotation <-
     function(organism,
              type = "dna",
              id.type = "toplevel",
+             release = NULL,
              path) {
         
         if (!is.element(type, c("dna", "cds", "pep")))
             stop("Please a 'type' argument supported by this function: 
                  'dna', 'cds', 'pep'.")
         
-        # test if REST API is responding
-        is.ensemblgenomes.alive()
-        
-        name <- NULL
-        
-        new.organism <- stringr::str_replace_all(organism, " ", "_")
-        
-        if (file.exists(file.path(tempdir(), "ensemblgenomes_summary.txt"))) {
-            suppressWarnings(
-                ensembl.available.organisms <-
-                    readr::read_tsv(
-                        file.path(tempdir(), "ensemblgenomes_summary.txt"),
-                        col_names = c(
-                            "division",
-                            "taxon_id",
-                            "name",
-                            "release",
-                            "display_name",
-                            "accession",
-                            "common_name",
-                            "assembly"
-                        ),
-                        col_types = readr::cols(
-                            division = readr::col_character(),
-                            taxon_id = readr::col_integer(),
-                            name = readr::col_character(),
-                            release = readr::col_integer(),
-                            display_name = readr::col_character(),
-                            accession = readr::col_character(),
-                            common_name = readr::col_character(),
-                            assembly = readr::col_character()
-                        ),
-                        comment = "#"
+            ensemblgenomes_summary <-
+                    suppressMessages(is.genome.available(
+                            organism = organism,
+                            db = "ensemblgenomes",
+                            details = TRUE
+                    ))
+            
+            if (nrow(ensemblgenomes_summary) == 0) {
+                    message("Unfortunately, organism '",organism,"' does not exist in this database. Could it be that the organism name is misspelled? Thus, download has been omitted.")
+                    return(FALSE)
+            }
+            
+            taxon_id <- assembly <- name <- accession <- NULL
+            
+            if (nrow(ensemblgenomes_summary) > 1) {
+                    if (is.taxid(organism)) {
+                            ensemblgenomes_summary <-
+                                    dplyr::filter(ensemblgenomes_summary, taxon_id == as.integer(organism), !is.na(assembly))
+                    } else {
+                            
+                            ensemblgenomes_summary <-
+                                    dplyr::filter(
+                                            ensemblgenomes_summary,
+                                            (name == stringr::str_to_lower(stringr::str_replace_all(organism, " ", "_"))) |
+                                                    (accession == organism),
+                                            !is.na(assembly)
+                                    )
+                    }
+            }
+            
+            new.organism <- ensemblgenomes_summary$name[1]
+            new.organism <-
+                    paste0(
+                            stringr::str_to_upper(stringr::str_sub(new.organism, 1, 1)),
+                            stringr::str_sub(new.organism, 2, nchar(new.organism))
                     )
-            )
-        }
-        
-        if (!file.exists(file.path(tempdir(), "ensemblgenomes_summary.txt"))) {
-            # check if organism is available on ENSEMBL
-            tryCatch({
-                ensembl.available.organisms <-
-                    jsonlite::fromJSON(
-     "http://rest.ensemblgenomes.org/info/species?content-type=application/json"
-                    )
-            }, error = function(e)
-                stop(
-                    "The API 'http://rest.ensemblgenomes.org' does not seem to 
-                    work properly. Are you connected to the internet? 
-                    Is the homepage 'http://rest.ensemblgenomes.org' 
-                    currently available?",
-                    call. = FALSE
-                ))
-            
-            aliases <- groups <- NULL
-            
-            # transform list object returned by 'fromJSON' to tibble
-            ensembl.available.organisms <-
-                tibble::as_tibble(dplyr::select(
-                    ensembl.available.organisms$species,
-                    -aliases,
-                    -groups
-                ))
-            
-            readr::write_tsv(
-                ensembl.available.organisms,
-                file.path(tempdir(), "ensemblgenomes_summary.txt")
-            )
-        }
-        
-        if (!any(
-            stringr::str_detect(
-                stringr::str_to_lower(new.organism),
-                ensembl.available.organisms$name
-            )
-        )) {
-            warning(
-                "Unfortunately organism '",
-                organism,
-                "' is not available at ENSEMBL. Please check whether or not the 
-            organism name is typed correctly. Thus, download of this species
-                has been omitted."
-            )
-            return(FALSE)
-        }
-        
         # test proper API access
         tryCatch({
             json.qry.info <-
@@ -114,18 +67,13 @@ getENSEMBLGENOMES.Annotation <-
                     )
                 )
         }, error = function(e)
-            stop(
-                "The API 'http://rest.ensemblgenomes.org' does not seem to work 
-                properly. Are you connected to the internet? Is the homepage 
-                'http://rest.ensemblgenomes.org' currently available?",
+            warning(
+                "The API 'http://rest.ensemblgenomes.org' does not seem to work properly. Do you have a stable internet connection?",
                 call. = FALSE
             ))
         
         # retrieve detailed information for organism of interest
-        get.org.info <-
-            is.genome.available(organism = organism,
-                                details = TRUE,
-                                db = "ensemblgenomes")
+        get.org.info <- ensemblgenomes_summary
         
         # retrieve the Ensembl Genomes version of the 
         # databases backing this service
@@ -135,10 +83,8 @@ getENSEMBLGENOMES.Annotation <-
  "http://rest.ensemblgenomes.org/info/eg_version?content-type=application/json"
                 )
         }, error = function(e)
-            stop(
-                "The API 'http://rest.ensemblgenomes.org' does not seem to work 
-                properly. Are you connected to the internet? Is the homepage 
-                'http://rest.ensemblgenomes.org' currently available?",
+            warning(
+                "The API 'http://rest.ensemblgenomes.org' does not seem to work properly. Do you have a stable internet connection?",
                 call. = FALSE
             ))
         
@@ -152,11 +98,7 @@ getENSEMBLGENOMES.Annotation <-
                     )
                 }, error = function(e)
                     stop(
-                        "The API 'http://rest.ensemblgenomes.org' does not seem 
-                        to work properly. Are you connected to the internet? 
-                        Is the homepage 
-'ftp://ftp.ensemblgenomes.org/pub/current/bacteria/species_EnsemblBacteria.txt' 
-                        currently available?",
+                        "The API 'http://rest.ensemblgenomes.org' does not seem to work properly. Do you have a stable internet connection?",
                         call. = FALSE
                     ))
             }
@@ -243,10 +185,26 @@ getENSEMBLGENOMES.Annotation <-
                 return(FALSE)
             }
             
+            release_api <- jsonlite::fromJSON(
+                    "http://rest.ensemblgenomes.org/info/eg_version?content-type=application/json"
+            )
+            
+            if (!is.null(release)){
+                    if (!is.element(release, seq_len(as.integer(release_api))))
+                            stop("Please provide a release number that is supported by ENSEMBLGENOMES.", call. = FALSE)
+            }
+            
+            # construct retrieval query
+            if (is.null(release))
+                    core_path <- "ftp://ftp.ensemblgenomes.org/pub/current/bacteria/gff3/"
+            
+            if (!is.null(release))
+                    core_path <- paste0("ftp://ftp.ensemblgenomes.org/pub/release-", release ,"/bacteria/gff3/")
+            
             # construct retrieval query
             ensembl.qry <-
                 paste0(
-                    "ftp://ftp.ensemblgenomes.org/pub/current/bacteria/gff3/",
+                        core_path,
                     paste0(unlist(
                         stringr::str_split(bacteria.info$core_db[1], "_")
                     )[1:3], collapse = "_"),
@@ -263,15 +221,30 @@ getENSEMBLGENOMES.Annotation <-
                     )
                 )
             
-            server.folder.path <- paste0(
-                "ftp://ftp.ensemblgenomes.org/pub/current/bacteria/gff3/",
-                paste0(unlist(
-                    stringr::str_split(bacteria.info$core_db[1], "_")
-                )[1:3], collapse = "_"),
-                "/",
-                stringr::str_to_lower(new.organism),
-                "/"
-            )
+            if (is.null(release)) {
+                    server.folder.path <- paste0(
+                            "ftp://ftp.ensemblgenomes.org/pub/current/bacteria/gff3/",
+                            paste0(unlist(
+                                    stringr::str_split(bacteria.info$core_db[1], "_")
+                            )[1:3], collapse = "_"),
+                            "/",
+                            stringr::str_to_lower(new.organism),
+                            "/"
+                    )
+            }
+            
+            if (!is.null(release)) {
+                    server.folder.path <- paste0(
+                            "ftp://ftp.ensemblgenomes.org/pub/release-", release ,"/bacteria/gff3/",
+                            paste0(unlist(
+                                    stringr::str_split(bacteria.info$core_db[1], "_")
+                            )[1:3], collapse = "_"),
+                            "/",
+                            stringr::str_to_lower(new.organism),
+                            "/"
+                    )
+            }
+            
             tryCatch({
                 get.files <- RCurl::getURL(
                     server.folder.path,
@@ -284,14 +257,20 @@ getENSEMBLGENOMES.Annotation <-
                     "The server path '",
                     server.folder.path,
                     "' seems not to exist. Please make sure that the selected 
-                    bacteria is available at ENSEMBLGENOMES.",
+                    bacteria is available at ENSEMBLGENOMES under the specified release.",
                     call. = FALSE
                 ))
             
             if (stringr::str_detect(get.files, "abinitio")) {
+                    
+                    if (is.null(release))
+                            core_path2 <- "ftp://ftp.ensemblgenomes.org/pub/current/bacteria/gff3/"
+                    if (!is.null(release))
+                            core_path2 <- paste0("ftp://ftp.ensemblgenomes.org/pub/release-", release,"/bacteria/gff3/")
+                    
                 ensembl.qry <-
                     paste0(
-                     "ftp://ftp.ensemblgenomes.org/pub/current/bacteria/gff3/",
+                            core_path2,
                         paste0(unlist(
                             stringr::str_split(bacteria.info$core_db[1], "_")
                         )[1:3], collapse = "_"),
@@ -310,10 +289,26 @@ getENSEMBLGENOMES.Annotation <-
             }
             
         } else {
+                release_api <- jsonlite::fromJSON(
+                        "http://rest.ensemblgenomes.org/info/eg_version?content-type=application/json"
+                )
+                
+                if (!is.null(release)){
+                        if (!is.element(release, seq_len(as.integer(release_api))))
+                                stop("Please provide a release number that is supported by ENSEMBLGENOMES.", call. = FALSE)
+                }
+                
+                # construct retrieval query
+                if (is.null(release))
+                        core_path <- "ftp://ftp.ensemblgenomes.org/pub/current/"
+                
+                if (!is.null(release))
+                        core_path <- paste0("ftp://ftp.ensemblgenomes.org/pub/release-", release ,"/")
+                
             # construct retrieval query
             ensembl.qry <-
                 paste0(
-                    "ftp://ftp.ensemblgenomes.org/pub/current/",
+                        core_path,
                     stringr::str_to_lower(
                         stringr::str_replace(get.org.info$division[1], 
                                              "Ensembl", "")
@@ -326,7 +321,7 @@ getENSEMBLGENOMES.Annotation <-
                         ".",
                         json.qry.info$default_coord_system_version,
                         ".",
-                        eg_version,
+                        ifelse(is.null(release), eg_version, release),
                         ".gff3.gz"
                     )
                 )
@@ -338,7 +333,7 @@ getENSEMBLGENOMES.Annotation <-
                     ".",
                     json.qry.info$default_coord_system_version,
                     ".",
-                    eg_version,
+                    ifelse(is.null(release), eg_version, release),
                     "_ensemblgenomes",
                     ".gff3.gz"
                 )
@@ -352,7 +347,7 @@ getENSEMBLGENOMES.Annotation <-
                             ".",
                             json.qry.info$default_coord_system_version,
                             ".",
-                            eg_version,
+                            ifelse(is.null(release), eg_version, release),
                             "_ensemblgenomes",
                             ".gff3.gz"
                         )
@@ -369,35 +364,34 @@ getENSEMBLGENOMES.Annotation <-
                                             ".",
                                    json.qry.info$default_coord_system_version,
                                             ".",
-                                            eg_version,
+                                   ifelse(is.null(release), eg_version, release),
                                             "_ensemblgenomes",
                                             ".gff3.gz"
                                         )
                                     ),
                                     mode = "wb")
-                }, error = function(e)
-                    stop(
-                        "The FTP site of ENSEMBLGENOMES 
-                        'ftp://ftp.ensemblgenomes.org/current/gff3' 
-                        does not seem to work properly. Are you connected to the
-                        internet? Is the site 
-                        'ftp://ftp.ensemblgenomes.org/current/gff3' or 
-                        'http://rest.ensemblgenomes.org' currently available?",
-                        call. = FALSE
-                    ))
+                }, error = function(e) {
+                        stop(
+                                "Something went wrong when trying to retrieve file ",
+                                ensembl.qry,
+                                " from ENSEMBLGENOMES. Could it be that the species ",
+                                organism,
+                                " does not have an entry for your specified release version?", call. = FALSE
+                        )
+                })
             }
         }
         
-        return(file.path(
+        return(c(file.path(
             path,
             paste0(
                 new.organism,
                 ".",
                 json.qry.info$default_coord_system_version,
                 ".",
-                eg_version,
+                ifelse(is.null(release), eg_version, release),
                 "_ensemblgenomes",
                 ".gff3.gz"
             )
-        ))
+        ), ensembl.qry))
 }

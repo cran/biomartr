@@ -1,6 +1,7 @@
 #' @title Perform Meta-Genome Retrieval
 #' @description Download genomes, proteomes, cds, gff, rna, or assembly stats 
-#' files of all species within a kingdom of life.
+#' files of all species within a kingdom of life. After downloading users
+#' can unzip all files using \code{\link{clean.retrieval}}.
 #' @param db a character string specifying the database from which the genome 
 #' shall be retrieved:
 #' 
@@ -86,7 +87,13 @@
 #' organism files and check whether already downloaded organism files are corrupted or not by checking the md5 checksum.
 #' After checking existing files the function will start downloading all remaining organisms.
 #' }
-#' @param reference a logical value indicating whether or not a genome shall be downloaded if it isn't marked in the database as either a reference genome or a representative genome.
+#' @param reference a logical value indicating whether or not a genome shall be downloaded if it isn't marked in the database 
+#' as either a reference genome or a representative genome. Options are:
+#' \itemize{
+#' \item \code{reference = FALSE} (Default): all organisms (reference, representative, and non-representative genomes) are downloaded.
+#' \item \code{reference = TRUE}: organisms that are downloaded must be either a reference or representative genome. Thus, most genomes which are usually non-reference genomes
+#' will not be downloaded.
+#' }
 #' @param combine just in case \code{type = "assemblystats"} is specified, shall
 #' assemby stats of individual species be imported and combined to a 
 #' \code{\link{data.frame}}? 
@@ -139,7 +146,7 @@
 #'    db = "refseq", 
 #'    type = "genome")
 #' }
-#' @seealso \code{\link{meta.retrieval.all}}, \code{\link{getCollection}}
+#' @seealso \code{\link{meta.retrieval.all}}, \code{\link{getCollection}}, \code{\link{clean.retrieval}}
 #' @return a character vector storing the file paths of the retrieved files.
 #' @export
 
@@ -148,11 +155,9 @@ meta.retrieval <- function(db         = "refseq",
                            group = NULL,
                            type       = "genome",
                            restart_at_last = TRUE,
-                           reference  = TRUE,
+                           reference  = FALSE,
                            combine    = FALSE,
                            path = NULL) {
-    # test internet connection
-    connected.to.internet()
     
     division <- subgroup <- NULL
     
@@ -297,15 +302,15 @@ meta.retrieval <- function(db         = "refseq",
             dir.create(path, recursive = TRUE)
         }
         
-        if (!file.exists(file.path(path, "doc")))
-            dir.create(file.path(path, "doc"))
+        if (!file.exists(file.path(path, "documentation")))
+            dir.create(file.path(path, "documentation"))
     } else {
         if (!file.exists(kingdom)) {
             message("Generating folder ", kingdom, " ...")
             dir.create(kingdom, recursive = TRUE)
         }
-        if (!file.exists(file.path(kingdom, "doc")))
-            dir.create(file.path(kingdom, "doc"))
+        if (!file.exists(file.path(kingdom, "documentation")))
+            dir.create(file.path(kingdom, "documentation"))
     }
     
     paths <- vector("character", length(FinalOrganisms))
@@ -365,9 +370,11 @@ meta.retrieval <- function(db         = "refseq",
     
     if (length(.existingOrgs) > 0) {
         if (restart_at_last) {
-            message("Skipping already downloaded species: ", paste0(.existingOrgs, collapse = ", "))
             FinalOrganisms <- dplyr::setdiff(FinalOrganisms, .existingOrgs)
-            message("\n")
+            if (length(FinalOrganisms) > 0) {
+                message("Skipping already downloaded species: ", paste0(.existingOrgs, collapse = ", "))
+                message("\n")   
+            }
         }
     }
 
@@ -581,30 +588,30 @@ meta.retrieval <- function(db         = "refseq",
         if (!is.null(path)) {
             meta_files <- list.files(path)
             meta_files <- meta_files[stringr::str_detect(meta_files, "doc_")]
-            file.rename(from = file.path(path, meta_files), to = file.path(path, "doc", meta_files))
+            file.rename(from = file.path(path, meta_files), to = file.path(path, "documentation", meta_files))
             
-            doc_tsv_files <- file.path(path,"doc", meta_files[stringr::str_detect(meta_files, "[.]tsv")])
+            doc_tsv_files <- file.path(path,"documentation", meta_files[stringr::str_detect(meta_files, "[.]tsv")])
             
             summary_log <- dplyr::bind_rows(lapply(doc_tsv_files, function(data) {
                 suppressMessages(readr::read_tsv(data))
             }))
             
-            readr::write_excel_csv(summary_log, file.path(path, "doc", paste0(kingdom, "_summary.csv")))
-            message("A summary file (which can be used as supplementary information file in publications) containig retrieval information for all ",kingdom," species has been stored at '",file.path(path, "doc", paste0(kingdom, "_summary.csv")),"'.")
+            readr::write_excel_csv(summary_log, file.path(path, "documentation", paste0(kingdom, "_summary.csv")))
+            message("A summary file (which can be used as supplementary information file in publications) containig retrieval information for all ",kingdom," species has been stored at '",file.path(path, "documentation", paste0(kingdom, "_summary.csv")),"'.")
             
         } else {
             meta_files <- list.files(kingdom)
             meta_files <- meta_files[stringr::str_detect(meta_files, "doc_")]
-            file.rename(from = file.path(kingdom, meta_files), to = file.path(kingdom, "doc", meta_files))
+            file.rename(from = file.path(kingdom, meta_files), to = file.path(kingdom, "documentation", meta_files))
             
-            doc_tsv_files <- file.path(kingdom,"doc", meta_files[stringr::str_detect(meta_files, "[.]tsv")])
+            doc_tsv_files <- file.path(kingdom,"documentation", meta_files[stringr::str_detect(meta_files, "[.]tsv")])
             
             summary_log <- dplyr::bind_rows(lapply(doc_tsv_files, function(data) {
                 suppressMessages(readr::read_tsv(data))
             }))
             
-            readr::write_excel_csv(summary_log, file.path(kingdom, "doc", paste0(kingdom, "_summary.csv")))
-            message("A summary file (which can be used as supplementary information file in publications) containig retrieval information for all ",kingdom," species has been stored at '",file.path(kingdom, "doc", paste0(kingdom, "_summary.csv")),"'.")
+            readr::write_excel_csv(summary_log, file.path(kingdom, "documentation", paste0(kingdom, "_summary.csv")))
+            message("A summary file (which can be used as supplementary information file in publications) containig retrieval information for all ",kingdom," species has been stored at '",file.path(kingdom, "documentation", paste0(kingdom, "_summary.csv")),"'.")
             
         }
         
@@ -621,30 +628,30 @@ meta.retrieval <- function(db         = "refseq",
         if (!is.null(path)) {
             meta_files <- list.files(path)
             meta_files <- meta_files[stringr::str_detect(meta_files, "doc_")]
-            file.rename(from = file.path(path, meta_files), to = file.path(path, "doc", meta_files))
+            file.rename(from = file.path(path, meta_files), to = file.path(path, "documentation", meta_files))
             
-            doc_tsv_files <- file.path(path,"doc", meta_files[stringr::str_detect(meta_files, "[.]tsv")])
+            doc_tsv_files <- file.path(path,"documentation", meta_files[stringr::str_detect(meta_files, "[.]tsv")])
             
             summary_log <- dplyr::bind_rows(lapply(doc_tsv_files, function(data) {
                 suppressMessages(readr::read_tsv(data))
             }))
             
-            readr::write_excel_csv(summary_log, file.path(path, "doc", paste0(kingdom, "_summary.csv")))
-            message("A summary file (which can be used as supplementary information file in publications) containig retrieval information for all ",kingdom," species has been stored at '",file.path(path, "doc", paste0(kingdom, "_summary.csv")),"'.")
+            readr::write_excel_csv(summary_log, file.path(path, "documentation", paste0(kingdom, "_summary.csv")))
+            message("A summary file (which can be used as supplementary information file in publications) containig retrieval information for all ",kingdom," species has been stored at '",file.path(path, "documentation", paste0(kingdom, "_summary.csv")),"'.")
             
         } else {
             meta_files <- list.files(kingdom)
             meta_files <- meta_files[stringr::str_detect(meta_files, "doc_")]
-            file.rename(from = file.path(kingdom, meta_files), to = file.path(kingdom, "doc", meta_files))
+            file.rename(from = file.path(kingdom, meta_files), to = file.path(kingdom, "documentation", meta_files))
             
-            doc_tsv_files <- file.path(kingdom,"doc", meta_files[stringr::str_detect(meta_files, "[.]tsv")])
+            doc_tsv_files <- file.path(kingdom,"documentation", meta_files[stringr::str_detect(meta_files, "[.]tsv")])
             
             summary_log <- dplyr::bind_rows(lapply(doc_tsv_files, function(data) {
                 suppressMessages(readr::read_tsv(data))
             }))
             
-            readr::write_excel_csv(summary_log, file.path(kingdom, "doc", paste0(kingdom, "_summary.csv")))
-            message("A summary file (which can be used as supplementary information file in publications) containig retrieval information for all ",kingdom," species has been stored at '",file.path(kingdom, "doc", paste0(kingdom, "_summary.csv")),"'.")
+            readr::write_excel_csv(summary_log, file.path(kingdom, "documentation", paste0(kingdom, "_summary.csv")))
+            message("A summary file (which can be used as supplementary information file in publications) containig retrieval information for all ",kingdom," species has been stored at '",file.path(kingdom, "documentation", paste0(kingdom, "_summary.csv")),"'.")
             
         }
         

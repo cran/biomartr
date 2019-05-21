@@ -5,7 +5,7 @@
 \title{Perform Meta-Genome Retrieval}
 \usage{
 meta.retrieval(db = "refseq", kingdom, group = NULL, type = "genome",
-  restart_at_last = TRUE, reference = TRUE, combine = FALSE,
+  restart_at_last = TRUE, reference = FALSE, combine = FALSE,
   path = NULL)
 }
 \arguments{
@@ -99,7 +99,13 @@ organism files and check whether already downloaded organism files are corrupted
 After checking existing files the function will start downloading all remaining organisms.
 }}
 
-\item{reference}{a logical value indicating whether or not a genome shall be downloaded if it isn't marked in the database as either a reference genome or a representative genome.}
+\item{reference}{a logical value indicating whether or not a genome shall be downloaded if it isn't marked in the database 
+as either a reference genome or a representative genome. Options are:
+\itemize{
+\item \code{reference = FALSE} (Default): all organisms (reference, representative, and non-representative genomes) are downloaded.
+\item \code{reference = TRUE}: organisms that are downloaded must be either a reference or representative genome. Thus, most genomes which are usually non-reference genomes
+will not be downloaded.
+}}
 
 \item{combine}{just in case \code{type = "assemblystats"} is specified, shall
 assemby stats of individual species be imported and combined to a 
@@ -113,7 +119,8 @@ a character vector storing the file paths of the retrieved files.
 }
 \description{
 Download genomes, proteomes, cds, gff, rna, or assembly stats 
-files of all species within a kingdom of life.
+files of all species within a kingdom of life. After downloading users
+can unzip all files using \code{\link{clean.retrieval}}.
 }
 \details{
 This function aims to perform bulk retrieval of the genomes, 
@@ -165,7 +172,7 @@ meta.retrieval(kingdom = "bacteria",
 }
 }
 \seealso{
-\code{\link{meta.retrieval.all}}, \code{\link{getCollection}}
+\code{\link{meta.retrieval.all}}, \code{\link{getCollection}}, \code{\link{clean.retrieval}}
 }
 \author{
 Hajk-Georg Drost

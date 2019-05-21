@@ -4,13 +4,17 @@
 \alias{getRNA}
 \title{RNA Sequence Retrieval}
 \usage{
-getRNA(db = "refseq", organism, reference = TRUE,
+getRNA(db = "refseq", organism, reference = FALSE, release = NULL,
   path = file.path("_ncbi_downloads", "RNA"))
 }
 \arguments{
 \item{db}{a character string specifying the database from which the genome 
-shall be retrieved: \code{db = "refseq"}, \code{db = "genbank"}, 
-\code{db = "ensembl"} or \code{db = "ensemblgenomes"}.}
+shall be retrieved: 
+\itemize{
+\item \code{db = "refseq"}
+\item \code{db = "genbank"}
+\item \code{db = "ensembl"} 
+}}
 
 \item{organism}{there are three options to characterize an organism: 
 \itemize{
@@ -20,6 +24,9 @@ shall be retrieved: \code{db = "refseq"}, \code{db = "genbank"},
 }}
 
 \item{reference}{a logical value indicating whether or not a genome shall be downloaded if it isn't marked in the database as either a reference genome or a representative genome.}
+
+\item{release}{the database release version of ENSEMBL (\code{db = "ensembl"}). Default is \code{release = NULL} meaning
+that the most recent database version is used.}
 
 \item{path}{a character string specifying the location (a folder) in which 
 the corresponding
@@ -49,7 +56,8 @@ Ath_RNA <- read_rna(file_path, format = "fasta")
 }
 \seealso{
 \code{\link{getGenome}}, \code{\link{getProteome}}, 
-\code{\link{getGTF}}, \code{\link{getGFF}}, \code{\link{meta.retrieval}}, 
+\code{\link{getGTF}}, \code{\link{getGFF}}, \code{\link{getRepeatMasker}}, 
+\code{\link{getAssemblyStats}}, \code{\link{meta.retrieval}}, 
 \code{\link{read_cds}}, \code{\link{getCDS}}
 }
 \author{

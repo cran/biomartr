@@ -10,7 +10,6 @@
 #' \item \code{db = "refseq"}
 #' \item \code{db = "genbank"}
 #' \item \code{db = "ensembl"}
-#' \item \code{db = "ensemblgenomes"}
 #' }
 #' @param organism a character string specifying the scientific name of the 
 #' organism of interest, e.g. \code{organism = "Homo sapiens"}.
@@ -68,7 +67,7 @@
 getAssemblyStats <-
     function(db = "refseq",
              organism,
-             reference = TRUE,
+             reference = FALSE,
              type = "download",
              path = file.path("_ncbi_downloads", "genomeassembly_stats")) {
         
@@ -237,16 +236,51 @@ getAssemblyStats <-
                             mode = "wb"
                         )
                         
+                        # test check sum
+                        md5_file_path <- file.path(path, 
+                                                   paste0(local.org, 
+                                                          "_md5checksums.txt"))
+                        md5_file <-
+                                read_md5file(md5_file_path)
+                        
+                        file_name <- NULL
+                        
+                        md5_sum <- dplyr::filter(md5_file,
+                                                 file_name == paste0(" ./", paste0(
+                                                         basename(FoundOrganism$ftp_path),
+                                                         "_assembly_stats.txt"
+                                                 )))$md5
+                        
+                        message("Checking md5 hash of file: ", 
+                                md5_file_path , " ...")
+                        
+                        if (!(tools::md5sum(file.path(
+                                path,
+                                paste0(local.org, "_assembly_stats_", db, 
+                                       ".txt")
+                        )) == md5_sum))
+                                stop(
+                                        paste0(
+                                                "Please download the file '",
+                                                md5_file_path,
+                                                "' again. The md5 hash between the downloaded file and the file ",
+                                                "stored at NCBI do not match.",
+                                                collapse = ""
+                                        )
+                                )
+                        unlink(md5_file_path)
+                        message("The md5 hash of file '", md5_file_path, "' matches!")
                   
-                    }, error = function(e)
-                        stop(
-                            "The FTP site 'ftp://ftp.ncbi.nlm.nih.gov/' cannot 
-                            be reached. Are you connected to the internet? 
-                            Is the the FTP site '",
-                            download_url,
-                            "' currently available?",
+                    }, error = function(e) {
+                        warning(
+                            "The download session seems to have timed out at the FTP site '",
+                            download_url, "'. This could be due to an overload of queries to the databases.",
+                            " Please restart this function to continue the data retrieval process or wait ",
+                            "for a while before restarting this function in case your IP address was logged due to an query overload on the server side.",
                             call. = FALSE
-                        ))
+                        )
+                        return("Not available")
+                    })
                 }
                 
                 docFile(

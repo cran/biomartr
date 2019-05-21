@@ -5,8 +5,12 @@
 #' of interest can be downloaded and stored locally. 
 #' RNA files can be retrieved from several databases.
 #' @param db a character string specifying the database from which the genome 
-#' shall be retrieved: \code{db = "refseq"}, \code{db = "genbank"}, 
-#' \code{db = "ensembl"} or \code{db = "ensemblgenomes"}.
+#' shall be retrieved: 
+#' \itemize{
+#' \item \code{db = "refseq"}
+#' \item \code{db = "genbank"}
+#' \item \code{db = "ensembl"} 
+#' }
 #' @param organism there are three options to characterize an organism: 
 #' \itemize{
 #' \item by \code{scientific name}: e.g. \code{organism = "Homo sapiens"}
@@ -14,6 +18,8 @@
 #' \item by \code{taxonomic identifier from NCBI Taxonomy}: e.g. \code{organism = "9606"} (= taxid of \code{Homo sapiens})
 #' }
 #' @param reference a logical value indicating whether or not a genome shall be downloaded if it isn't marked in the database as either a reference genome or a representative genome.
+#' @param release the database release version of ENSEMBL (\code{db = "ensembl"}). Default is \code{release = NULL} meaning
+#' that the most recent database version is used.
 #' @param path a character string specifying the location (a folder) in which 
 #' the corresponding
 #' CDS file shall be stored. Default is 
@@ -31,27 +37,31 @@
 #' Ath_RNA <- read_rna(file_path, format = "fasta")
 #' }
 #' @seealso \code{\link{getGenome}}, \code{\link{getProteome}}, 
-#' \code{\link{getGTF}}, \code{\link{getGFF}}, \code{\link{meta.retrieval}}, 
+#' \code{\link{getGTF}}, \code{\link{getGFF}}, \code{\link{getRepeatMasker}}, 
+#' \code{\link{getAssemblyStats}}, \code{\link{meta.retrieval}}, 
 #' \code{\link{read_cds}}, \code{\link{getCDS}}
 #' @export
 
 getRNA <-
     function(db = "refseq",
              organism,
-             reference = TRUE,
+             reference = FALSE,
+             release = NULL,
              path = file.path("_ncbi_downloads", "RNA")) {
-        if (!is.element(db, c("refseq", "genbank", "ensembl", 
-                              "ensemblgenomes")))
+        if (!is.element(db, c("refseq", "genbank", "ensembl")))
             stop(
                 "Please select one of the available data bases: 
-                'refseq', 'genbank', 'ensembl' or 'ensemblgenomes'.",
+                'refseq', 'genbank', or 'ensembl'.",
                 call. = FALSE
             )
             
         if (db == "ensemblgenomes") {
-            organism_name <- is.genome.available(db = db, organism = organism, details = TRUE)$display_name[1]
-            message("Starting RNA retrieval of '", organism_name, "' from ", db, " ...")
-            message("\n")
+                organism_name <- is.genome.available(db = db, organism = organism, details = TRUE)$display_name[1]
+                
+                if (!is.na(organism_name))
+                        message("Starting RNA retrieval of '", organism_name, "' from ", db, " ...")
+                if (is.na(organism_name))
+                        message("Starting RNA retrieval of '", organism, "' from ", db, " ...")
         } else {
             message("Starting RNA retrieval of '", organism, "' from ", db, " ...")
             message("\n")
@@ -210,7 +220,7 @@ getRNA <-
                                 )
                             )
                             
-                            message("RNA download is completed!")
+                            message("RNA download of ", organism, " is completed!")
                                 
                             # download md5checksum file for organism of interest
                             custom_download(
@@ -230,7 +240,7 @@ getRNA <-
                             file_name <- NULL
                             
                             md5_sum <- dplyr::filter(md5_file,
-                                            file_name == paste0("./", paste0(
+                                            file_name == paste0(" ./", paste0(
                                              basename(FoundOrganism$ftp_path),
                                                     "_rna_from_genomic.fna.gz"
                                                      )))$md5
@@ -255,11 +265,10 @@ getRNA <-
                 message("The md5 hash of file '", md5_file_path, "' matches!")
                         }, error = function(e) {
                             warning(
-                                "The FTP site 'ftp://ftp.ncbi.nlm.nih.gov/' 
-                                cannot be reached. Are you connected to the 
-                                internet? Is the the FTP site '",
-                                download_url,
-                                "' currently available?",
+                                "The download session seems to have timed out at the FTP site '",
+                                download_url, "'. This could be due to an overload of queries to the databases.",
+                                " Please restart this function to continue the data retrieval process or wait ",
+                                "for a while before restarting this function in case your IP address was logged due to an query overload on the server side.",
                                 call. = FALSE
                             )
                             return(FALSE)
@@ -358,11 +367,17 @@ getRNA <-
             }
             
             # download CDS sequence from ENSEMBL
-            rna.path <-
-                getENSEMBL.Seq(organism, type = "ncrna", id.type = "none", path)
+                rna.path <-
+                        getENSEMBL.Seq(
+                                organism,
+                                type = "ncrna",
+                                id.type = "none",
+                                release = release,
+                                path = path
+                        )
             
-            if (is.logical(rna.path)) {
-                if (!rna.path)
+            if (is.logical(rna.path[1])) {
+                if (!rna.path[1])
                     return(FALSE)
             } else {
                 
@@ -422,7 +437,9 @@ getRNA <-
                     paste0("doc_", new.organism, "_db_", db, ".txt")
                 ))
                 
-                cat(paste0("File Name: ", rna.path))
+                cat(paste0("File Name: ", rna.path[1]))
+                cat("\n")
+                cat(paste0("Download Path: ", rna.path[2]))
                 cat("\n")
                 cat(paste0("Organism Name: ", new.organism))
                 cat("\n")
@@ -456,7 +473,8 @@ getRNA <-
                 sink()
                 
                 doc <- tibble::tibble(
-                    file_name = rna.path,
+                    file_name = rna.path[1],
+                    download_path = rna.path[2],
                     organism = new.organism,
                     database = db,
                     download_data = date(),
@@ -480,12 +498,12 @@ getRNA <-
                         "' has been downloaded to '",
                         path,
                         "' and has been named '",
-                        basename(rna.path),
+                        basename(rna.path[1]),
                         "'."
                     )
                 )
                 
-                return(rna.path)
+                return(rna.path[1])
             }
         }
         
@@ -496,12 +514,17 @@ getRNA <-
             }
             
             # download CDS sequence from ENSEMBLGENOMES
-            rna.path <-
-                getENSEMBLGENOMES.Seq(organism, type = "ncrna", 
-                                      id.type = "none", path)
+                rna.path <-
+                        getENSEMBLGENOMES.Seq(
+                                organism,
+                                type = "ncrna",
+                                id.type = "none",
+                                release = release,
+                                path = path
+                        )
             
-            if (is.logical(rna.path)) {
-                if (!rna.path)
+            if (is.logical(rna.path[1])) {
+                if (!rna.path[1])
                     return(FALSE)
             } else {
                 
@@ -560,7 +583,9 @@ getRNA <-
                     paste0("doc_", new.organism, "_db_", db, ".txt")
                 ))
                 
-                cat(paste0("File Name: ", rna.path))
+                cat(paste0("File Name: ", rna.path[1]))
+                cat("\n")
+                cat(paste0("Download Path: ", rna.path[2]))
                 cat("\n")
                 cat(paste0("Organism Name: ", new.organism))
                 cat("\n")
@@ -594,7 +619,8 @@ getRNA <-
                 sink()
                 
                 doc <- tibble::tibble(
-                    file_name = rna.path,
+                    file_name = rna.path[1],
+                    download_path = rna.path[2],
                     organism = new.organism,
                     database = db,
                     download_data = date(),
@@ -619,12 +645,12 @@ getRNA <-
                         "' has been downloaded to '",
                         path,
                         "' and has been named '",
-                        basename(rna.path),
+                        basename(rna.path[1]),
                         "'."
                     )
                 )
                 
-                return(rna.path)
+                return(rna.path[1])
             }
             
         }

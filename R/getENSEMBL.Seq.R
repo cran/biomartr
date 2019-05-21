@@ -4,12 +4,13 @@
 #' @param organism scientific name of the organism of interest.
 #' @param type biological sequence type.
 #' @param id.type id type.
+#' @param release the ENSEMBLGENOMES release. Default is \code{release = NULL} meaning that the current (most recent) version is used.
 #' @param path location where file shall be stored.
 #' @author Hajk-Georg Drost
 #' @noRd
 
 
-getENSEMBL.Seq <- function(organism, type = "dna", id.type = "toplevel", path) {
+getENSEMBL.Seq <- function(organism, type = "dna", id.type = "toplevel", release = NULL, path) {
     
     if (!is.element(type, c("dna", "cds", "pep", "ncrna")))
         stop("Please a 'type' argument supported by this function: 
@@ -65,16 +66,32 @@ getENSEMBL.Seq <- function(organism, type = "dna", id.type = "toplevel", path) {
         return(FALSE)
     } else {
         
+            release_api <- jsonlite::fromJSON(
+                    "http://rest.ensembl.org/info/data/?content-type=application/json"
+            )$releases
+            
+            if (!is.null(release)){
+                    if (!is.element(release, seq_len(as.integer(release_api))))
+                            stop("Please provide a release number that is supported by ENSEMBL.", call. = FALSE)
+            }
+            
+            # construct retrieval query
+            if (is.null(release))
+                    core_path <- "ftp://ftp.ensembl.org/pub/current_fasta/"
+            
+            if (!is.null(release))
+                    core_path <- paste0("ftp://ftp.ensembl.org/pub/release-", release ,"/fasta/")
+            
         # construct retrieval query
         ensembl.qry <-
             paste0(
-                "ftp://ftp.ensembl.org/pub/current_fasta/",
+                    core_path,
                 stringr::str_to_lower(new.organism),
                 "/",
                 type,
                 "/",
                 paste0(
-                    new.organism,
+                    stringr::str_to_title(new.organism, locale = "en"),
                     ".",
                     rest_api_status$default_coord_system_version,
                     ".",
@@ -95,7 +112,7 @@ getENSEMBL.Seq <- function(organism, type = "dna", id.type = "toplevel", path) {
         if (file.exists(file.path(
             path,
             paste0(
-                new.organism,
+                stringr::str_to_title(new.organism, locale = "en"),
                 ".",
                 rest_api_status$default_coord_system_version,
                 ".",
@@ -108,7 +125,7 @@ getENSEMBL.Seq <- function(organism, type = "dna", id.type = "toplevel", path) {
             message("File ",file.path(
                 path,
                 paste0(
-                    new.organism,
+                    stringr::str_to_title(new.organism, locale = "en"),
                     ".",
                     rest_api_status$default_coord_system_version,
                     ".",
@@ -121,7 +138,7 @@ getENSEMBL.Seq <- function(organism, type = "dna", id.type = "toplevel", path) {
             return(file.path(
                 path,
                 paste0(
-                    new.organism,
+                    stringr::str_to_title(new.organism, locale = "en"),
                     ".",
                     rest_api_status$default_coord_system_version,
                     ".",
@@ -148,10 +165,10 @@ getENSEMBL.Seq <- function(organism, type = "dna", id.type = "toplevel", path) {
                                 ),
                                 mode = "wb")
                 
-                return(file.path(
+                return(c(file.path(
                     path,
                     paste0(
-                        new.organism,
+                        stringr::str_to_title(new.organism, locale = "en"),
                         ".",
                         rest_api_status$default_coord_system_version,
                         ".",
@@ -160,7 +177,7 @@ getENSEMBL.Seq <- function(organism, type = "dna", id.type = "toplevel", path) {
                         ifelse(id.type == "none", "", id.type),
                         ".fa.gz"
                     )
-                ))
+                ), ensembl.qry))
         }
     }
 }

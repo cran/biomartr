@@ -5,8 +5,7 @@ biomartr
 [![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/biomartr)](https://github.com/metacran/cranlogs.app)
 [![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/grand-total/biomartr)](https://github.com/metacran/cranlogs.app)
  
-
-
+ 
 ## Genomic Data Retrieval with R
 
 ### Motivation:
@@ -14,6 +13,16 @@ biomartr
 This package is born out of my own frustration to automate the genomic data retrieval process to create computationally reproducible scripts for large-scale genomics studies. Since I couldn't find easy-to-use and fully reproducible software libraries I sat down and tried to implement a framework that would enable anyone to automate and standardize the genomic data retrieval process. I hope that this package is useful to others as well and that it helps to promote reproducible research in genomics studies.
 
 I happily welcome anyone who wishes to contribute to this project :) Just drop me an email.
+
+Please find a detailed [documentation here](https://ropensci.github.io/biomartr/articles/).
+
+
+### Citation
+
+**I develop `biomartr` in my spare time and would be very grateful if you could cite the following paper in case `biomartr` was useful for your own research. I plan on vastly extending the biomartr functionality and usability in the next years to facilitate reproducible genomics research and require citations to back up these efforts. Many thanks in advance :)**
+
+> Drost HG, Paszkowski J. __Biomartr: genomic data retrieval with R__. *Bioinformatics* (2017) 33(8): 1216-1217. [doi:10.1093/bioinformatics/btw821](https://academic.oup.com/bioinformatics/article/doi/10.1093/bioinformatics/btw821/2931816/Biomartr-genomic-data-retrieval-with-R).
+
 
 ### Short package description:
 
@@ -33,18 +42,28 @@ In detail, `biomartr` automates genome, proteome, CDS, RNA, Repeats, GFF/GTF (an
 - [NCBI RefSeq](https://www.ncbi.nlm.nih.gov/refseq/)
 - [NCBI Genbank](https://www.ncbi.nlm.nih.gov/genbank/)
 - [ENSEMBL](https://www.ensembl.org/index.html)
-- [ENSEMBLGENOMES](http://ensemblgenomes.org)
+- [ENSEMBLGENOMES](http://ensemblgenomes.org) (as of April 2019 - `ENSEMBL` and `ENSEMBLGENOMES` were joined - see [details here](http://www.ensembl.info/2019/03/08/joint-rest-server-for-ensembl-and-ensembl-genomes-in-ensembl-96/))
 - [UniProt](http://www.uniprot.org)
 
-Furthermore, an interface to the [Ensembl Biomart](www.ensembl.org/biomart) database allows users to retrieve functional annotation for genomic loci using a novel and organism centric search strategy. In addition, users can [download entire databases](https://github.com/HajkD/biomartr/blob/master/vignettes/Database_Retrieval.Rmd) such as `NCBI RefSeq`, `NCBI nr`, `NCBI nt`, `NCBI Genbank`, etc. as well as `ENSEMBL` and `ENSEMBLGENOMES` with only one command.
+Furthermore, an interface to the [Ensembl Biomart](www.ensembl.org/biomart) database allows users to retrieve functional annotation for genomic loci using a novel and organism centric search strategy. In addition, users can [download entire databases](https://github.com/HajkD/biomartr/blob/master/vignettes/Database_Retrieval.Rmd) such as 
 
-### Citation
+- `NCBI RefSeq` 
+- `NCBI nr` 
+- `NCBI nt`
+- `NCBI Genbank`
+- `ENSEMBL` 
 
-**I would be very greatful if you could cite the following paper in case `biomartr` was useful for your own research. I plan on vastly extending 
-the biomartr functionality and usability in the next years. Many thanks in advance :)**
+with only one command.
 
-> Drost HG, Paszkowski J. __Biomartr: genomic data retrieval with R__. *Bioinformatics* (2017) 33(8): 1216-1217. [doi:10.1093/bioinformatics/btw821](https://academic.oup.com/bioinformatics/article/doi/10.1093/bioinformatics/btw821/2931816/Biomartr-genomic-data-retrieval-with-R).
+### Similar Work
 
+The main difference between the [BiomaRt](http://www.bioconductor.org/packages/release/bioc/html/biomaRt.html) package and the [biomartr](https://ropensci.github.io/biomartr/) package is that `biomartr` extends the `functional annotation retrieval` procedure of `BiomaRt` and __in addition__ provides useful retrieval functions for genomes, proteomes, coding sequences, gff files, RNA sequences, Repeat Masker annotations files, and functions for the retrieval of entire databases such as `NCBI nr` etc.
+
+Please consult the [Tutorials section](https://ropensci.github.io/biomartr/#tutorials) for more details.
+
+`In the context of functional annotation retrieval` the `biomartr` package allows users to screen available marts using only the scientific name of an organism of interest instead of first searching for marts and datasets which support a particular organism of interest (which is required when using the `BiomaRt` package). Furthermore, `biomartr` allows you to search for particular topics when searching for attributes and filters. I am aware that the similar naming of the packages is unfortunate, but it arose due to historical reasons (please find a detailed explanation here: https://github.com/ropensci/biomartr/blob/master/FAQs.md and here [#11](https://github.com/ropensci/biomartr/issues/11)).
+
+I also dedicated [an entire vignette to compare](https://ropensci.github.io/biomartr/articles/Functional_Annotation.html) the `BiomaRt` and `biomartr` package functionality in the context of `Functional Annotation` (where their functionality overlaps which comprises about only 20% of the overall functionality of the biomartr package).
 
 ### Feedback
 >__I truly value your opinion and improvement suggestions. Hence, I would be extremely grateful if you could take this 1 minute and 3 question survey (https://goo.gl/forms/Qaoxxjb1EnNSLpM02) so that I can learn how to improve `biomartr` in the best possible way. Many many thanks in advance.__
@@ -52,17 +71,32 @@ the biomartr functionality and usability in the next years. Many thanks in advan
 
 ## Installation
 
+The `biomartr` package relies on some [Bioconductor](https://www.bioconductor.org/install/) tools and thus requires
+installation of the following packages:
+
 ```r
-# install biomartr 0.8.0
-source("http://bioconductor.org/biocLite.R")
-biocLite('biomartr')
+# Install core Bioconductor packages
+if (!requireNamespace("BiocManager"))
+    install.packages("BiocManager")
+BiocManager::install()
+# Install package dependencies
+BiocManager::install("Biostrings", version = "3.8")
+BiocManager::install("biomaRt", version = "3.8")
+
+```
+
+Now users can install `biomartr` from CRAN:
+
+```r
+# install biomartr 0.9.0
+install.packages("biomartr", dependencies = TRUE)
 ```
 
 ## Example
 
 ### Collection Retrieval
 
-The automated retrieval of collections (= Genome, Proteome, CDS, RNA, GFF, Repeat Masker, AssemblyStats)
+The automated retrieval of collections (= Genome, Proteome, CDS, RNA, GFF, Repeat Masker, AssemblyStats files)
 will make sure that the genome file of an organism will match the CDS, proteome, RNA, GFF, etc file
 and was generated using the same genome assembly version. One aspect of why genomics studies
 fail in computational and biological reproducibility is that it is not clear whether CDS, proteome, RNA, GFF, etc files
@@ -75,9 +109,7 @@ to the respective genomics study to ensure computational and biological reproduc
 
 ```r
 # download collection for Saccharomyces cerevisiae
-getCollection( db = "refseq", 
-               organism = "Saccharomyces cerevisiae", 
-               path = file.path("refseq","Collections"))
+biomartr::getCollection( db = "refseq", organism = "Saccharomyces cerevisiae")
 ```
 
 Internally, the `getCollection()` function will now generate a folder named `refseq/Collection/Saccharomyces_cerevisiae`
@@ -174,8 +206,10 @@ Some bug fixes or new functionality will not be available on CRAN yet, but in th
 
 ```r
 # install the current version of biomartr on your system
-source("http://bioconductor.org/biocLite.R")
-biocLite("ropensci/biomartr")
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("ropensci/biomartr")
 ```
 
 ## Genomic Data Retrieval
@@ -188,6 +222,7 @@ biocLite("ropensci/biomartr")
 * `getMetaGenomeAnnotations()` : Retrieve annotation *.gff files for metagenomes from NCBI Genbank
 * `listMetaGenomes()` : List available metagenomes on NCBI Genbank
 * `getMetaGenomeSummary()` : Helper function to retrieve the assembly_summary.txt file from NCBI genbank metagenomes
+* `clean.retrieval()`: Format meta.retrieval output
 
 #### Genome Retrieval
 
@@ -199,9 +234,13 @@ biocLite("ropensci/biomartr")
 * `is.genome.available()` : Check Genome Availability  NCBI and ENSEMBL servers
 * `getCollection()` : Retrieve a Collection: Genome, Proteome, CDS, RNA, GFF, Repeat Masker, AssemblyStats
 * `getGenome()` : Download a specific genome stored on NCBI and ENSEMBL servers
+* `getGenomeSet()` : Genome Retrieval of multiple species
 * `getProteome()` : Download a specific proteome stored on NCBI and ENSEMBL servers
+* `getProteomeSet()` : Proteome Retrieval of multiple species
 * `getCDS()` : Download a specific CDS file (genome) stored on NCBI and ENSEMBL servers
+* `getCDSSet()` : CDS Retrieval of multiple species
 * `getRNA()` : Download a specific RNA file stored on NCBI and ENSEMBL servers
+* `getRNASet()` : RNA Retrieval of multiple species
 * `getGFF()` : Genome Annotation Retrieval from NCBI (`*.gff`) and ENSEMBL (`*.gff3`) servers
 * `getGTF()` : Genome Annotation Retrieval (`*.gtf`) from ENSEMBL servers
 * `getRepeatMasker() :` Repeat Masker TE Annotation Retrieval

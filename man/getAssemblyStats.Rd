@@ -4,7 +4,7 @@
 \alias{getAssemblyStats}
 \title{Genome Assembly Stats Retrieval}
 \usage{
-getAssemblyStats(db = "refseq", organism, reference = TRUE,
+getAssemblyStats(db = "refseq", organism, reference = FALSE,
   type = "download", path = file.path("_ncbi_downloads",
   "genomeassembly_stats"))
 }
@@ -15,7 +15,6 @@ shall be retrieved:
 \item \code{db = "refseq"}
 \item \code{db = "genbank"}
 \item \code{db = "ensembl"}
-\item \code{db = "ensemblgenomes"}
 }}
 
 \item{organism}{a character string specifying the scientific name of the 

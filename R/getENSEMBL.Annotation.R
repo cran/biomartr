@@ -4,6 +4,7 @@
 #' @param organism scientific name of the organism of interest.
 #' @param type specification type.
 #' @param id.type id type.
+#' @param release the ENSEMBL release. Default is \code{release = NULL} meaning that the current (most recent) version is used.
 #' @param path location where file shall be stored.
 #' @author Hajk-Georg Drost
 #' @noRd
@@ -12,6 +13,7 @@ getENSEMBL.Annotation <-
     function(organism,
              type = "dna",
              id.type = "toplevel",
+             release = NULL,
              path) {
         
         if (!is.element(type, c("dna", "cds", "pep")))
@@ -92,21 +94,35 @@ getENSEMBL.Annotation <-
             # col_names = TRUE, delim = "\t")
         }
         
+        release_api <- jsonlite::fromJSON(
+                "http://rest.ensembl.org/info/data/?content-type=application/json"
+        )$releases
         
-            
+        if (!is.null(release)){
+                if (!is.element(release, seq_len(as.integer(release_api))))
+                        stop("Please provide a release number that is supported by ENSEMBL.", call. = FALSE)
+        }
+        
+        # construct retrieval query
+        if (is.null(release))
+                core_path <- "ftp://ftp.ensembl.org/pub/current_gff3/"
+        
+        if (!is.null(release))
+                core_path <- paste0("ftp://ftp.ensembl.org/pub/release-", release ,"/gff3/")
+        
             json.qry.info <- rest_api_status
         # construct retrieval query
         ensembl.qry <-
             paste0(
-                "ftp://ftp.ensembl.org/pub/current_gff3/",
+                    core_path,
                 stringr::str_to_lower(new.organism),
                 "/",
                 paste0(
-                    new.organism,
+                    stringr::str_to_title(new.organism, locale = "en"),
                     ".",
                     json.qry.info$default_coord_system_version,
                     ".",
-                    ensembl.available.organisms$release[1],
+                    ifelse(is.null(release), ensembl.available.organisms$release[1], release),
                     ".gff3.gz"
                 )
             )
@@ -114,11 +130,11 @@ getENSEMBL.Annotation <-
         if (file.exists(file.path(
             path,
             paste0(
-                new.organism,
+                stringr::str_to_title(new.organism, locale = "en"),
                 ".",
                 json.qry.info$default_coord_system_version,
                 ".",
-                ensembl.available.organisms$release[1],
+                ifelse(is.null(release), ensembl.available.organisms$release[1], release),
                 "_ensembl",
                 ".gff3.gz"
             )
@@ -128,11 +144,11 @@ getENSEMBL.Annotation <-
                 file.path(
                     path,
                     paste0(
-                        new.organism,
+                        stringr::str_to_title(new.organism, locale = "en"),
                         ".",
                         json.qry.info$default_coord_system_version,
                         ".",
-                        ensembl.available.organisms$release[1],
+                        ifelse(is.null(release), ensembl.available.organisms$release[1], release),
                         "_ensembl",
                         ".gff3.gz"
                     )
@@ -140,42 +156,45 @@ getENSEMBL.Annotation <-
                 " exists already. Thus, download has been skipped."
             )
         } else {
-            tryCatch({
-                custom_download(ensembl.qry,
-                                destfile = file.path(
-                                    path,
-                                    paste0(
-                                        new.organism,
-                                        ".",
-                                json.qry.info$default_coord_system_version,
-                                        ".",
-                                        ensembl.available.organisms$release[1],
-                                        "_ensembl",
-                                        ".gff3.gz"
-                                    )
-                                ),
-                                mode = "wb")
-            }, error = function(e)
-                stop(
-                    "The FTP site of ENSEMBL 
-                    'ftp://ftp.ensembl.org/pub/current_gff3/' does not seem to 
-                    work properly. Are you connected to the internet? 
-                    Is the site 'ftp://ftp.ensembl.org/pub/current_gff3/' or 
-                    'http://rest.ensembl.org' currently available?",
-                    call. = FALSE
-                ))
+                tryCatch({
+                        custom_download(ensembl.qry,
+                                        destfile = file.path(
+                                                path,
+                                                paste0(
+                                                        stringr::str_to_title(new.organism, locale = "en"),
+                                                        ".",
+                                                        json.qry.info$default_coord_system_version,
+                                                        ".",
+                                                        ifelse(
+                                                                is.null(release),
+                                                                ensembl.available.organisms$release[1],
+                                                                release
+                                                        ),
+                                                        "_ensembl",
+                                                        ".gff3.gz"
+                                                )
+                                        ),
+                                        mode = "wb")
+                }, error = function(e) {
+                        stop(
+                                "Something went wrong when trying to retrieve file ",
+                                ensembl.qry,
+                                " from ENSEMBL. Could it be that the species ",
+                                organism,
+                                " does not have an entry for your specified release version?", call. = FALSE
+                        )
+                })
         }
-        
-        return(file.path(
+        return(c(file.path(
             path,
             paste0(
-                new.organism,
+                stringr::str_to_title(new.organism, locale = "en"),
                 ".",
                 json.qry.info$default_coord_system_version,
                 ".",
-                ensembl.available.organisms$release[1],
+                ifelse(is.null(release), ensembl.available.organisms$release[1], release),
                 "_ensembl",
                 ".gff3.gz"
             )
-        ))
+        ), ensembl.qry))
 }

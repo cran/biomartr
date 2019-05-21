@@ -11,54 +11,287 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-06-27" />
+<meta name="date" content="2019-05-21" />
 
 <title>Functional Annotation with biomartr</title>
 
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+<style type="text/css" data-origin="pandoc">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
 
-<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
 
 </head>
 
@@ -68,7 +301,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 <h1 class="title toc-ignore">Functional Annotation with biomartr</h1>
-<h4 class="date"><em>2018-06-27</em></h4>
+<h4 class="date">2019-05-21</h4>
 
 
 
@@ -86,63 +319,47 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Hence, when users wish to retrieve information for a specific organism of interest, they first need to specify a particular <code>mart</code> and <code>dataset</code> in which the information of the corresponding organism of interest can be found. Subsequently they can specify the <code>attributes</code> argument to retrieve a particular type of functional annotation (e.g. Gene Ontology terms).</p>
 <p>The following section shall illustrate how <code>marts</code>, <code>datasets</code>, and <code>attributes</code> could be explored using <code>biomaRt</code> before the <code>biomartr</code> package existed.</p>
 <p>The availability of <code>marts</code>, <code>datasets</code>, and <code>attributes</code> can be checked by the following functions:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># install the biomaRt package       </span>
-<span class="co"># source(&quot;http://bioconductor.org/biocLite.R&quot;)      </span>
-<span class="co"># biocLite(&quot;biomaRt&quot;)       </span>
-<span class="co"># load biomaRt      </span>
-<span class="kw">library</span>(biomaRt)        
-<span class="co"># look at top 10 databases      </span>
-<span class="kw">head</span>(biomaRt<span class="op">::</span><span class="kw">listMarts</span>(<span class="dt">host =</span> <span class="st">&quot;www.ensembl.org&quot;</span>), <span class="dv">10</span>)      </code></pre></div>
-<pre><code>#&gt;                biomart               version
-#&gt; 1 ENSEMBL_MART_ENSEMBL      Ensembl Genes 92
-#&gt; 2   ENSEMBL_MART_MOUSE      Mouse strains 92
-#&gt; 3     ENSEMBL_MART_SNP  Ensembl Variation 92
-#&gt; 4 ENSEMBL_MART_FUNCGEN Ensembl Regulation 92</code></pre>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># install the biomaRt package       </span></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="co"># source(&quot;http://bioconductor.org/biocLite.R&quot;)      </span></a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co"># biocLite(&quot;biomaRt&quot;)       </span></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co"># load biomaRt      </span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(biomaRt)        </a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co"># look at top 10 databases      </span></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">head</span>(biomaRt<span class="op">::</span><span class="kw">listMarts</span>(<span class="dt">host =</span> <span class="st">&quot;www.ensembl.org&quot;</span>), <span class="dv">10</span>)      </a></code></pre></div>
 <p>Users will observe that several <code>marts</code> providing annotation for specific classes of organisms or groups of organisms are available.</p>
 <p>For our example, we will choose the <code>hsapiens_gene_ensembl</code> <code>mart</code> and list all available datasets that are element of this <code>mart</code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(biomaRt<span class="op">::</span><span class="kw">listDatasets</span>(biomaRt<span class="op">::</span><span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>, <span class="dt">host =</span> <span class="st">&quot;www.ensembl.org&quot;</span>)), <span class="dv">10</span>)     </code></pre></div>
-<pre><code>#&gt;                        dataset                                  description            version
-#&gt; 1   acarolinensis_gene_ensembl               Anole lizard genes (AnoCar2.0)          AnoCar2.0
-#&gt; 2    amelanoleuca_gene_ensembl                        Panda genes (ailMel1)            ailMel1
-#&gt; 3      amexicanus_gene_ensembl                  Cave fish genes (AstMex102)          AstMex102
-#&gt; 4      anancymaae_gene_ensembl           Ma's night monkey genes (Anan_2.0)           Anan_2.0
-#&gt; 5  aplatyrhynchos_gene_ensembl                    Duck genes (BGI_duck_1.0)       BGI_duck_1.0
-#&gt; 6         btaurus_gene_ensembl                           Cow genes (UMD3.1)             UMD3.1
-#&gt; 7         caperea_gene_ensembl        Brazilian guinea pig genes (CavAp1.0)           CavAp1.0
-#&gt; 8           catys_gene_ensembl              Sooty mangabey genes (Caty_1.0)           Caty_1.0
-#&gt; 9      ccapucinus_gene_ensembl          Capuchin genes (Cebus_imitator-1.0) Cebus_imitator-1.0
-#&gt; 10     cchok1gshd_gene_ensembl Chinese hamster CHOK1GS genes (CHOK1GS_HDv1)       CHOK1GS_HDv1</code></pre>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">head</span>(biomaRt<span class="op">::</span><span class="kw">listDatasets</span>(biomaRt<span class="op">::</span><span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>, <span class="dt">host =</span> <span class="st">&quot;www.ensembl.org&quot;</span>)), <span class="dv">10</span>)     </a></code></pre></div>
 <p>The <code>useMart()</code> function is a wrapper function provided by <code>biomaRt</code> to connect a selected BioMart database (<code>mart</code>) with a corresponding dataset stored within this <code>mart</code>.<br />
 We select dataset <code>hsapiens_gene_ensembl</code> and now check for available attributes (annotation data) that can be accessed for <code>Homo sapiens</code> genes.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(biomaRt<span class="op">::</span><span class="kw">listAttributes</span>(biomaRt<span class="op">::</span><span class="kw">useDataset</span>(
-                                         <span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>,         
-                                         <span class="dt">mart    =</span> <span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>,      
-                                         <span class="dt">host    =</span> <span class="st">&quot;www.ensembl.org&quot;</span>))), <span class="dv">10</span>)        </code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">head</span>(biomaRt<span class="op">::</span><span class="kw">listAttributes</span>(biomaRt<span class="op">::</span><span class="kw">useDataset</span>(</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">                                         <span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>,         </a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">                                         <span class="dt">mart    =</span> <span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>,      </a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">                                         <span class="dt">host    =</span> <span class="st">&quot;www.ensembl.org&quot;</span>))), <span class="dv">10</span>)        </a></code></pre></div>
 <p>Please note the nested structure of this attribute query. For an attribute query procedure an additional wrapper function named <code>useDataset()</code> is needed in which <code>useMart()</code> and a corresponding dataset needs to be specified. The result is a table storing the name of available attributes for<br />
 <em>Homo sapiens</em> as well as a short description.</p>
 <p>Furthermore, users can retrieve all filters for <em>Homo sapiens</em> that can be specified by the actual BioMart query process.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="kw">head</span>(biomaRt<span class="op">::</span><span class="kw">listFilters</span>(biomaRt<span class="op">::</span><span class="kw">useDataset</span>(<span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>,       
-                                               <span class="dt">mart    =</span> <span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>,        
-                                               <span class="dt">host    =</span> <span class="st">&quot;www.ensembl.org&quot;</span>))), <span class="dv">10</span>)      </code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"> <span class="kw">head</span>(biomaRt<span class="op">::</span><span class="kw">listFilters</span>(biomaRt<span class="op">::</span><span class="kw">useDataset</span>(<span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>,       </a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">                                               <span class="dt">mart    =</span> <span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>,        </a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">                                               <span class="dt">host    =</span> <span class="st">&quot;www.ensembl.org&quot;</span>))), <span class="dv">10</span>)      </a></code></pre></div>
 <p>After accumulating all this information, it is now possible to perform an actual BioMart query by using the <code>getBM()</code> function.</p>
 <p>In this example we will retrieve attributes: <code>start_position</code>,<code>end_position</code> and <code>description</code><br />
 for the <em>Homo sapiens</em> gene <code>&quot;GUCA2A&quot;</code>.</p>
 <p>Since the input genes are <code>ensembl gene ids</code>, we need to specify the <code>filters</code> argument <code>filters = &quot;hgnc_symbol&quot;</code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"> <span class="co"># 1) select a mart and data set        </span>
- mart &lt;-<span class="st"> </span>biomaRt<span class="op">::</span><span class="kw">useDataset</span>(<span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>,         
-                    <span class="dt">mart    =</span> <span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>,       
-                    <span class="dt">host    =</span> <span class="st">&quot;www.ensembl.org&quot;</span>))       
-        
- <span class="co"># 2) run a biomart query using the getBM() function        </span>
- <span class="co"># and specify the attributes and filter arguments      </span>
- geneSet &lt;-<span class="st"> &quot;GUCA2A&quot;</span>        
-        
- resultTable &lt;-<span class="st"> </span>biomaRt<span class="op">::</span><span class="kw">getBM</span>(<span class="dt">attributes =</span> <span class="kw">c</span>(<span class="st">&quot;start_position&quot;</span>,<span class="st">&quot;end_position&quot;</span>,<span class="st">&quot;description&quot;</span>),       
-                      <span class="dt">filters    =</span> <span class="st">&quot;hgnc_symbol&quot;</span>,       
-                      <span class="dt">values     =</span> geneSet,         
-                      <span class="dt">mart       =</span> mart)        
-        
- resultTable        </code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"> <span class="co"># 1) select a mart and data set        </span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"> mart &lt;-<span class="st"> </span>biomaRt<span class="op">::</span><span class="kw">useDataset</span>(<span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>,         </a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">                    <span class="dt">mart    =</span> <span class="kw">useMart</span>(<span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>,       </a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">                    <span class="dt">host    =</span> <span class="st">&quot;www.ensembl.org&quot;</span>))       </a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">        </a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"> <span class="co"># 2) run a biomart query using the getBM() function        </span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"> <span class="co"># and specify the attributes and filter arguments      </span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"> geneSet &lt;-<span class="st"> &quot;GUCA2A&quot;</span>        </a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">        </a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"> resultTable &lt;-<span class="st"> </span>biomaRt<span class="op">::</span><span class="kw">getBM</span>(<span class="dt">attributes =</span> <span class="kw">c</span>(<span class="st">&quot;start_position&quot;</span>,<span class="st">&quot;end_position&quot;</span>,<span class="st">&quot;description&quot;</span>),       </a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">                      <span class="dt">filters    =</span> <span class="st">&quot;hgnc_symbol&quot;</span>,       </a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">                      <span class="dt">values     =</span> geneSet,         </a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">                      <span class="dt">mart       =</span> mart)        </a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">        </a>
+<a class="sourceLine" id="cb5-15" data-line-number="15"> resultTable        </a></code></pre></div>
 <p>When using <code>getBM()</code> users can pass all attributes retrieved by <code>listAttributes()</code> to the <code>attributes</code> argument of the <code>getBM()</code> function.</p>
 </div>
 </div>
@@ -166,36 +383,93 @@ for the <em>Homo sapiens</em> gene <code>&quot;GUCA2A&quot;</code>.</p>
 <div id="retrieve-available-marts" class="section level3">
 <h3>Retrieve Available Marts</h3>
 <p>The <code>getMarts()</code> function allows users to list all available databases that can be accessed through BioMart interfaces.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the biomartr package</span>
-<span class="kw">library</span>(biomartr)
-
-<span class="co"># list all available databases</span>
-biomartr<span class="op">::</span><span class="kw">getMarts</span>()</code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># load the biomartr package</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">library</span>(biomartr)</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co"># list all available databases</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">biomartr<span class="op">::</span><span class="kw">getMarts</span>()</a></code></pre></div>
+<pre><code>  mart                  version                       
+   &lt;chr&gt;                 &lt;chr&gt;                         
+ 1 ENSEMBL_MART_ENSEMBL  Ensembl Genes 92              
+ 2 ENSEMBL_MART_MOUSE    Mouse strains 92              
+ 3 ENSEMBL_MART_SEQUENCE Sequence                      
+ 4 ENSEMBL_MART_ONTOLOGY Ontology                      
+ 5 ENSEMBL_MART_GENOMIC  Genomic features 92           
+ 6 ENSEMBL_MART_SNP      Ensembl Variation 92          
+ 7 ENSEMBL_MART_FUNCGEN  Ensembl Regulation 92         
+ 8 plants_mart           Ensembl Plants Genes 39       
+ 9 plants_variations     Ensembl Plants Variations 39  
+10 fungi_mart            Ensembl Fungi Genes 39        
+11 fungi_variations      Ensembl Fungi Variations 39   
+12 protists_mart         Ensembl Protists Genes 39     
+13 protists_variations   Ensembl Protists Variations 39
+14 metazoa_mart          Ensembl Metazoa Genes 39      
+15 metazoa_variations    Ensembl Metazoa Variations 39 </code></pre>
 </div>
 <div id="retrieve-available-datasets-from-a-specific-mart" class="section level3">
 <h3>Retrieve Available Datasets from a Specific Mart</h3>
 <p>Now users can select a specific database to list all available datasets that can be accessed through this database. In this example we choose the <code>ENSEMBL_MART_ENSEMBL</code> database.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">getDatasets</span>(<span class="dt">mart =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>) , <span class="dv">5</span>)</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">getDatasets</span>(<span class="dt">mart =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>) , <span class="dv">5</span>)</a></code></pre></div>
+<pre><code> dataset                description                         version        
+  &lt;chr&gt;                  &lt;chr&gt;                               &lt;chr&gt;          
+1 pabelii_gene_ensembl   Orangutan genes (PPYG2)             PPYG2          
+2 mpahari_gene_ensembl   Shrew mouse genes (PAHARI_EIJ_v1.1) PAHARI_EIJ_v1.1
+3 mspretus_gene_ensembl  Algerian mouse genes (SPRET_EiJ_v1) SPRET_EiJ_v1   
+4 chircus_gene_ensembl   Goat genes (ARS1)                   ARS1           
+5 trubripes_gene_ensembl Fugu genes (FUGU 4.0)               FUGU 4.0  </code></pre>
 <p>Now you can select the dataset <code>hsapiens_gene_ensembl</code> and list all available attributes that can be retrieved from this dataset.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tail</span>(biomartr<span class="op">::</span><span class="kw">getDatasets</span>(<span class="dt">mart =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>) , <span class="dv">38</span>)</code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">tail</span>(biomartr<span class="op">::</span><span class="kw">getDatasets</span>(<span class="dt">mart =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>) , <span class="dv">38</span>)</a></code></pre></div>
+<pre><code>1 xtropicalis_gene_ensembl Xenopus genes (JGI 4.2)                JGI 4.2     
+ 2 saraneus_gene_ensembl    Shrew genes (sorAra1)                  sorAra1     
+ 3 nleucogenys_gene_ensembl Gibbon genes (Nleu_3.0)                Nleu_3.0    
+ 4 vpacos_gene_ensembl      Alpaca genes (vicPac1)                 vicPac1     
+ 5 pcoquereli_gene_ensembl  Coquerel's sifaka genes (Pcoq_1.0)     Pcoq_1.0    
+ 6 ggallus_gene_ensembl     Chicken genes (Gallus_gallus-5.0)      Gallus_gall…
+ 7 csavignyi_gene_ensembl   C.savignyi genes (CSAV 2.0)            CSAV 2.0    
+ 8 ngalili_gene_ensembl     Upper Galilee mountains blind mole ra… S.galili_v1…
+ 9 rroxellana_gene_ensembl  Golden snub-nosed monkey genes (Rrox_… Rrox_v1     
+10 mnemestrina_gene_ensembl Pig-tailed macaque genes (Mnem_1.0)    Mnem_1.0    
+# ... with 28 more rows</code></pre>
 </div>
 <div id="retrieve-available-attributes-from-a-specific-dataset" class="section level3">
 <h3>Retrieve Available Attributes from a Specific Dataset</h3>
 <p>Now that you have selected a database (<code>hsapiens_gene_ensembl</code>) and a dataset (<code>hsapiens_gene_ensembl</code>), users can list all available attributes for this dataset using the <code>getAttributes()</code> function.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-<span class="co"># list all available attributes for dataset: hsapiens_gene_ensembl</span>
-<span class="kw">head</span>( biomartr<span class="op">::</span><span class="kw">getAttributes</span>(<span class="dt">mart    =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>, 
-                              <span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>), <span class="dv">10</span> )</code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="co"># list all available attributes for dataset: hsapiens_gene_ensembl</span></a>
+<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="kw">head</span>( biomartr<span class="op">::</span><span class="kw">getAttributes</span>(<span class="dt">mart    =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>, </a>
+<a class="sourceLine" id="cb12-5" data-line-number="5">                              <span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>), <span class="dv">10</span> )</a></code></pre></div>
+<pre><code>                            name                  description
+1                ensembl_gene_id               Gene stable ID
+2        ensembl_gene_id_version       Gene stable ID version
+3          ensembl_transcript_id         Transcript stable ID
+4  ensembl_transcript_id_version Transcript stable ID version
+5             ensembl_peptide_id            Protein stable ID
+6     ensembl_peptide_id_version    Protein stable ID version
+7                ensembl_exon_id               Exon stable ID
+8                    description             Gene description
+9                chromosome_name     Chromosome/scaffold name
+10                start_position              Gene start (bp)</code></pre>
 </div>
 <div id="retrieve-available-filters-from-a-specific-dataset" class="section level3">
 <h3>Retrieve Available Filters from a Specific Dataset</h3>
 <p>Finally, the <code>getFilters()</code> function allows users to list available filters for a specific dataset that can be used for a <code>biomart()</code> query.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-<span class="co"># list all available filters for dataset: hsapiens_gene_ensembl</span>
-<span class="kw">head</span>( biomartr<span class="op">::</span><span class="kw">getFilters</span>(<span class="dt">mart    =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>, 
-                           <span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>), <span class="dv">10</span> )</code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="co"># list all available filters for dataset: hsapiens_gene_ensembl</span></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="kw">head</span>( biomartr<span class="op">::</span><span class="kw">getFilters</span>(<span class="dt">mart    =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>, </a>
+<a class="sourceLine" id="cb14-5" data-line-number="5">                           <span class="dt">dataset =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>), <span class="dv">10</span> )</a></code></pre></div>
+<pre><code>                 name                            description
+1     chromosome_name               Chromosome/scaffold name
+2               start                                  Start
+3                 end                                    End
+4          band_start                             Band Start
+5            band_end                               Band End
+6        marker_start                           Marker Start
+7          marker_end                             Marker End
+8       encode_region                          Encode region
+9              strand                                 Strand
+10 chromosomal_region e.g. 1:100:10000:-1, 1:100000:200000:1</code></pre>
 </div>
 </div>
 <div id="organism-specific-retrieval-of-information" class="section level2">
@@ -203,78 +477,233 @@ biomartr<span class="op">::</span><span class="kw">getMarts</span>()</code></pre
 <p>In most use cases, users will work with a single or a set of model organisms. In this process they will mostly be interested in specific annotations for this particular model organism. The <code>organismBM()</code> function addresses this issue and provides users with an organism centric query to <code>marts</code> and <code>datasets</code> which are available for a particular organism of interest.</p>
 <p><strong>Note</strong> that when running the following functions for the first time, the data retrieval procedure will take some time, due to the remote access to BioMart. The corresponding result is then saved in a <code>*.txt</code> file named <code>_biomart/listDatasets.txt</code> within the <code>tempdir()</code> folder, allowing subsequent queries to be performed much faster. The <code>tempdir()</code> folder, however, will be deleted after a new R session was established. In this case the inital call of the subsequent functions again will take time to retrieve all organism specific data from the BioMart database.</p>
 <p>This concept of locally storing all organism specific database linking information available in BioMart into an internal file allows users to significantly speed up subsequent retrieval queries for that particular organism.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-<span class="co"># retrieving all available datasets and biomart connections for</span>
-<span class="co"># a specific query organism (scientific name)</span>
-biomartr<span class="op">::</span><span class="kw">organismBM</span>(<span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="co"># retrieving all available datasets and biomart connections for</span></a>
+<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="co"># a specific query organism (scientific name)</span></a>
+<a class="sourceLine" id="cb16-5" data-line-number="5">biomartr<span class="op">::</span><span class="kw">organismBM</span>(<span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>)</a></code></pre></div>
+<pre><code>   organism_name description                    mart      dataset       version
+   &lt;chr&gt;         &lt;chr&gt;                          &lt;chr&gt;     &lt;chr&gt;         &lt;chr&gt;  
+ 1 hsapiens      Human genes (GRCh38.p12)       ENSEMBL_… hsapiens_gen… GRCh38…
+ 2 hsapiens      Human sequences (GRCh38.p12)   ENSEMBL_… hsapiens_gen… GRCh38…
+ 3 hsapiens      marker_feature                 ENSEMBL_… hsapiens_mar… GRCh38…
+ 4 hsapiens      karyotype_start                ENSEMBL_… hsapiens_kar… GRCh38…
+ 5 hsapiens      encode                         ENSEMBL_… hsapiens_enc… GRCh38…
+ 6 hsapiens      marker_feature_end             ENSEMBL_… hsapiens_mar… GRCh38…
+ 7 hsapiens      karyotype_end                  ENSEMBL_… hsapiens_kar… GRCh38…
+ 8 hsapiens      Human Short Variants (SNPs an… ENSEMBL_… hsapiens_snp  GRCh38…
+ 9 hsapiens      Human Somatic Short Variants … ENSEMBL_… hsapiens_snp… GRCh38…
+10 hsapiens      Human Somatic Structural Vari… ENSEMBL_… hsapiens_str… GRCh38…
+11 hsapiens      Human Structural Variants (GR… ENSEMBL_… hsapiens_str… GRCh38…
+12 hsapiens      Human Regulatory Features (GR… ENSEMBL_… hsapiens_reg… GRCh38…
+13 hsapiens      Human miRNA Target Regions (G… ENSEMBL_… hsapiens_mir… GRCh38…
+14 hsapiens      Human Binding Motifs (GRCh38.… ENSEMBL_… hsapiens_mot… GRCh38…
+15 hsapiens      Human Other Regulatory Region… ENSEMBL_… hsapiens_ext… GRCh38…
+16 hsapiens      Human Regulatory Evidence (GR… ENSEMBL_… hsapiens_peak GRCh38…</code></pre>
 <p>The result is a table storing all <code>marts</code> and <code>datasets</code> from which annotations can be retrieved for <em>Homo sapiens</em>. Furthermore, a short description as well as the version of the dataset being accessed (very useful for publications) is returned.</p>
 <p>Users will observe that 3 different <code>marts</code> provide 6 different <code>datasets</code> storing annotation information for <em>Homo sapiens</em>.</p>
 <p><strong>Please note, however, that scientific names of organisms must be written correctly! For ex. “Homo Sapiens” will be treated differently (not recognized) than “Homo sapiens” (recognized).</strong></p>
 <p>Similar to the <code>biomaRt</code> package query methodology, users need to specify <code>attributes</code> and <code>filters</code> to be able to perform accurate BioMart queries. Here the functions <code>organismAttributes()</code> and <code>organismFilters()</code> provide useful and intuitive concepts to obtain this information.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-<span class="co"># return available attributes for &quot;Homo sapiens&quot;</span>
-<span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>), <span class="dv">20</span>)</code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb18-3" data-line-number="3"><span class="co"># return available attributes for &quot;Homo sapiens&quot;</span></a>
+<a class="sourceLine" id="cb18-4" data-line-number="4"><span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>), <span class="dv">20</span>)</a></code></pre></div>
+<pre><code>1 ensembl_gene_id               Gene stable ID         hsapiens_ge… ENSEMBL_M…
+ 2 ensembl_gene_id_version       Gene stable ID version hsapiens_ge… ENSEMBL_M…
+ 3 ensembl_transcript_id         Transcript stable ID   hsapiens_ge… ENSEMBL_M…
+ 4 ensembl_transcript_id_version Transcript stable ID … hsapiens_ge… ENSEMBL_M…
+ 5 ensembl_peptide_id            Protein stable ID      hsapiens_ge… ENSEMBL_M…
+ 6 ensembl_peptide_id_version    Protein stable ID ver… hsapiens_ge… ENSEMBL_M…
+ 7 ensembl_exon_id               Exon stable ID         hsapiens_ge… ENSEMBL_M…
+ 8 description                   Gene description       hsapiens_ge… ENSEMBL_M…
+ 9 chromosome_name               Chromosome/scaffold n… hsapiens_ge… ENSEMBL_M…
+10 start_position                Gene start (bp)        hsapiens_ge… ENSEMBL_M…
+11 end_position                  Gene end (bp)          hsapiens_ge… ENSEMBL_M…
+12 strand                        Strand                 hsapiens_ge… ENSEMBL_M…
+13 band                          Karyotype band         hsapiens_ge… ENSEMBL_M…
+14 transcript_start              Transcript start (bp)  hsapiens_ge… ENSEMBL_M…
+15 transcript_end                Transcript end (bp)    hsapiens_ge… ENSEMBL_M…
+16 transcription_start_site      Transcription start s… hsapiens_ge… ENSEMBL_M…
+17 transcript_length             Transcript length (in… hsapiens_ge… ENSEMBL_M…
+18 transcript_tsl                Transcript support le… hsapiens_ge… ENSEMBL_M…
+19 transcript_gencode_basic      GENCODE basic annotat… hsapiens_ge… ENSEMBL_M…
+20 transcript_appris             APPRIS annotation      hsapiens_ge… ENSEMBL_M…</code></pre>
 <p>Users will observe that the <code>organismAttributes()</code> function returns a data.frame storing attribute names, datasets, and marts which are available for <code>Homo sapiens</code>. After the ENSEMBL release 87 the <code>ENSEMBL_MART_SEQUENCE</code> service provided by Ensembl does not work properly and thus the <code>organismAttributes()</code> function prints out warning messages to make the user aware when certain marts provided bt Ensembl do not work properly, yet.</p>
 <p>An additional feature provided by <code>organismAttributes()</code> is the <code>topic</code> argument. The <code>topic</code> argument allows users to to search for specific attributes, topics, or categories for faster filtering.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-<span class="co"># search for attribute topic &quot;id&quot;</span>
-<span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>), <span class="dv">20</span>)</code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb20-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb20-3" data-line-number="3"><span class="co"># search for attribute topic &quot;id&quot;</span></a>
+<a class="sourceLine" id="cb20-4" data-line-number="4"><span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>), <span class="dv">20</span>)</a></code></pre></div>
+<pre><code>  name                          description            dataset      mart      
+   &lt;chr&gt;                         &lt;chr&gt;                  &lt;chr&gt;        &lt;chr&gt;     
+ 1 ensembl_gene_id               Gene stable ID         hsapiens_ge… ENSEMBL_M…
+ 2 ensembl_gene_id_version       Gene stable ID version hsapiens_ge… ENSEMBL_M…
+ 3 ensembl_transcript_id         Transcript stable ID   hsapiens_ge… ENSEMBL_M…
+ 4 ensembl_transcript_id_version Transcript stable ID … hsapiens_ge… ENSEMBL_M…
+ 5 ensembl_peptide_id            Protein stable ID      hsapiens_ge… ENSEMBL_M…
+ 6 ensembl_peptide_id_version    Protein stable ID ver… hsapiens_ge… ENSEMBL_M…
+ 7 ensembl_exon_id               Exon stable ID         hsapiens_ge… ENSEMBL_M…
+ 8 study_external_id             Study external refere… hsapiens_ge… ENSEMBL_M…
+ 9 go_id                         GO term accession      hsapiens_ge… ENSEMBL_M…
+10 dbass3_id                     DataBase of Aberrant … hsapiens_ge… ENSEMBL_M…
+11 dbass5_id                     DataBase of Aberrant … hsapiens_ge… ENSEMBL_M…
+12 hgnc_id                       HGNC ID                hsapiens_ge… ENSEMBL_M…
+13 protein_id                    INSDC protein ID       hsapiens_ge… ENSEMBL_M…
+14 mim_morbid_description        MIM morbid description hsapiens_ge… ENSEMBL_M…
+15 mim_morbid_accession          MIM morbid accession   hsapiens_ge… ENSEMBL_M…
+16 mirbase_id                    miRBase ID             hsapiens_ge… ENSEMBL_M…
+17 refseq_peptide                RefSeq peptide ID      hsapiens_ge… ENSEMBL_M…
+18 refseq_peptide_predicted      RefSeq peptide predic… hsapiens_ge… ENSEMBL_M…
+19 wikigene_id                   WikiGene ID            hsapiens_ge… ENSEMBL_M…
+20 mobidblite                    MobiDBLite             hsapiens_ge… ENSEMBL_M…</code></pre>
 <p>Now, all <code>attribute names</code> having <code>id</code> as part of their <code>name</code> are being returned.</p>
 <p>Another example is <code>topic = &quot;homolog&quot;</code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-<span class="co"># search for attribute topic &quot;homolog&quot;</span>
-<span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;homolog&quot;</span>), <span class="dv">20</span>)</code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3"><span class="co"># search for attribute topic &quot;homolog&quot;</span></a>
+<a class="sourceLine" id="cb22-4" data-line-number="4"><span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;homolog&quot;</span>), <span class="dv">20</span>)</a></code></pre></div>
+<pre><code>  &lt;chr&gt;                                         &lt;chr&gt;           &lt;chr&gt;   &lt;chr&gt; 
+ 1 mspretus_homolog_ensembl_gene                 Algerian mouse… hsapie… ENSEM…
+ 2 mspretus_homolog_associated_gene_name         Algerian mouse… hsapie… ENSEM…
+ 3 mspretus_homolog_ensembl_peptide              Algerian mouse… hsapie… ENSEM…
+ 4 mspretus_homolog_chromosome                   Algerian mouse… hsapie… ENSEM…
+ 5 mspretus_homolog_chrom_start                  Algerian mouse… hsapie… ENSEM…
+ 6 mspretus_homolog_chrom_end                    Algerian mouse… hsapie… ENSEM…
+ 7 mspretus_homolog_canonical_transcript_protein Query protein … hsapie… ENSEM…
+ 8 mspretus_homolog_subtype                      Last common an… hsapie… ENSEM…
+ 9 mspretus_homolog_orthology_type               Algerian mouse… hsapie… ENSEM…
+10 mspretus_homolog_perc_id                      %id. target Al… hsapie… ENSEM…
+11 mspretus_homolog_perc_id_r1                   %id. query gen… hsapie… ENSEM…
+12 mspretus_homolog_goc_score                    Algerian mouse… hsapie… ENSEM…
+13 mspretus_homolog_wga_coverage                 Algerian mouse… hsapie… ENSEM…
+14 mspretus_homolog_dn                           dN with Algeri… hsapie… ENSEM…
+15 mspretus_homolog_ds                           dS with Algeri… hsapie… ENSEM…
+16 mspretus_homolog_orthology_confidence         Algerian mouse… hsapie… ENSEM…
+17 vpacos_homolog_ensembl_gene                   Alpaca gene st… hsapie… ENSEM…
+18 vpacos_homolog_associated_gene_name           Alpaca gene na… hsapie… ENSEM…
+19 vpacos_homolog_ensembl_peptide                Alpaca protein… hsapie… ENSEM…
+20 vpacos_homolog_chromosome                     Alpaca chromos… hsapie… ENSEM…</code></pre>
 <p>Or <code>topic = &quot;dn&quot;</code> and <code>topic = &quot;ds&quot;</code> for <code>dn</code> and <code>ds</code> value retrieval.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-<span class="co"># search for attribute topic &quot;dn&quot;</span>
-<span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;dn&quot;</span>))</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-<span class="co"># search for attribute topic &quot;ds&quot;</span>
-<span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;ds&quot;</span>))</code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb24-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb24-3" data-line-number="3"><span class="co"># search for attribute topic &quot;dn&quot;</span></a>
+<a class="sourceLine" id="cb24-4" data-line-number="4"><span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;dn&quot;</span>))</a></code></pre></div>
+<pre><code>  name                  description            dataset               mart      
+  &lt;chr&gt;                 &lt;chr&gt;                  &lt;chr&gt;                 &lt;chr&gt;     
+1 cdna_coding_start     cDNA coding start      hsapiens_gene_ensembl ENSEMBL_M…
+2 cdna_coding_end       cDNA coding end        hsapiens_gene_ensembl ENSEMBL_M…
+3 mspretus_homolog_dn   dN with Algerian mouse hsapiens_gene_ensembl ENSEMBL_M…
+4 vpacos_homolog_dn     dN with Alpaca         hsapiens_gene_ensembl ENSEMBL_M…
+5 pformosa_homolog_dn   dN with Amazon molly   hsapiens_gene_ensembl ENSEMBL_M…
+6 cpalliatus_homolog_dn dN with Angola colobus hsapiens_gene_ensembl ENSEMBL_M…</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb26-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb26-3" data-line-number="3"><span class="co"># search for attribute topic &quot;ds&quot;</span></a>
+<a class="sourceLine" id="cb26-4" data-line-number="4"><span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;ds&quot;</span>))</a></code></pre></div>
+<pre><code>  name                description            dataset               mart        
+  &lt;chr&gt;               &lt;chr&gt;                  &lt;chr&gt;                 &lt;chr&gt;       
+1 ccds                CCDS ID                hsapiens_gene_ensembl ENSEMBL_MAR…
+2 cds_length          CDS Length             hsapiens_gene_ensembl ENSEMBL_MAR…
+3 cds_start           CDS start              hsapiens_gene_ensembl ENSEMBL_MAR…
+4 cds_end             CDS end                hsapiens_gene_ensembl ENSEMBL_MAR…
+5 mspretus_homolog_ds dS with Algerian mouse hsapiens_gene_ensembl ENSEMBL_MAR…
+6 vpacos_homolog_ds   dS with Alpaca         hsapiens_gene_ensembl ENSEMBL_MAR…</code></pre>
 <p>Analogous to the <code>organismAttributes()</code> function, the <code>organismFilters()</code> function returns all filters that are available for a query organism of interest.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-<span class="co"># return available filters for &quot;Homo sapiens&quot;</span>
-<span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismFilters</span>(<span class="st">&quot;Homo sapiens&quot;</span>), <span class="dv">20</span>)</code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb28-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb28-3" data-line-number="3"><span class="co"># return available filters for &quot;Homo sapiens&quot;</span></a>
+<a class="sourceLine" id="cb28-4" data-line-number="4"><span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismFilters</span>(<span class="st">&quot;Homo sapiens&quot;</span>), <span class="dv">20</span>)</a></code></pre></div>
+<pre><code>   name                                description          dataset    mart    
+   &lt;chr&gt;                               &lt;chr&gt;                &lt;chr&gt;      &lt;chr&gt;   
+ 1 chromosome_name                     Chromosome/scaffold… hsapiens_… ENSEMBL…
+ 2 start                               Start                hsapiens_… ENSEMBL…
+ 3 end                                 End                  hsapiens_… ENSEMBL…
+ 4 band_start                          Band Start           hsapiens_… ENSEMBL…
+ 5 band_end                            Band End             hsapiens_… ENSEMBL…
+ 6 marker_start                        Marker Start         hsapiens_… ENSEMBL…
+ 7 marker_end                          Marker End           hsapiens_… ENSEMBL…
+ 8 encode_region                       Encode region        hsapiens_… ENSEMBL…
+ 9 strand                              Strand               hsapiens_… ENSEMBL…
+10 chromosomal_region                  e.g. 1:100:10000:-1… hsapiens_… ENSEMBL…
+11 with_ccds                           With CCDS ID(s)      hsapiens_… ENSEMBL…
+12 with_chembl                         With ChEMBL ID(s)    hsapiens_… ENSEMBL…
+13 with_clone_based_ensembl_gene       With Clone-based (E… hsapiens_… ENSEMBL…
+14 with_clone_based_ensembl_transcript With Clone-based (E… hsapiens_… ENSEMBL…
+15 with_dbass3                         With DataBase of Ab… hsapiens_… ENSEMBL…
+16 with_dbass5                         With DataBase of Ab… hsapiens_… ENSEMBL…
+17 with_ens_hs_transcript              With Ensembl Human … hsapiens_… ENSEMBL…
+18 with_ens_hs_translation             With Ensembl Human … hsapiens_… ENSEMBL…
+19 with_entrezgene_trans_name          With EntrezGene tra… hsapiens_… ENSEMBL…
+20 with_embl                           With European Nucle… hsapiens_… ENSEMBL…</code></pre>
 <p>The <code>organismFilters()</code> function also allows users to search for filters that correspond to a specific topic or category.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-<span class="co"># search for filter topic &quot;id&quot;</span>
-<span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismFilters</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>), <span class="dv">20</span>)</code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb30-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb30-3" data-line-number="3"><span class="co"># search for filter topic &quot;id&quot;</span></a>
+<a class="sourceLine" id="cb30-4" data-line-number="4"><span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismFilters</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>), <span class="dv">20</span>)</a></code></pre></div>
+<pre><code>   name                          description               dataset     mart    
+   &lt;chr&gt;                         &lt;chr&gt;                     &lt;chr&gt;       &lt;chr&gt;   
+ 1 with_protein_id               With INSDC protein ID ID… hsapiens_g… ENSEMBL…
+ 2 with_mim_morbid               With MIM morbid ID(s)     hsapiens_g… ENSEMBL…
+ 3 with_refseq_peptide           With RefSeq peptide ID(s) hsapiens_g… ENSEMBL…
+ 4 with_refseq_peptide_predicted With RefSeq peptide pred… hsapiens_g… ENSEMBL…
+ 5 ensembl_gene_id               Gene stable ID(s) [e.g. … hsapiens_g… ENSEMBL…
+ 6 ensembl_gene_id_version       Gene stable ID(s) with v… hsapiens_g… ENSEMBL…
+ 7 ensembl_transcript_id         Transcript stable ID(s) … hsapiens_g… ENSEMBL…
+ 8 ensembl_transcript_id_version Transcript stable ID(s) … hsapiens_g… ENSEMBL…
+ 9 ensembl_peptide_id            Protein stable ID(s) [e.… hsapiens_g… ENSEMBL…
+10 ensembl_peptide_id_version    Protein stable ID(s) wit… hsapiens_g… ENSEMBL…
+11 ensembl_exon_id               Exon ID(s) [e.g. ENSE000… hsapiens_g… ENSEMBL…
+12 dbass3_id                     DataBase of Aberrant 3' … hsapiens_g… ENSEMBL…
+13 dbass5_id                     DataBase of Aberrant 5' … hsapiens_g… ENSEMBL…
+14 hgnc_id                       HGNC ID(s) [e.g. HGNC:10… hsapiens_g… ENSEMBL…
+15 protein_id                    INSDC protein ID(s) [e.g… hsapiens_g… ENSEMBL…
+16 mim_morbid_accession          MIM morbid accession(s) … hsapiens_g… ENSEMBL…
+17 mirbase_id                    miRBase ID(s) [e.g. hsa-… hsapiens_g… ENSEMBL…
+18 refseq_peptide                RefSeq peptide ID(s) [e.… hsapiens_g… ENSEMBL…
+19 refseq_peptide_predicted      RefSeq peptide predicted… hsapiens_g… ENSEMBL…
+20 wikigene_id                   WikiGene ID(s) [e.g. 1]   hsapiens_g… ENSEMBL…</code></pre>
 </div>
 <div id="construct-biomart-queries-with-biomartr" class="section level2">
 <h2>Construct BioMart queries with <code>biomartr</code></h2>
 <p>The short introduction to the functionality of <code>organismBM()</code>, <code>organismAttributes()</code>, and <code>organismFilters()</code> will allow users to perform BioMart queries in a very intuitive organism centric way. The main function to perform BioMart queries is <code>biomart()</code>.</p>
 <p>For the following examples we will assume that we are interested in the annotation of specific genes from the <em>Homo sapiens</em> proteome. We want to map the corresponding refseq gene id to a set of other gene ids used in other databases. For this purpose, first we need consult the <code>organismAttributes()</code> function.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-
-<span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>))</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-<span class="co"># retrieve the proteome of Homo sapiens from refseq</span>
-file_path &lt;-<span class="st"> </span>biomartr<span class="op">::</span><span class="kw">getProteome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>,
-                                    <span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>,
-                                    <span class="dt">path     =</span> <span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;proteomes&quot;</span>) )
-
-Hsapiens_proteome &lt;-<span class="st"> </span>biomartr<span class="op">::</span><span class="kw">read_proteome</span>(file_path, <span class="dt">format =</span> <span class="st">&quot;fasta&quot;</span>)
-
-<span class="co"># remove splice variants from id</span>
-gene_set &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">sapply</span>(<span class="kw">strsplit</span>(Hsapiens_proteome<span class="op">@</span>ranges<span class="op">@</span>NAMES[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>], <span class="st">&quot;.&quot;</span>,<span class="dt">fixed =</span> <span class="ot">TRUE</span>), <span class="cf">function</span>(x) x[<span class="dv">1</span>]))
-
-result_BM &lt;-<span class="st"> </span>biomartr<span class="op">::</span><span class="kw">biomart</span>( <span class="dt">genes      =</span> gene_set, <span class="co"># genes were retrieved using biomartr::getGenome()</span>
-                                <span class="dt">mart       =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>, <span class="co"># marts were selected with biomartr::getMarts()</span>
-                                <span class="dt">dataset    =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>, <span class="co"># datasets were selected with biomartr::getDatasets()</span>
-                                <span class="dt">attributes =</span> <span class="kw">c</span>(<span class="st">&quot;ensembl_gene_id&quot;</span>,<span class="st">&quot;ensembl_peptide_id&quot;</span>), <span class="co"># attributes were selected with biomartr::getAttributes()</span>
-                                <span class="dt">filters    =</span> <span class="st">&quot;refseq_peptide&quot;</span>) <span class="co"># specify what ID type was stored in the fasta file retrieved with biomartr::getGenome()</span>
-
-result_BM </code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb32-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb32-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb32-4" data-line-number="4"><span class="kw">head</span>(biomartr<span class="op">::</span><span class="kw">organismAttributes</span>(<span class="st">&quot;Homo sapiens&quot;</span>, <span class="dt">topic =</span> <span class="st">&quot;id&quot;</span>))</a></code></pre></div>
+<pre><code> name                          description                  dataset    mart   
+  &lt;chr&gt;                         &lt;chr&gt;                        &lt;chr&gt;      &lt;chr&gt;  
+1 ensembl_gene_id               Gene stable ID               hsapiens_… ENSEMB…
+2 ensembl_gene_id_version       Gene stable ID version       hsapiens_… ENSEMB…
+3 ensembl_transcript_id         Transcript stable ID         hsapiens_… ENSEMB…
+4 ensembl_transcript_id_version Transcript stable ID version hsapiens_… ENSEMB…
+5 ensembl_peptide_id            Protein stable ID            hsapiens_… ENSEMB…
+6 ensembl_peptide_id_version    Protein stable ID version    hsapiens_… ENSEMB…</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb34-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb34-3" data-line-number="3"><span class="co"># retrieve the proteome of Homo sapiens from refseq</span></a>
+<a class="sourceLine" id="cb34-4" data-line-number="4">file_path &lt;-<span class="st"> </span>biomartr<span class="op">::</span><span class="kw">getProteome</span>( <span class="dt">db       =</span> <span class="st">&quot;refseq&quot;</span>,</a>
+<a class="sourceLine" id="cb34-5" data-line-number="5">                                    <span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>,</a>
+<a class="sourceLine" id="cb34-6" data-line-number="6">                                    <span class="dt">path     =</span> <span class="kw">file.path</span>(<span class="st">&quot;_ncbi_downloads&quot;</span>,<span class="st">&quot;proteomes&quot;</span>) )</a>
+<a class="sourceLine" id="cb34-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb34-8" data-line-number="8">Hsapiens_proteome &lt;-<span class="st"> </span>biomartr<span class="op">::</span><span class="kw">read_proteome</span>(file_path, <span class="dt">format =</span> <span class="st">&quot;fasta&quot;</span>)</a>
+<a class="sourceLine" id="cb34-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb34-10" data-line-number="10"><span class="co"># remove splice variants from id</span></a>
+<a class="sourceLine" id="cb34-11" data-line-number="11">gene_set &lt;-<span class="st"> </span><span class="kw">unlist</span>(<span class="kw">sapply</span>(<span class="kw">strsplit</span>(Hsapiens_proteome<span class="op">@</span>ranges<span class="op">@</span>NAMES[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>], <span class="st">&quot;.&quot;</span>,<span class="dt">fixed =</span> <span class="ot">TRUE</span>), <span class="cf">function</span>(x) x[<span class="dv">1</span>]))</a>
+<a class="sourceLine" id="cb34-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb34-13" data-line-number="13">result_BM &lt;-<span class="st"> </span>biomartr<span class="op">::</span><span class="kw">biomart</span>( <span class="dt">genes      =</span> gene_set, <span class="co"># genes were retrieved using biomartr::getGenome()</span></a>
+<a class="sourceLine" id="cb34-14" data-line-number="14">                                <span class="dt">mart       =</span> <span class="st">&quot;ENSEMBL_MART_ENSEMBL&quot;</span>, <span class="co"># marts were selected with biomartr::getMarts()</span></a>
+<a class="sourceLine" id="cb34-15" data-line-number="15">                                <span class="dt">dataset    =</span> <span class="st">&quot;hsapiens_gene_ensembl&quot;</span>, <span class="co"># datasets were selected with biomartr::getDatasets()</span></a>
+<a class="sourceLine" id="cb34-16" data-line-number="16">                                <span class="dt">attributes =</span> <span class="kw">c</span>(<span class="st">&quot;ensembl_gene_id&quot;</span>,<span class="st">&quot;ensembl_peptide_id&quot;</span>), <span class="co"># attributes were selected with biomartr::getAttributes()</span></a>
+<a class="sourceLine" id="cb34-17" data-line-number="17">                                <span class="dt">filters    =</span> <span class="st">&quot;refseq_peptide&quot;</span>) <span class="co"># specify what ID type was stored in the fasta file retrieved with biomartr::getGenome()</span></a>
+<a class="sourceLine" id="cb34-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb34-19" data-line-number="19">result_BM </a></code></pre></div>
+<pre><code>  refseq_peptide ensembl_gene_id ensembl_peptide_id
+1      NP_000005 ENSG00000175899    ENSP00000323929
+2      NP_000006 ENSG00000156006    ENSP00000286479
+3      NP_000007 ENSG00000117054    ENSP00000359878
+4      NP_000008 ENSG00000122971    ENSP00000242592
+5      NP_000009 ENSG00000072778    ENSP00000349297</code></pre>
 <p>The <code>biomart()</code> function takes as arguments a set of genes (gene ids specified in the <code>filter</code> argument), the corresponding <code>mart</code> and <code>dataset</code>, as well as the <code>attributes</code> which shall be returned.</p>
 </div>
 <div id="gene-ontology" class="section level2">
@@ -284,14 +713,14 @@ result_BM </code></pre></div>
 <div id="go-annotation-retrieval-via-biomart" class="section level3">
 <h3>GO Annotation Retrieval via BioMart</h3>
 <p>The <code>getGO()</code> function takes several arguments as input to retrieve GO information from BioMart. First, the scientific name of the <code>organism</code> of interest needs to be specified. Furthermore, a set of <code>gene ids</code> as well as their corresponding <code>filter</code> notation (<code>GUCA2A</code> gene ids have <code>filter</code> notation <code>hgnc_symbol</code>; see <code>organismFilters()</code> for details) need to be specified. The <code>database</code> argument then defines the database from which GO information shall be retrieved.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># show all elements of the data.frame</span>
-<span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)
-<span class="co"># search for GO terms of an example Homo sapiens gene</span>
-GO_tbl &lt;-<span class="st"> </span>biomartr<span class="op">::</span><span class="kw">getGO</span>(<span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>, 
-                          <span class="dt">genes    =</span> <span class="st">&quot;GUCA2A&quot;</span>,
-                          <span class="dt">filters  =</span> <span class="st">&quot;hgnc_symbol&quot;</span>)
-
-GO_tbl</code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb36-1" data-line-number="1"><span class="co"># show all elements of the data.frame</span></a>
+<a class="sourceLine" id="cb36-2" data-line-number="2"><span class="kw">options</span>(<span class="dt">tibble.print_max =</span> <span class="ot">Inf</span>)</a>
+<a class="sourceLine" id="cb36-3" data-line-number="3"><span class="co"># search for GO terms of an example Homo sapiens gene</span></a>
+<a class="sourceLine" id="cb36-4" data-line-number="4">GO_tbl &lt;-<span class="st"> </span>biomartr<span class="op">::</span><span class="kw">getGO</span>(<span class="dt">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>, </a>
+<a class="sourceLine" id="cb36-5" data-line-number="5">                          <span class="dt">genes    =</span> <span class="st">&quot;GUCA2A&quot;</span>,</a>
+<a class="sourceLine" id="cb36-6" data-line-number="6">                          <span class="dt">filters  =</span> <span class="st">&quot;hgnc_symbol&quot;</span>)</a>
+<a class="sourceLine" id="cb36-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb36-8" data-line-number="8">GO_tbl</a></code></pre></div>
 <p>Hence, for each <em>gene id</em> the resulting table stores all annotated GO terms found in <a href="http://ensemblgenomes.org/info/access/biomart">Ensembl Biomart</a>.</p>
 </div>
 </div>

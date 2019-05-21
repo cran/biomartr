@@ -11,7 +11,6 @@
 #' \item \code{db = "refseq"}
 #' \item \code{db = "genbank"}
 #' \item \code{db = "ensembl"}
-#' \item \code{db = "ensemblgenomes"}
 #' }
 #' @param organism there are three options to characterize an organism: 
 #' \itemize{
@@ -22,7 +21,7 @@
 #' @param reference a logical value indicating whether or not a collection shall be downloaded if it isn't marked in the database as either a reference genome or a representative genome. 
 #' @param path a character string specifying the location (a folder) in which 
 #' the corresponding collection shall be stored. Default is 
-#' \code{path} = \code{file.path("_ncbi_downloads","collection")}.
+#' \code{path} = \code{file.path("_db_downloads","collections")}.
 #' @author Hajk-Georg Drost
 #' @details Internally this function loads the the overview.txt file from NCBI:
 #' 
@@ -42,10 +41,11 @@
 #' # and store the corresponding genome file in '_ncbi_downloads/collection'
 #'  getCollection( db       = "refseq", 
 #'              organism = "Arabidopsis thaliana", 
-#'              path = file.path("_ncbi_downloads","collection"))
+#'              path = file.path("_db_downloads","collections"))
 #' }
 #' 
-#' @seealso \code{\link{getProteome}}, \code{\link{getCDS}}, 
+#' @seealso \code{\link{getGenomeSet}}, \code{\link{getProteomeSet}}, \code{\link{getCDSSet}}, 
+#' \code{\link{getGenome}}, \code{\link{getProteome}}, \code{\link{getCDS}}, 
 #' \code{\link{getGFF}}, \code{\link{getRNA}}, \code{\link{meta.retrieval}}, 
 #' \code{\link{read_genome}}
 #' @export
@@ -53,16 +53,23 @@ getCollection <-
         function(db = "refseq",
                  organism,
                  reference = TRUE,
-                 path = file.path("_ncbi_downloads","collection")
+                 path = file.path("_db_downloads","collections")
         ) {
         
         new_name <- stringr::str_replace_all(organism," ","_")
+        message("Starting collection retrieval (genome, proteome, cds, gff/gtf, rna, repeat masker, assembly stats) for ", new_name, " ...")
             
-        if (!file.exists(file.path(path, new_name)))
-            dir.create(file.path(path, new_name), recursive = TRUE)
+        org_exists <- is.genome.available(db = "refseq", organism, details = TRUE)   
         
-        path <- file.path(path, new_name)
-            
+        if (isFALSE(org_exists) || length(org_exists) == 0)
+            stop("No entry was found for organism ",organism,". Could the name be misspelled?",  call. = FALSE)
+        
+
+        if (!file.exists(file.path(path, db, new_name)))
+            dir.create(file.path(path, db, new_name), recursive = TRUE)
+        
+        path <- file.path(path, db, new_name)
+        
         # retrieve genome assembly
         species_genome <-
                 getGenome(
@@ -71,7 +78,7 @@ getCollection <-
                         reference = reference,
                         path = path
                 )
-        
+        message("\n")
         # retrieve proteome 
         species_proteome <-
                 getProteome(
@@ -81,7 +88,7 @@ getCollection <-
                         path = path
                 )
         
-        
+        message("\n")
         # retrieve coding sequences
         species_cds <-
                 getCDS(
@@ -90,15 +97,25 @@ getCollection <-
                         reference = reference,
                         path = path
                 )
-        
+        message("\n")
         # retrieve corresponding gff file
-        species_cds <-
+        species_gff <-
                 getGFF(
                         db = db,
                         organism = organism,
                         reference = reference,
                         path = path
                 )
+        message("\n")
+        if (is.element(db, c("ensembl", "ensemblgenomes"))) {
+                species_gtf <-
+                        getGTF(
+                                db = db,
+                                organism = organism,
+                                path = path
+                        )
+                message("\n")
+        }
         
         # retrieve RNA
         species_rna <-
@@ -108,6 +125,7 @@ getCollection <-
                         reference = reference,
                         path = path
                 )
+        message("\n")
         
         if (is.element(db, c("refseq", "genbank"))) {
                 # retrieve RepeatMasker output
@@ -118,6 +136,7 @@ getCollection <-
                                 reference = reference,
                                 path = path
                         )
+                message("\n")
                 
                 # retrieve assembly stats
                 species_stats <-
@@ -208,15 +227,6 @@ getCollection <-
                 message("Collection retrieval finished successfully!")
                 message("\n")
                 
-                cat(paste0(
-                        "We retrieved the genome assembly and checked the annotation for '",
-                        organism,
-                        "' (database: ",
-                        tsv_file$database,
-                        ", accession: ",
-                        tsv_file$assembly_accession,
-                        ") using the biomartr R package (Drost and Paszkowski, 2017)."
-                ))
         }
         
         

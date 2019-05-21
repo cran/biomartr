@@ -11,7 +11,6 @@
 #' \item \code{db = "refseq"}
 #' \item \code{db = "genbank"}
 #' \item \code{db = "ensembl"}
-#' \item \code{db = "ensemblgenomes"}
 #' } 
 #' @param organism there are three options to characterize an organism: 
 #' \itemize{
@@ -20,6 +19,8 @@
 #' \item by \code{taxonomic identifier from NCBI Taxonomy}: e.g. \code{organism = "9606"} (= taxid of \code{Homo sapiens})
 #' }
 #' @param reference a logical value indicating whether or not a genome shall be downloaded if it isn't marked in the database as either a reference genome or a representative genome.
+#' @param release the database release version of ENSEMBL (\code{db = "ensembl"}). Default is \code{release = NULL} meaning that the most recent database version is used.
+#' @param gunzip a logical value indicating whether or not files should be unzipped.
 #' @param path a character string specifying the location (a folder) 
 #' in which the corresponding CDS file shall be stored. 
 #' Default is \code{path} = \code{file.path("_ncbi_downloads","CDS")}.
@@ -37,27 +38,34 @@
 #' 
 #' }
 #' @seealso \code{\link{getGenome}}, \code{\link{getProteome}}, 
-#' \code{\link{getGFF}}, \code{\link{getRNA}}, \code{\link{meta.retrieval}}, 
+#' \code{\link{getGFF}}, \code{\link{getRNA}}, \code{\link{getRepeatMasker}}, 
+#' \code{\link{getAssemblyStats}}, \code{\link{meta.retrieval}}, 
 #' \code{\link{read_cds}}
 #' @export
 
 getCDS <-
     function(db = "refseq",
              organism,
-             reference = TRUE,
+             reference = FALSE,
+             release = NULL,
+             gunzip = FALSE,
              path = file.path("_ncbi_downloads", "CDS")) {
+            
         if (!is.element(db, c("refseq", "genbank", 
-                              "ensembl", "ensemblgenomes")))
+                              "ensembl")))
             stop(
                 "Please select one of the available data bases: 
-                'refseq', 'genbank', 'ensembl' or 'ensemblgenomes'.",
+                'refseq', 'genbank', or 'ensembl'.",
                 call. = FALSE
             )
             
         if (db == "ensemblgenomes") {
-            organism_name <- is.genome.available(db = db, organism = organism, details = TRUE)$display_name[1]
-            message("Starting CDS retrieval of '", organism_name, "' from ", db, " ...")
-            message("\n")
+                organism_name <- is.genome.available(db = db, organism = organism, details = TRUE)$display_name[1]
+                
+                if (!is.na(organism_name))
+                        message("Starting CDS retrieval of '", organism_name, "' from ", db, " ...")
+                if (is.na(organism_name))
+                        message("Starting CDS retrieval of '", organism, "' from ", db, " ...")
         } else {
             message("Starting CDS retrieval of '", organism, "' from ", db, " ...")
             message("\n")
@@ -149,16 +157,16 @@ getCDS <-
                 organism <-
                     stringr::str_replace_all(organism, " ", "_")
                 
-                download_url <-
-                    paste0(
-                        FoundOrganism$ftp_path,
-                        "/",
-                        paste0(
-                            basename(FoundOrganism$ftp_path),
-                            "_cds_from_genomic.fna.gz"
-                        )
-                    )
-                
+                        download_url <-
+                                paste0(
+                                        FoundOrganism$ftp_path,
+                                        "/",
+                                        paste0(
+                                                basename(FoundOrganism$ftp_path),
+                                                "_cds_from_genomic.fna.gz"
+                                        )
+                                )
+        
                 local.org <-
                     stringr::str_replace_all(organism, "-", "_")
                 local.org <-
@@ -215,7 +223,7 @@ getCDS <-
                                 )
                             )
                             
-                         message("CDS download is completed!")
+                            message("CDS download of ", organism, " is completed!")
                                 
                             # download md5checksum file for organism of interest
                             custom_download(
@@ -235,7 +243,7 @@ getCDS <-
                             file_name <- NULL
                             
                             md5_sum <- dplyr::filter(md5_file,
-                                            file_name == paste0("./", paste0(
+                                            file_name == paste0(" ./", paste0(
                                             basename(FoundOrganism$ftp_path),
                                                     "_cds_from_genomic.fna.gz"
                                                      )))$md5
@@ -259,14 +267,16 @@ getCDS <-
                 message("The md5 hash of file '", md5_file_path, "' matches!")
                             
                         }, error = function(e)
-                            stop(
-                                "The FTP site 'ftp://ftp.ncbi.nlm.nih.gov/' 
-                                cannot be reached. Are you connected to the 
-                                internet? Is the the FTP site '",
-                                download_url,
-                                "' currently available?",
+                        {
+                            warning(
+                                "The download session seems to have timed out at the FTP site '",
+                                download_url, "'. This could be due to an overload of queries to the databases.",
+                                " Please restart this function to continue the data retrieval process or wait ",
+                                "for a while before restarting this function in case your IP address was logged due to an query overload on the server side.",
                                 call. = FALSE
-                            ))
+                            )
+                            return("Not available")
+                        })
                     }
                     
                     docFile(
@@ -333,15 +343,32 @@ getCDS <-
                         )
                     )
                     
-                    return(file.path(
-                        path,
-                        paste0(
-                            local.org,
-                            "_cds_from_genomic_",
-                            db,
-                            ".fna.gz"
-                        )
-                    ))
+                    if (gunzip) {
+                            message(
+                                    paste0(
+                                            "The proteome of '",
+                                            organism,
+                                            "' has been downloaded to '",
+                                            path,
+                                            "' and has been named '",
+                                            paste0(local.org, "_protein_", db, ".faa"),
+                                            "' ."
+                                    )
+                            )
+                            
+                    }
+                    
+                    if (gunzip) {
+                            message("Unzipping downloaded file ...")
+                            R.utils::gunzip(file.path(path,
+                                                      paste0(local.org, "_cds_from_genomic_", db, ".fna.gz")), destname = file.path(path,
+                                                                                                                           paste0(local.org, "_cds_from_genomic_", db, ".fna")))
+                            return(file.path(path,
+                                             paste0(local.org, "_cds_from_genomic_", db, ".fna")))
+                    } else {
+                            return(file.path(path,
+                                             paste0(local.org, "_cds_from_genomic_", db, ".fna.gz")))
+                    }
                 } else {
                     stop(
                         "File: ",
@@ -361,11 +388,17 @@ getCDS <-
             }
             
             # download CDS sequence from ENSEMBL
-            cds.path <-
-                getENSEMBL.Seq(organism, type = "cds", id.type = "all", path)
+                cds.path <-
+                        getENSEMBL.Seq(
+                                organism,
+                                type = "cds",
+                                id.type = "all",
+                                release = release,
+                                path = path
+                        )
             
-            if (is.logical(cds.path)) {
-                if (!cds.path)
+            if (is.logical(cds.path[1])) {
+                if (!cds.path[1])
                     return(FALSE)
             } else {
                 
@@ -425,7 +458,9 @@ getCDS <-
                     paste0("doc_", new.organism, "_db_", db, ".txt")
                 ))
                 
-                cat(paste0("File Name: ", cds.path))
+                cat(paste0("File Name: ", cds.path[1]))
+                cat("\n")
+                cat(paste0("Download Path: ", cds.path[2]))
                 cat("\n")
                 cat(paste0("Organism Name: ", new.organism))
                 cat("\n")
@@ -459,7 +494,8 @@ getCDS <-
                 sink()
                 
                 doc <- tibble::tibble(
-                    file_name = cds.path,
+                    file_name = cds.path[1],
+                    download_path = cds.path[2],
                     organism = new.organism,
                     database = db,
                     download_data = date(),
@@ -476,19 +512,42 @@ getCDS <-
                     paste0("doc_", new.organism, "_db_", db, ".tsv"))
                 )
                 
-                message(
-                    paste0(
-                        "The CDS of '",
-                        organism,
-                        "' has been downloaded to '",
-                        path,
-                        "' and has been named '",
-                        basename(cds.path),
-                        "'."
-                    )
-                )
+                if (!gunzip) {
+                        message(
+                                paste0(
+                                        "The CDS of '",
+                                        ensembl_summary$display_name[1],
+                                        "' has been downloaded to '",
+                                        path,
+                                        "' and has been named '",
+                                        basename(cds.path[1]),
+                                        "'."
+                                )
+                        )
+                }
                 
-                return(cds.path)
+                if (gunzip) {
+                        message(
+                                paste0(
+                                        "The CDS of '",
+                                        ensembl_summary$display_name[1],
+                                        "' has been downloaded to '",
+                                        path,
+                                        "' and has been named '",
+                                        basename(unlist(stringr::str_replace(cds.path[1], "[.]gz", ""))),
+                                        "'."
+                                )
+                        )
+                }
+                
+                if (gunzip) {
+                        message("Unzipping downloaded file ...")
+                        R.utils::gunzip(cds.path[1], destname = unlist(stringr::str_replace(cds.path[1], "[.]gz", "")))
+                        return(unlist(stringr::str_replace(cds.path[1], "[.]gz", "")))
+                } else {
+                        return(cds.path[1])
+                }
+            
             }
         }
         
@@ -499,12 +558,17 @@ getCDS <-
             }
             
             # download CDS sequence from ENSEMBLGENOMES
-            cds.path <-
-                getENSEMBLGENOMES.Seq(organism, type = "cds", 
-                                      id.type = "all", path)
+                cds.path <-
+                        getENSEMBLGENOMES.Seq(
+                                organism,
+                                type = "cds",
+                                id.type = "all",
+                                release = release,
+                                path = path
+                        )
             
-            if (is.logical(cds.path)) {
-                if (!cds.path)
+            if (is.logical(cds.path[1])) {
+                if (!cds.path[1])
                     return(FALSE)
             } else {
                 
@@ -564,7 +628,9 @@ getCDS <-
                     paste0("doc_", new.organism, "_db_", db, ".txt")
                 ))
                 
-                cat(paste0("File Name: ", cds.path))
+                cat(paste0("File Name: ", cds.path[1]))
+                cat("\n")
+                cat(paste0("Download Path: ", cds.path[2]))
                 cat("\n")
                 cat(paste0("Organism Name: ", new.organism))
                 cat("\n")
@@ -598,7 +664,8 @@ getCDS <-
                 sink()
                 
                 doc <- tibble::tibble(
-                    file_name = cds.path,
+                    file_name = cds.path[1],
+                    download_path = cds.path[2],
                     organism = new.organism,
                     database = db,
                     download_data = date(),
@@ -615,19 +682,41 @@ getCDS <-
                     paste0("doc_", new.organism, "_db_", db, ".tsv"))
                 )
                 
-                message(
-                    paste0(
-                        "The CDS of '",
-                        organism,
-                        "' has been downloaded to '",
-                        path,
-                        "' and has been named '",
-                        basename(cds.path),
-                        "'."
-                    )
-                )
+                if (!gunzip) {
+                        message(
+                                paste0(
+                                        "The CDS of '",
+                                        ensembl_summary$display_name,
+                                        "' has been downloaded to '",
+                                        path,
+                                        "' and has been named '",
+                                        basename(cds.path[1]),
+                                        "'."
+                                )
+                        )
+                }
                 
-                return(cds.path)
+                if (gunzip) {
+                        message(
+                                paste0(
+                                        "The CDS of '",
+                                        ensembl_summary$display_name,
+                                        "' has been downloaded to '",
+                                        path,
+                                        "' and has been named '",
+                                        basename(unlist(stringr::str_replace(cds.path[1], "[.]gz", ""))),
+                                        "'."
+                                )
+                        )
+                }
+                
+                if (gunzip) {
+                        message("Unzipping downloaded file ...")
+                        R.utils::gunzip(cds.path[1], destname = unlist(stringr::str_replace(cds.path[1], "[.]gz", "")))
+                        return(unlist(stringr::str_replace(cds.path[1], "[.]gz", "")))
+                } else {
+                        return(cds.path[1])
+                }
             }
             
         }
