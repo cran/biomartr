@@ -1,6 +1,5 @@
 biomartr
 ========
-[![rpackages.io rank](https://www.rpackages.io/badge/biomartr.svg)](https://www.rpackages.io/package/biomartr)
 [![](https://badges.ropensci.org/93_status.svg)](https://github.com/ropensci/onboarding/issues/93)
 [![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/biomartr)](https://github.com/metacran/cranlogs.app)
 [![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/grand-total/biomartr)](https://github.com/metacran/cranlogs.app)
@@ -14,7 +13,7 @@ This package is born out of my own frustration to automate the genomic data retr
 
 I happily welcome anyone who wishes to contribute to this project :) Just drop me an email.
 
-Please find a detailed [documentation here](https://ropensci.github.io/biomartr/articles/).
+Please find a detailed [documentation here](https://docs.ropensci.org/biomartr/articles/).
 
 
 ### Citation
@@ -45,7 +44,7 @@ In detail, `biomartr` automates genome, proteome, CDS, RNA, Repeats, GFF/GTF (an
 - [ENSEMBLGENOMES](http://ensemblgenomes.org) (as of April 2019 - `ENSEMBL` and `ENSEMBLGENOMES` were joined - see [details here](http://www.ensembl.info/2019/03/08/joint-rest-server-for-ensembl-and-ensembl-genomes-in-ensembl-96/))
 - [UniProt](http://www.uniprot.org)
 
-Furthermore, an interface to the [Ensembl Biomart](www.ensembl.org/biomart) database allows users to retrieve functional annotation for genomic loci using a novel and organism centric search strategy. In addition, users can [download entire databases](https://github.com/HajkD/biomartr/blob/master/vignettes/Database_Retrieval.Rmd) such as 
+Furthermore, an interface to the `Ensembl Biomart` database allows users to retrieve functional annotation for genomic loci using a novel and organism centric search strategy. In addition, users can [download entire databases](https://github.com/HajkD/biomartr/blob/master/vignettes/Database_Retrieval.Rmd) such as 
 
 - `NCBI RefSeq` 
 - `NCBI nr` 
@@ -57,13 +56,13 @@ with only one command.
 
 ### Similar Work
 
-The main difference between the [BiomaRt](http://www.bioconductor.org/packages/release/bioc/html/biomaRt.html) package and the [biomartr](https://ropensci.github.io/biomartr/) package is that `biomartr` extends the `functional annotation retrieval` procedure of `BiomaRt` and __in addition__ provides useful retrieval functions for genomes, proteomes, coding sequences, gff files, RNA sequences, Repeat Masker annotations files, and functions for the retrieval of entire databases such as `NCBI nr` etc.
+The main difference between the [BiomaRt](http://www.bioconductor.org/packages/release/bioc/html/biomaRt.html) package and the [biomartr](https://docs.ropensci.org/biomartr/) package is that `biomartr` extends the `functional annotation retrieval` procedure of `BiomaRt` and __in addition__ provides useful retrieval functions for genomes, proteomes, coding sequences, gff files, RNA sequences, Repeat Masker annotations files, and functions for the retrieval of entire databases such as `NCBI nr` etc.
 
-Please consult the [Tutorials section](https://ropensci.github.io/biomartr/#tutorials) for more details.
+Please consult the [Tutorials section](https://docs.ropensci.org/biomartr/#tutorials) for more details.
 
 `In the context of functional annotation retrieval` the `biomartr` package allows users to screen available marts using only the scientific name of an organism of interest instead of first searching for marts and datasets which support a particular organism of interest (which is required when using the `BiomaRt` package). Furthermore, `biomartr` allows you to search for particular topics when searching for attributes and filters. I am aware that the similar naming of the packages is unfortunate, but it arose due to historical reasons (please find a detailed explanation here: https://github.com/ropensci/biomartr/blob/master/FAQs.md and here [#11](https://github.com/ropensci/biomartr/issues/11)).
 
-I also dedicated [an entire vignette to compare](https://ropensci.github.io/biomartr/articles/Functional_Annotation.html) the `BiomaRt` and `biomartr` package functionality in the context of `Functional Annotation` (where their functionality overlaps which comprises about only 20% of the overall functionality of the biomartr package).
+I also dedicated [an entire vignette to compare](https://docs.ropensci.org/biomartr/articles/Functional_Annotation.html) the `BiomaRt` and `biomartr` package functionality in the context of `Functional Annotation` (where their functionality overlaps which comprises about only 20% of the overall functionality of the biomartr package).
 
 ### Feedback
 >__I truly value your opinion and improvement suggestions. Hence, I would be extremely grateful if you could take this 1 minute and 3 question survey (https://goo.gl/forms/Qaoxxjb1EnNSLpM02) so that I can learn how to improve `biomartr` in the best possible way. Many many thanks in advance.__
@@ -160,7 +159,7 @@ the `out.folder` argument to define a custom output folder path.
 
 ### Frequently Asked Questions (FAQs)
 
-Please find [all FAQs here](FAQs.md).
+Please find [all FAQs here](https://github.com/ropensci/biomartr/blob/master/FAQs.md).
 
 ### Discussions and Bug Reports
 
@@ -170,20 +169,18 @@ provided in this package.
 Furthermore, in case you find some bugs or need additional (more flexible) functionality of parts
 of this package, please let me know:
 
-[twitter: HajkDrost](https://twitter.com/hajkdrost) or  [email](hgd23@cam.ac.uk)
-
-For Bug Reports: Please send me an [issue](https://github.com/HajkD/biomartr/issues).
+https://github.com/HajkD/biomartr/issues
 
 
 ## Tutorials
 
 Getting Started with `biomartr`:
 
-- [NCBI Database Retrieval](https://ropensci.github.io/biomartr/articles/Database_Retrieval.html)
-- [Genomic Sequence Retrieval](https://ropensci.github.io/biomartr/articles/Sequence_Retrieval.html)
-- [Meta-Genome Retrieval](https://ropensci.github.io/biomartr/articles/MetaGenome_Retrieval.html)
-- [Functional Annotation](https://ropensci.github.io/biomartr/articles/Functional_Annotation.html)
-- [BioMart Examples](https://ropensci.github.io/biomartr/articles/BioMart_Examples.html)
+- [NCBI Database Retrieval](https://docs.ropensci.org/biomartr/articles/Database_Retrieval.html)
+- [Genomic Sequence Retrieval](https://docs.ropensci.org/biomartr/articles/Sequence_Retrieval.html)
+- [Meta-Genome Retrieval](https://docs.ropensci.org/biomartr/articles/MetaGenome_Retrieval.html)
+- [Functional Annotation](https://docs.ropensci.org/biomartr/articles/Functional_Annotation.html)
+- [BioMart Examples](https://docs.ropensci.org/biomartr/articles/BioMart_Examples.html)
 
 
 Users can also read the tutorials within ([RStudio](http://www.rstudio.com/)) :
@@ -198,7 +195,7 @@ browseVignettes("biomartr")
 ```
 
 ## NEWS
-The current status of the package as well as a detailed history of the functionality of each version of `biomartr` can be found in the [NEWS](https://ropensci.github.io/biomartr/news/index.html) section.
+The current status of the package as well as a detailed history of the functionality of each version of `biomartr` can be found in the [NEWS](https://docs.ropensci.org/biomartr/news/index.html) section.
 
 
 ## Install Developer Version
@@ -308,6 +305,6 @@ library("biomartr", lib.loc = "C:/Program Files/R/R-3.1.1/library")
 
 # Code of conduct
 
-Please note that this project is released with a [Contributor Code of Conduct](CONDUCT.md). By participating in this project you agree to abide by its terms.
+Please note that this project is released with a [Contributor Code of Conduct](https://github.com/ropensci/biomartr/blob/master/CONDUCT.md). By participating in this project you agree to abide by its terms.
 
 
