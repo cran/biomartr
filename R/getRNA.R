@@ -80,7 +80,7 @@ getRNA <-
             }
             
             organism_name <- assembly_accession <- taxid <- 
-                refseq_category <- version_status <- NULL
+                refseq_category <- version_status <- ftp_path <- NULL
             organism <-
                 stringr::str_replace_all(organism, "\\(", "")
             organism <-
@@ -96,7 +96,7 @@ getRNA <-
                             ((refseq_category == "representative genome") |
                                  (refseq_category == "reference genome")
                             ),
-                            (version_status == "latest")
+                            (version_status == "latest"), !is.na(ftp_path)
                         ) 
                 } else {
                     FoundOrganism <-
@@ -106,7 +106,7 @@ getRNA <-
                             ((refseq_category == "representative genome") |
                                  (refseq_category == "reference genome")
                             ),
-                            (version_status == "latest"))
+                            (version_status == "latest"), !is.na(ftp_path))
                 }
             } else {
                 if (!is.taxid(organism)) {
@@ -115,14 +115,14 @@ getRNA <-
                             AssemblyFilesAllKingdoms,
                             stringr::str_detect(organism_name, organism) |
                                 stringr::str_detect(assembly_accession, organism),
-                            (version_status == "latest")
+                            (version_status == "latest"), !is.na(ftp_path)
                         ) 
                 } else {
                     FoundOrganism <-
                         dplyr::filter(
                             AssemblyFilesAllKingdoms,
                             taxid == as.integer(organism),
-                            (version_status == "latest")
+                            (version_status == "latest"), !is.na(ftp_path)
                         ) 
                 }
             }
@@ -319,7 +319,7 @@ getRNA <-
                         
                     )
                     
-                    readr::write_tsv(doc, path = file.path(path,paste0("doc_",local.org,"_db_",db,".tsv")))
+                    readr::write_tsv(doc, file = file.path(path,paste0("doc_",local.org,"_db_",db,".tsv")))
                     
                     message(
                         paste0(
@@ -483,7 +483,7 @@ getRNA <-
                     
                 )
                 
-                readr::write_tsv(doc, file.path(
+                readr::write_tsv(doc, file = file.path(
                     path,
                     paste0("doc_", new.organism, "_db_", db, ".tsv"))
                 )
@@ -628,7 +628,7 @@ getRNA <-
                     
                 )
                 
-                readr::write_tsv(doc, file.path(
+                readr::write_tsv(doc, file = file.path(
                     path,
                     paste0("doc_", new.organism, "_db_", db, ".tsv"))
                 )

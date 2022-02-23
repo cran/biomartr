@@ -17,6 +17,9 @@
 #' @param release the database release version of ENSEMBL (\code{db = "ensembl"}). Default is \code{release = NULL} meaning
 #' that the most recent database version is used.
 #' @param gunzip a logical value indicating whether or not files should be unzipped.
+#' @param remove_annotation_outliers shall outlier lines be removed from the input \code{annotation_file}? 
+#' If yes, then the initial \code{annotation_file} will be overwritten and the removed outlier lines will be stored at \code{\link{tempdir}}
+#' for further exploration.
 #' @param path a character string specifying the location (a folder) in which 
 #' the corresponding annotation file shall be stored. Default is 
 #' \code{path = file.path("_ncbi_downloads","genomes")}.
@@ -60,6 +63,7 @@ getGFF <-
              reference = FALSE,
              release = NULL,
              gunzip = FALSE,
+             remove_annotation_outliers = FALSE,
              path = file.path("_ncbi_downloads", "annotation")) {
         
        if (!is.element(db, c("refseq", "genbank", "ensembl")))
@@ -93,7 +97,7 @@ getGFF <-
             }
             
             organism_name <- assembly_accession <- taxid <-
-                refseq_category <- version_status <- NULL
+                refseq_category <- version_status <- ftp_path <- NULL
             
             organism <-
                 stringr::str_replace_all(organism, "\\(", "")
@@ -111,7 +115,7 @@ getGFF <-
                             ((refseq_category == "representative genome") |
                                  (refseq_category == "reference genome")
                             ),
-                            (version_status == "latest")
+                            (version_status == "latest"), !is.na(ftp_path)
                         ) 
                 } else {
                     FoundOrganism <-
@@ -121,7 +125,7 @@ getGFF <-
                             ((refseq_category == "representative genome") |
                                  (refseq_category == "reference genome")
                             ),
-                            (version_status == "latest"))
+                            (version_status == "latest"), !is.na(ftp_path))
                 }
             } else {
                 if (!is.taxid(organism)) {
@@ -130,14 +134,14 @@ getGFF <-
                             AssemblyFilesAllKingdoms,
                             stringr::str_detect(organism_name, organism) |
                                 stringr::str_detect(assembly_accession, organism),
-                            (version_status == "latest")
+                            (version_status == "latest"), !is.na(ftp_path)
                         ) 
                 } else {
                     FoundOrganism <-
                         dplyr::filter(
                             AssemblyFilesAllKingdoms,
                             taxid == as.integer(organism),
-                            (version_status == "latest")
+                            (version_status == "latest"), !is.na(ftp_path)
                         ) 
                 }
             }
@@ -318,7 +322,7 @@ getGFF <-
                         
                     )
                     
-                    readr::write_tsv(doc, path = file.path(path,paste0("doc_",local.org,"_db_",db,".tsv")))
+                    readr::write_tsv(doc, file = file.path(path,paste0("doc_",local.org,"_db_",db,".tsv")))
                     
                     if (gunzip) {
                             message(
@@ -340,11 +344,16 @@ getGFF <-
                             R.utils::gunzip(file.path(path,
                                                       paste0(local.org, "_genomic_", db, ".gff.gz")), destname = file.path(path,
                                                                                                                                     paste0(local.org, "_genomic_", db, ".gff")))
-                            return(file.path(path,
-                                             paste0(local.org, "_genomic_", db, ".gff")))
+                            
+                            
+                            output_path <- check_annotation_biomartr(file.path(path,
+                                                                paste0(local.org, "_genomic_", db, ".gff")), remove_annotation_outliers = remove_annotation_outliers)
+                            
+                            return(output_path)
                     } else {
-                            return(file.path(path,
-                                             paste0(local.org, "_genomic_", db, ".gff.gz")))
+                        output_path <- check_annotation_biomartr(file.path(path,
+                                                            paste0(local.org, "_genomic_", db, ".gff.gz")), remove_annotation_outliers = remove_annotation_outliers)
+                            return(output_path)
                     }
                 } else {
                     message(
@@ -479,7 +488,7 @@ getGFF <-
                     
                 )
                 
-                readr::write_tsv(doc, file.path(
+                readr::write_tsv(doc, file = file.path(
                     path,
                     paste0("doc_", new.organism, "_db_", db, ".tsv"))
                 )
@@ -515,9 +524,14 @@ getGFF <-
                 if (gunzip) {
                         message("Unzipping downloaded file ...")
                         R.utils::gunzip(genome.path[1], destname = unlist(stringr::str_replace(genome.path[1], "[.]gz", "")))
-                        return(unlist(stringr::str_replace(genome.path[1], "[.]gz", "")))
+                        
+                        output_path <- check_annotation_biomartr(unlist(stringr::str_replace(genome.path[1], "[.]gz", "")), remove_annotation_outliers = remove_annotation_outliers)
+                        
+                        return(output_path)
                 } else {
-                        return(genome.path[1])
+                    output_path <- check_annotation_biomartr(genome.path[1], remove_annotation_outliers = remove_annotation_outliers)
+                    
+                        return(output_path)
                 }
             }
         }
@@ -645,7 +659,7 @@ getGFF <-
                     
                 )
                 
-                readr::write_tsv(doc, file.path(
+                readr::write_tsv(doc, file = file.path(
                     path,
                     paste0("doc_", new.organism, "_db_", db, ".tsv"))
                 )
@@ -681,6 +695,7 @@ getGFF <-
                 if (gunzip) {
                         message("Unzipping downloaded file ...")
                         R.utils::gunzip(genome.path[1], destname = unlist(stringr::str_replace(genome.path[1], "[.]gz", "")))
+                        
                         return(unlist(stringr::str_replace(genome.path[1], "[.]gz", "")))
                 } else {
                         return(genome.path[1])

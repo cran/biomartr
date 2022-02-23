@@ -1,9 +1,14 @@
 biomartr
 ========
-[![](https://badges.ropensci.org/93_status.svg)](https://github.com/ropensci/onboarding/issues/93)
-[![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/biomartr)](https://github.com/metacran/cranlogs.app)
-[![rstudio mirror downloads](http://cranlogs.r-pkg.org/badges/grand-total/biomartr)](https://github.com/metacran/cranlogs.app)
- 
+
+<!-- badges: start -->
+[![](https://badges.ropensci.org/93_status.svg)](https://github.com/ropensci/software-review/issues/93)
+[![Travis-CI Build Status](https://travis-ci.org/ropensci/biomartr.svg?branch=master)](https://travis-ci.org/ropensci/biomartr)
+[![rstudio mirror downloads](https://cranlogs.r-pkg.org/badges/biomartr)](https://github.com/r-hub/cranlogs.app)
+[![rstudio mirror downloads](https://cranlogs.r-pkg.org/badges/grand-total/biomartr)](https://github.com/r-hub/cranlogs.app)
+[![Paper link](https://img.shields.io/badge/Published%20in-Bioinformatics-126888.svg)](https://academic.oup.com/bioinformatics/article/33/8/1216/2931816)
+[![install with bioconda](https://img.shields.io/badge/install%20with-bioconda-brightgreen.svg?style=flat)](https://bioconda.github.io/recipes/r-biomartr/README.html)
+<!-- badges: end -->
  
 ## Genomic Data Retrieval with R
 
@@ -18,7 +23,8 @@ Please find a detailed [documentation here](https://docs.ropensci.org/biomartr/a
 
 ### Citation
 
-**I develop `biomartr` in my spare time and would be very grateful if you could cite the following paper in case `biomartr` was useful for your own research. I plan on vastly extending the biomartr functionality and usability in the next years to facilitate reproducible genomics research and require citations to back up these efforts. Many thanks in advance :)**
+__Please cite `biomartr` if it was helpful for your research. This will allow me to
+continue maintaining this project in the future.__
 
 > Drost HG, Paszkowski J. __Biomartr: genomic data retrieval with R__. *Bioinformatics* (2017) 33(8): 1216-1217. [doi:10.1093/bioinformatics/btw821](https://academic.oup.com/bioinformatics/article/doi/10.1093/bioinformatics/btw821/2931816/Biomartr-genomic-data-retrieval-with-R).
 
@@ -41,10 +47,10 @@ In detail, `biomartr` automates genome, proteome, CDS, RNA, Repeats, GFF/GTF (an
 - [NCBI RefSeq](https://www.ncbi.nlm.nih.gov/refseq/)
 - [NCBI Genbank](https://www.ncbi.nlm.nih.gov/genbank/)
 - [ENSEMBL](https://www.ensembl.org/index.html)
-- [ENSEMBLGENOMES](http://ensemblgenomes.org) (as of April 2019 - `ENSEMBL` and `ENSEMBLGENOMES` were joined - see [details here](http://www.ensembl.info/2019/03/08/joint-rest-server-for-ensembl-and-ensembl-genomes-in-ensembl-96/))
-- [UniProt](http://www.uniprot.org)
+- [ENSEMBLGENOMES](http://ensemblgenomes.org) (as of April 2019 - `ENSEMBL` and `ENSEMBLGENOMES` were joined - see [details here](https://www.ensembl.info/2019/03/08/joint-rest-server-for-ensembl-and-ensembl-genomes-in-ensembl-96/))
+- [UniProt](https://www.uniprot.org)
 
-Furthermore, an interface to the `Ensembl Biomart` database allows users to retrieve functional annotation for genomic loci using a novel and organism centric search strategy. In addition, users can [download entire databases](https://github.com/HajkD/biomartr/blob/master/vignettes/Database_Retrieval.Rmd) such as 
+Furthermore, an interface to the `Ensembl Biomart` database allows users to retrieve functional annotation for genomic loci using a novel and organism centric search strategy. In addition, users can [download entire databases](https://docs.ropensci.org/biomartr/articles/Database_Retrieval.html) such as 
 
 - `NCBI RefSeq` 
 - `NCBI nr` 
@@ -56,7 +62,7 @@ with only one command.
 
 ### Similar Work
 
-The main difference between the [BiomaRt](http://www.bioconductor.org/packages/release/bioc/html/biomaRt.html) package and the [biomartr](https://docs.ropensci.org/biomartr/) package is that `biomartr` extends the `functional annotation retrieval` procedure of `BiomaRt` and __in addition__ provides useful retrieval functions for genomes, proteomes, coding sequences, gff files, RNA sequences, Repeat Masker annotations files, and functions for the retrieval of entire databases such as `NCBI nr` etc.
+The main difference between the [BiomaRt](https://www.bioconductor.org/packages/release/bioc/html/biomaRt.html) package and the [biomartr](https://docs.ropensci.org/biomartr/) package is that `biomartr` extends the `functional annotation retrieval` procedure of `BiomaRt` and __in addition__ provides useful retrieval functions for genomes, proteomes, coding sequences, gff files, RNA sequences, Repeat Masker annotations files, and functions for the retrieval of entire databases such as `NCBI nr` etc.
 
 Please consult the [Tutorials section](https://docs.ropensci.org/biomartr/#tutorials) for more details.
 
@@ -79,17 +85,38 @@ if (!requireNamespace("BiocManager"))
     install.packages("BiocManager")
 BiocManager::install()
 # Install package dependencies
-BiocManager::install("Biostrings", version = "3.8")
-BiocManager::install("biomaRt", version = "3.8")
+BiocManager::install("Biostrings")
+BiocManager::install("biomaRt")
 
 ```
 
 Now users can install `biomartr` from CRAN:
 
 ```r
-# install biomartr 0.9.0
+# install biomartr 1.0.2
 install.packages("biomartr", dependencies = TRUE)
 ```
+
+## Installation with Bioconda
+
+With an activated Bioconda channel (see [2. Set up channels](https://bioconda.github.io/user/install.html#set-up-channels)), install with:
+
+```
+conda install r-biomartr
+```
+
+and update with:
+
+```
+conda update r-biomartr
+```
+
+or use the docker container:
+```
+docker pull quay.io/biocontainers/r-biomartr:<tag>
+```
+(check [r-biomartr/tags](https://quay.io/repository/biocontainers/r-biomartr?tab=tags) for valid values for <tag>)
+
 
 ## Example
 
@@ -153,10 +180,6 @@ All geneomes are stored in the folder named according to the kingdom.
 In this case `vertebrate_mammalian`. Alternatively, users can specify
 the `out.folder` argument to define a custom output folder path.
 
-### Platforms
-
-> Find `biomartr` also at [OmicTools](https://omictools.com/biomartr-tool).
-
 ### Frequently Asked Questions (FAQs)
 
 Please find [all FAQs here](https://github.com/ropensci/biomartr/blob/master/FAQs.md).
@@ -183,7 +206,7 @@ Getting Started with `biomartr`:
 - [BioMart Examples](https://docs.ropensci.org/biomartr/articles/BioMart_Examples.html)
 
 
-Users can also read the tutorials within ([RStudio](http://www.rstudio.com/)) :
+Users can also read the tutorials within ([RStudio](https://www.rstudio.com/)) :
 
 ```r
 # source the biomartr package
@@ -298,10 +321,6 @@ devtools::install_github("HajkD/biomartr", build_vignettes = TRUE, dependencies 
 # and then call it from the library
 library("biomartr", lib.loc = "C:/Program Files/R/R-3.1.1/library")
 ```
-
-### Troubleshooting on Windows Machines
-
-- Install `biomartr` on a Win 8 laptop: [solution](https://github.com/HajkD/orthologr/issues/1) ( Thanks to Andres Romanowski )
 
 # Code of conduct
 

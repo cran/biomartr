@@ -1,21 +1,36 @@
-#' @title List All Available Genomes
+#' @title List All Available Genomes either by kingdom, group, or subgroup
 #' @description This function retrieves the names of all genomes available on 
 #' the NCBI ftp:// server and stores the results in a file named 'overview.txt' 
 #' inside the directory _ncbi_downloads' that is built inside the workspace.
 #' @param db a character string specifying the database for which genome 
-#' availability shall be checked, e.g. \code{db = "refseq"}, 
-#' \code{db = "genbank"}, \code{db = "ensembl"}, \code{db = "ensemblgenomes"}. 
+#' availability shall be checked. Available options are:
+#' \itemize{
+#' \item \code{db = "refseq"} 
+#' \item \code{db = "genbank"}
+#' \item \code{db = "ensembl"}
+#' }
 #' @param type a character string specifying a potential filter of available 
-#' genomes. Options are \code{type = "all"}, \code{type = "kingdom"}, 
-#' \code{type = "group"}, \code{type = "subgroup"}.
+#' genomes. Available options are:
+#' \itemize{
+#' \item \code{type = "all"}
+#' \item \code{type = "kingdom"} 
+#' \item \code{type = "group"}
+#' \item \code{type = "subgroup"}
+#' }
 #' @param subset a character string or character vector specifying a subset of 
 #' \code{type}. E.g. if users are interested in retrieving all
 #' \code{Eukaryota} species, they can specify: \code{type = "kingdom"} and 
 #' \code{subset = "Eukaryota"}. 
 #' @param details a boolean value specifying whether only the scientific names 
 #' of stored genomes shall be returned (details = FALSE) or all information such
-#' as \code{organism_name},\code{kingdoms}, \code{group}, \code{subgroup}, 
-#' \code{file_size_MB}, etc.
+#' as 
+#' \itemize{
+#' \item \code{organism_name}
+#' \item \code{kingdoms}
+#' \item \code{group}
+#' \item \code{subgroup} 
+#' \item \code{file_size_MB}, etc.
+#' }
 #' @author Hajk-Georg Drost
 #' @details Internally this function loads the the overview.txt file from NCBI 
 #' and creates a directory '_ncbi_downloads' in the \code{temdir()}
@@ -29,6 +44,12 @@
 #' \dontrun{
 #' # print details for refseq
 #' listGenomes(db = "refseq") 
+#' # print details for all plants in refseq
+#' listGenomes(db = "refseq", type = "kingdom")
+#' # print details for all plant groups in refseq
+#' listGenomes(db = "refseq", type = "group")
+#' # print details for all plant subgroups in refseq
+#' listGenomes(db = "refseq", type = "subgroup")
 #' }
 #' @export
 
@@ -38,10 +59,10 @@ listGenomes <-
              subset = NULL,
              details = FALSE) {
         if (!is.element(db, c("refseq", "genbank", 
-                              "ensembl", "ensemblgenomes")))
+                              "ensembl")))
             stop(
                 "Please specify a database that is supported by this function. 
-                E.g. 'refseq', 'genbank', 'ensembl' or 'ensemblgenomes'.",
+                E.g. 'refseq', 'genbank', or 'ensembl'.",
                 call. = FALSE
             )
         
@@ -74,24 +95,22 @@ listGenomes <-
                 if (details) {
                     if (!is.null(subset)) {
                         warning(
-                            "For option type = 'all' no subset can be specified.
-                            Please select another type and then 
-                            specify subset = '",
+                            "For option type = 'all' no subset can be specified.",
+                            " Please select another type and then specify subset = '",
                             subset,
                             "'.",
                             call. = FALSE
                         )
                     }
                     
-                    return(joined.df)
+                    return(tibble::as_tibble(joined.df))
                 }
                 
                 if (!details) {
                     if (!is.null(subset)) {
                         warning(
-                            "For option type = 'all' no subset can be specified.
-                            Please select another type and then 
-                            specify subset = '",
+                            "For option type = 'all' no subset can be specified.",
+                            " Please select another type and then specify subset = '",
                             subset,
                             "'.",
                             call. = FALSE
@@ -109,19 +128,17 @@ listGenomes <-
                             table(joined.df$kingdoms)
                         ))))
                             stop(
-                                "Unfortunately, not all members of your 
-                                specified subset '",
+                                "Unfortunately, not all members of your specified subset '",
                                 paste0(subset, ", '"),
-                                " could be found. Search terms are case 
-                                sensitive, so you could try to type 
-                                'Eukaryota' instead of 'eukaryota'.",
+                                " could be found. Search terms are case sensitive, so you could try to type:", 
+                                " 'Eukaryota' instead of 'eukaryota'.",
                                 call. = FALSE
                             )
                         
                         return(dplyr::filter(joined.df, 
                                              is.element(kingdoms, subset)))
                     } else {
-                        return(joined.df)
+                        return(tibble::as_tibble(joined.df))
                     }
                 }
                 
@@ -131,12 +148,10 @@ listGenomes <-
                             table(joined.df$kingdoms)
                         ))))
                             stop(
-                                "Unfortunately, not all members of your 
-                                specified subset '",
+                                "Unfortunately, not all members of your specified subset '",
                                 paste0(subset, ", '"),
-                                " could be found. Search terms are case 
-                                sensitive, so you could try to type 
-                                'Eukaryota' instead of 'eukaryota'.",
+                                " could be found. Search terms are case sensitive, so you could try to type:", 
+                                " 'Eukaryota' instead of 'eukaryota'.",
                                 call. = FALSE
                             )
                         return(unique(
@@ -156,18 +171,16 @@ listGenomes <-
                             table(joined.df$group)
                         ))))
                             stop(
-                                "Unfortunately, not all memebrs of your 
-                                specified subset '",
+                                "Unfortunately, not all memebrs of your specified subset '",
                                 paste0(subset, ", '"),
-                                " could be found. Search terms are case 
-                                sensitive, so you could try to type 
-                                'Eukaryota' instead of 'eukaryota'.",
+                                " could be found. Search terms are case sensitive, so you could try to type:", 
+                                " 'Eukaryota' instead of 'eukaryota'.",
                                 call. = FALSE
                             )
                         return(dplyr::filter(joined.df, 
                                              is.element(group, subset)))
                     } else {
-                        return(joined.df)
+                        return(tibble::as_tibble(joined.df))
                     }
                 }
                 
@@ -177,12 +190,10 @@ listGenomes <-
                             table(joined.df$group)
                         ))))
                             stop(
-                                "Unfortunately, not all memebrs of your 
-                                specified subset '",
+                                "Unfortunately, not all memebrs of your specified subset '",
                                 paste0(subset, ", '"),
-                                " could be found. Search terms are case 
-                                sensitive, so you could try to type 
-                                'Eukaryota' instead of 'eukaryota'.",
+                                " could be found. Search terms are case sensitive, so you could try to type:", 
+                                " 'Eukaryota' instead of 'eukaryota'.",
                                 call. = FALSE
                             )
                         return(unique(
@@ -202,18 +213,16 @@ listGenomes <-
                             table(joined.df$subgroup)
                         ))))
                             stop(
-                                "Unfortunately, not all memebrs of your 
-                                specified subset '",
+                                "Unfortunately, not all memebrs of your specified subset '",
                                 paste0(subset, ", '"),
-                                " could be found. Search terms are case 
-                                sensitive, so you could try to type 
-                                'Eukaryota' instead of 'eukaryota'.",
+                                " could be found. Search terms are case sensitive, so you could try to type:", 
+                                " 'Eukaryota' instead of 'eukaryota'.",
                                 call. = FALSE
                             )
                         return(dplyr::filter(joined.df, 
                                              is.element(subgroup, subset)))
                     } else {
-                        return(joined.df)
+                        return(tibble::as_tibble(joined.df))
                     }
                 }
                 
@@ -223,12 +232,10 @@ listGenomes <-
                             table(joined.df$subgroup)
                         ))))
                             stop(
-                                "Unfortunately, not all memebrs of your 
-                                specified subset '",
+                                "Unfortunately, not all memebrs of your specified subset '",
                                 paste0(subset, ", '"),
-                                " could be found. Search terms are case 
-                                sensitive, so you could try to type 
-                                'Eukaryota' instead of 'eukaryota'.",
+                                " could be found. Search terms are case sensitive, so you could try to type:", 
+                                " 'Eukaryota' instead of 'eukaryota'.",
                                 call. = FALSE
                             )
                         return(unique(
@@ -245,8 +252,8 @@ listGenomes <-
         if (db == "ensembl") {
             if (!is.element(type, c("all", "kingdom")))
                 stop(
-                    "Unfortunately, ENSEMBL only provides kingdom information 
-                    and no group or subgroup information.", call. = FALSE
+                    "Unfortunately, ENSEMBL only provides kingdom information and no group or subgroup information.", 
+                    call. = FALSE
                 )
             
             ensemblinfo <- get.ensembl.info()
@@ -260,12 +267,10 @@ listGenomes <-
                             table(ensemblinfo$division)
                         ))))
                             stop(
-                                "Unfortunately, not all memebrs of your 
-                                specified subset '",
+                                "Unfortunately, not all memebrs of your specified subset '",
                                 paste0(subset, ", '"),
-                                " could be found. Search terms are case 
-                                sensitive, so you could try to type 
-                                'EnsemblMetazoa' instead of 'ensemblmetazoa'.",
+                                " could be found. Search terms are case sensitive, so you could try to type:", 
+                                " 'EnsemblMetazoa' instead of 'ensemblmetazoa'.",
                                 call. = FALSE
                             )
                         return(dplyr::filter(
@@ -274,7 +279,7 @@ listGenomes <-
                         ))
                         
                     } else {
-                        return(ensemblinfo)
+                        return(tibble::as_tibble(ensemblinfo))
                     }
                 }
             }
@@ -288,12 +293,10 @@ listGenomes <-
                             table(ensemblinfo$division)
                         ))))
                             stop(
-                                "Unfortunately, not all memebrs of your 
-                                specified subset '",
+                                "Unfortunately, not all memebrs of your specified subset '",
                                 paste0(subset, ", '"),
-                                " could be found. Search terms are case 
-                                sensitive, so you could try to type 
-                                'EnsemblMetazoa' instead of 'ensemblmetazoa'.",
+                                " could be found. Search terms are case sensitive, so you could try to type:", 
+                                " 'EnsemblMetazoa' instead of 'ensemblmetazoa'.",
                                 call. = FALSE
                             )
                         return(unique(
@@ -313,8 +316,7 @@ listGenomes <-
         if (db == "ensemblgenomes") {
             if (!is.element(type, c("all", "kingdom")))
                 stop(
-                    "Unfortunately, ENSEMBLGENOMES only provides kingdom 
-                    information and no group or subgroup information.", call. = FALSE
+                    "Unfortunately, ENSEMBLGENOMES only provides kingdom information and no group or subgroup information.", call. = FALSE
                 )
             
             ensemblgenomesinfo <-  get.ensemblgenome.info()
@@ -328,12 +330,10 @@ listGenomes <-
                             table(ensemblgenomesinfo$division)
                         ))))
                             stop(
-                                "Unfortunately, not all memebrs of your 
-                                specified subset '",
+                                "Unfortunately, not all memebrs of your specified subset '",
                                 paste0(subset, ", '"),
-                                " could be found. Search terms are case 
-                                sensitive, so you could try to type 
-                                'EnsemblMetazoa' instead of 'ensemblmetazoa'.",
+                                " could be found. Search terms are case sensitive, so you could try to type:", 
+                                " 'EnsemblMetazoa' instead of 'ensemblmetazoa'.",
                                 call. = FALSE
                             )
                         return(dplyr::filter(
@@ -356,12 +356,10 @@ listGenomes <-
                             table(ensemblgenomesinfo$division)
                         ))))
                             stop(
-                                "Unfortunately, not all memebrs of your 
-                                specified subset '",
+                                "Unfortunately, not all memebrs of your specified subset '",
                                 paste0(subset, ", '"),
-                                " could be found. Search terms are case 
-                                sensitive, so you could try to type 
-                                'EnsemblMetazoa' instead of 'ensemblmetazoa'.",
+                                " could be found. Search terms are case sensitive, so you could try to type:", 
+                                " 'EnsemblMetazoa' instead of 'ensemblmetazoa'.",
                                 call. = FALSE
                             )
                         return(unique(

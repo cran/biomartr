@@ -108,7 +108,7 @@ getAssemblyStats <-
         organism <- stringr::str_replace_all(organism, "\\(", "")
         organism <- stringr::str_replace_all(organism, "\\)", "")
         
-        assembly_accession <- taxid <- NULL
+        assembly_accession <- taxid <- ftp_path <- NULL
         
         if (reference) {
             if (!is.taxid(organism)) {
@@ -120,7 +120,7 @@ getAssemblyStats <-
                         ((refseq_category == "representative genome") |
                              (refseq_category == "reference genome")
                         ),
-                        (version_status == "latest")
+                        (version_status == "latest"), !is.na(ftp_path)
                     ) 
             } else {
                 FoundOrganism <-
@@ -130,7 +130,7 @@ getAssemblyStats <-
                         ((refseq_category == "representative genome") |
                              (refseq_category == "reference genome")
                         ),
-                        (version_status == "latest"))
+                        (version_status == "latest"), !is.na(ftp_path))
             }
         } else {
             if (!is.taxid(organism)) {
@@ -139,14 +139,14 @@ getAssemblyStats <-
                         AssemblyFilesAllKingdoms,
                         stringr::str_detect(organism_name, organism) |
                             stringr::str_detect(assembly_accession, organism),
-                        (version_status == "latest")
+                        (version_status == "latest"), !is.na(ftp_path)
                     ) 
             } else {
                 FoundOrganism <-
                     dplyr::filter(
                         AssemblyFilesAllKingdoms,
                         taxid == as.integer(organism),
-                        (version_status == "latest")
+                        (version_status == "latest"), !is.na(ftp_path)
                     ) 
             }
         }
@@ -323,7 +323,7 @@ getAssemblyStats <-
                     
                 )
                 
-                readr::write_tsv(doc, path = file.path(path,paste0("doc_",local.org,"_db_",db,".tsv")))
+                readr::write_tsv(doc, file = file.path(path,paste0("doc_",local.org,"_db_",db,".tsv")))
                 
                 message(
                     paste0(

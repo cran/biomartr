@@ -1,5 +1,5 @@
 #' @title Retrieve All Available Attributes for a Specific Dataset
-#' @description This funcion queries the BioMart Interface and returns a table
+#' @description This function queries the BioMart Interface and returns a table
 #' storing all available attributes for a specific dataset.
 #' 
 #' @param mart a character string specifying the database (mart) 
@@ -34,8 +34,9 @@ getAttributes <- function(mart, dataset){
     if (!is.element(mart, getMarts()$mart))
         stop("Please select a valid mart with getMarts().", call. = FALSE)
     
-    if (!is.element(dataset, getDatasets(mart = mart)$dataset))
-        stop("Please select a valid dataset with getDatasets().", call. = FALSE)
+  message("Starting retrieval of attribute information from mart ", mart, " and dataset ", dataset, " ...")
+    # if (!is.element(dataset, getDatasets(mart = mart)$dataset))
+    #     stop("Please select a valid dataset with getDatasets().", call. = FALSE)
      
     if (stringr::str_detect(mart, "ENSEMBL"))
         # connect to BioMart API

@@ -19,6 +19,11 @@
 #' \item by \code{taxonomic identifier from NCBI Taxonomy}: e.g. \code{organism = "9606"} (= taxid of \code{Homo sapiens})
 #' }
 #' @param reference a logical value indicating whether or not a collection shall be downloaded if it isn't marked in the database as either a reference genome or a representative genome. 
+#' @param release the database release version of ENSEMBL (\code{db = "ensembl"}). Default is \code{release = NULL} meaning that the most recent database version is used.
+#' @param gunzip a logical value indicating whether or not files should be unzipped.
+#' @param remove_annotation_outliers shall outlier lines be removed from the input annotation_file?
+#'  If yes, then the initial annotation_file will be overwritten and the removed outlier lines 
+#'  will be stored at \code{\link{tempdir}} for further exploration.
 #' @param path a character string specifying the location (a folder) in which 
 #' the corresponding collection shall be stored. Default is 
 #' \code{path} = \code{file.path("_db_downloads","collections")}.
@@ -53,13 +58,16 @@ getCollection <-
         function(db = "refseq",
                  organism,
                  reference = TRUE,
+                 release = NULL,
+                 gunzip = FALSE,
+                 remove_annotation_outliers = FALSE,
                  path = file.path("_db_downloads","collections")
         ) {
         
         new_name <- stringr::str_replace_all(organism," ","_")
         message("Starting collection retrieval (genome, proteome, cds, gff/gtf, rna, repeat masker, assembly stats) for ", new_name, " ...")
             
-        org_exists <- is.genome.available(db = "refseq", organism, details = TRUE)   
+        org_exists <- is.genome.available(db = db, organism, details = TRUE)   
         
         if (isFALSE(org_exists) || length(org_exists) == 0)
             stop("No entry was found for organism ",organism,". Could the name be misspelled?",  call. = FALSE)
@@ -76,6 +84,8 @@ getCollection <-
                         db = db,
                         organism = organism,
                         reference = reference,
+                        release = release,
+                        gunzip = gunzip,
                         path = path
                 )
         message("\n")
@@ -85,6 +95,8 @@ getCollection <-
                         db = db,
                         organism = organism,
                         reference = reference,
+                        release = release,
+                        gunzip = gunzip,
                         path = path
                 )
         
@@ -95,6 +107,8 @@ getCollection <-
                         db = db,
                         organism = organism,
                         reference = reference,
+                        release = release,
+                        gunzip = gunzip,
                         path = path
                 )
         message("\n")
@@ -104,6 +118,9 @@ getCollection <-
                         db = db,
                         organism = organism,
                         reference = reference,
+                        release = release,
+                        gunzip = gunzip,
+                        remove_annotation_outliers = remove_annotation_outliers,
                         path = path
                 )
         message("\n")
@@ -112,6 +129,7 @@ getCollection <-
                         getGTF(
                                 db = db,
                                 organism = organism,
+                                remove_annotation_outliers = remove_annotation_outliers,
                                 path = path
                         )
                 message("\n")
@@ -188,6 +206,7 @@ getCollection <-
                 
                 message("Collection retrieval finished successfully!")
                 message("\n")
+                return(file.path(getwd(), path))
                 
         }
         
@@ -212,6 +231,7 @@ getCollection <-
                 
                 message("Collection retrieval finished successfully!")
                 message("\n")
+                return(file.path(getwd(), path))
                 
         }
 }
