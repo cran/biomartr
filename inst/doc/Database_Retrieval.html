@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2023-05-07" />
+<meta name="date" content="2023-06-19" />
 
 <title>NCBI Database Retrieval</title>
 
@@ -338,7 +338,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">NCBI Database Retrieval</h1>
-<h4 class="date">2023-05-07</h4>
+<h4 class="date">2023-06-19</h4>
 
 
 
@@ -351,7 +351,7 @@ databases, please set the default <code>timeout</code> setting
 <strong>on your local machine</strong> from 60sec to at least 300000sec
 before running any retrieval functions via:</p>
 </blockquote>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">timeout =</span> <span class="dv">300000</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">timeout =</span> <span class="dv">300000</span>)</span></code></pre></div>
 <div id="getting-started" class="section level2">
 <h2>Getting Started</h2>
 <p>NCBI stores a variety of specialized database such as <a href="https://www.ncbi.nlm.nih.gov/guide/data-software/">Genbank,
@@ -390,8 +390,8 @@ retrieval</a></li>
 list available databases. Using the <code>listNCBIDatabases()</code>
 function users can retrieve a list of available databases stored on
 NCBI.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># retrieve a list of available sequence databases at NCBI</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;all&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># retrieve a list of available sequence databases at NCBI</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;all&quot;</span>)</span></code></pre></div>
 <pre><code>[1] &quot;16S_ribosomal_RNA&quot;                     &quot;16S_ribosomal_RNA-nucl-metadata&quot;      
  [3] &quot;18S_fungal_sequences&quot;                  &quot;18S_fungal_sequences-nucl-metadata&quot;   
  [5] &quot;28S_fungal_sequences&quot;                  &quot;28S_fungal_sequences-nucl-metadata&quot;   
@@ -435,8 +435,8 @@ database name. In the following example all sequence files that are part
 of the <code>NCBI nr</code> database shall be retrieved.</p>
 <p>First, the <code>listNCBIDatabases(db = &quot;nr&quot;)</code> allows to list
 all files corresponding to the <code>nr</code> database.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show all NCBI nr files</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;nr&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># show all NCBI nr files</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;nr&quot;</span>)</span></code></pre></div>
 <pre><code>[1] &quot;nr.00.tar.gz&quot;          &quot;nr.01.tar.gz&quot;         
  [3] &quot;nr.02.tar.gz&quot;          &quot;nr.03.tar.gz&quot;         
  [5] &quot;nr.04.tar.gz&quot;          &quot;nr.05.tar.gz&quot;         
@@ -469,8 +469,8 @@ all files corresponding to the <code>nr</code> database.</p>
 <p>The output illustrates that the <code>NCBI nr</code> database has
 been separated into several sub-data-packages.</p>
 <p>Further examples are:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show all NCBI nt files</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;nt&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># show all NCBI nt files</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;nt&quot;</span>)</span></code></pre></div>
 <pre><code>[1] &quot;nt.00.tar.gz&quot;          &quot;nt.01.tar.gz&quot;         
  [3] &quot;nt.02.tar.gz&quot;          &quot;nt.03.tar.gz&quot;         
  [5] &quot;nt.04.tar.gz&quot;          &quot;nt.05.tar.gz&quot;         
@@ -496,8 +496,8 @@ been separated into several sub-data-packages.</p>
 [45] &quot;nt.43.tar.gz&quot;          &quot;nt.44.tar.gz&quot;         
 [47] &quot;nt.45.tar.gz&quot;          &quot;nt.46.tar.gz&quot;         
 [49] &quot;nt.47.tar.gz&quot;          &quot;nt.48.tar.gz&quot;</code></pre>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show all NCBI RefSeq (only proteomes)</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;refseq_protein&quot;</span>), <span class="dv">20</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># show all NCBI RefSeq (only proteomes)</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">head</span>(biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;refseq_protein&quot;</span>), <span class="dv">20</span>)</span></code></pre></div>
 <pre><code>[1] &quot;refseq_protein.00.tar.gz&quot; &quot;refseq_protein.01.tar.gz&quot;
  [3] &quot;refseq_protein.02.tar.gz&quot; &quot;refseq_protein.03.tar.gz&quot;
  [5] &quot;refseq_protein.04.tar.gz&quot; &quot;refseq_protein.05.tar.gz&quot;
@@ -508,23 +508,23 @@ been separated into several sub-data-packages.</p>
 [15] &quot;refseq_protein.14.tar.gz&quot; &quot;refseq_protein.15.tar.gz&quot;
 [17] &quot;refseq_protein.16.tar.gz&quot; &quot;refseq_protein.17.tar.gz&quot;
 [19] &quot;refseq_protein.18.tar.gz&quot; &quot;refseq_protein.19.tar.gz&quot;</code></pre>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show all NCBI RefSeq (only RNA)</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;refseq_rna&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># show all NCBI RefSeq (only RNA)</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;refseq_rna&quot;</span>)</span></code></pre></div>
 <pre><code>[1] &quot;refseq_rna.00.tar.gz&quot;          &quot;refseq_rna.01.tar.gz&quot;         
  [3] &quot;refseq_rna.02.tar.gz&quot;          &quot;refseq_rna.03.tar.gz&quot;         
  [5] &quot;refseq_rna.04.tar.gz&quot;          &quot;refseq_rna.05.tar.gz&quot;         
  [7] &quot;refseq_rna.06.tar.gz&quot;          &quot;refseq_rna.07.tar.gz&quot;         
  [9] &quot;refseq_rna.08.tar.gz&quot;          &quot;refseq_rna-nucl-metadata.json&quot;
 [11] &quot;refseq_rna.09.tar.gz&quot; </code></pre>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show NCBI swissprot</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;swissprot&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># show NCBI swissprot</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;swissprot&quot;</span>)</span></code></pre></div>
 <pre><code>[1] &quot;swissprot.tar.gz&quot;             &quot;swissprot-prot-metadata.json&quot;</code></pre>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show NCBI PDB</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;pdb&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="co"># show NCBI PDB</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;pdb&quot;</span>)</span></code></pre></div>
 <pre><code> [1] &quot;pdbaa.tar.gz&quot;             &quot;pdbnt.tar.gz&quot;            
 [3] &quot;pdbaa-prot-metadata.json&quot; &quot;pdbnt-nucl-metadata.json&quot;</code></pre>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># show NCBI Human database</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;human&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="co"># show NCBI Human database</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">listNCBIDatabases</span>(<span class="at">db =</span> <span class="st">&quot;human&quot;</span>)</span></code></pre></div>
 <pre><code>1] &quot;human_genome.00.tar.gz&quot;          &quot;human_genome.01.tar.gz&quot;         
 [3] &quot;human_genome-nucl-metadata.json&quot;</code></pre>
 <p><strong>Please not that all lookup and retrieval function will only
@@ -542,8 +542,8 @@ described above, users can now download these databases using the
 <p>For downloading only single files users can type:</p>
 <div id="example-ncbi-nr" class="section level3">
 <h3>Example NCBI nr</h3>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download the entire NCBI nr database</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;nr&quot;</span>, <span class="at">path =</span> <span class="st">&quot;nr&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="co"># download the entire NCBI nr database</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;nr&quot;</span>, <span class="at">path =</span> <span class="st">&quot;nr&quot;</span>)</span></code></pre></div>
 <p>This command will download the pre-formatted (by makeblastdb
 formatted) database version is retrieved.</p>
 <p>Using this command, all <code>NCBI nr</code> files are loaded into
@@ -562,24 +562,24 @@ of large data chunks.</p>
 <h3>Example NCBI nt</h3>
 <p>The same approach can be applied to all other databases mentioned
 above, e.g.:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download the entire NCBI nt database</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;nt&quot;</span>, <span class="at">path =</span> <span class="st">&quot;nt&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># download the entire NCBI nt database</span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;nt&quot;</span>, <span class="at">path =</span> <span class="st">&quot;nt&quot;</span>)</span></code></pre></div>
 </div>
 <div id="example-ncbi-refseq" class="section level3">
 <h3>Example NCBI RefSeq</h3>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download the entire NCBI refseq (protein) database</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;refseq_protein&quot;</span>, <span class="at">path =</span> <span class="st">&quot;refseq_protein&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># download the entire NCBI refseq (protein) database</span></span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;refseq_protein&quot;</span>, <span class="at">path =</span> <span class="st">&quot;refseq_protein&quot;</span>)</span></code></pre></div>
 </div>
 <div id="example-pdb" class="section level3">
 <h3>Example PDB</h3>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download the entire NCBI PDB database</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;pdb&quot;</span>, <span class="at">path =</span> <span class="st">&quot;pdb&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="co"># download the entire NCBI PDB database</span></span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;pdb&quot;</span>, <span class="at">path =</span> <span class="st">&quot;pdb&quot;</span>)</span></code></pre></div>
 </div>
 <div id="example-ncbi-taxonomy" class="section level3">
 <h3>Example NCBI Taxonomy</h3>
 <p>Download NCBI Taxonomy via:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download the entire NCBI taxonomy database</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;taxdb&quot;</span>, <span class="at">path =</span> <span class="st">&quot;taxdb&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="co"># download the entire NCBI taxonomy database</span></span>
+<span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;taxdb&quot;</span>, <span class="at">path =</span> <span class="st">&quot;taxdb&quot;</span>)</span></code></pre></div>
 <pre><code>Starting download of the files: taxdb.tar.gz, taxdb.btd, taxdb.bti ...
 This download process may take a while due to the large size of the individual data chunks ...
 Starting download process of file: taxdb.tar.gz ...
@@ -599,14 +599,14 @@ Download process is finished and files are stored in &#39;taxdb&#39;.</code></pr
 <div id="example-ncbi-swissprot" class="section level3">
 <h3>Example NCBI Swissprot</h3>
 <p>Download NCBI Swissprot via:</p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download the entire NCBI swissprot database</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;swissprot&quot;</span>, <span class="at">path =</span> <span class="st">&quot;swissprot&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="co"># download the entire NCBI swissprot database</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;swissprot&quot;</span>, <span class="at">path =</span> <span class="st">&quot;swissprot&quot;</span>)</span></code></pre></div>
 </div>
 <div id="example-ncbi-cdd-delta" class="section level3">
 <h3>Example NCBI CDD Delta</h3>
 <p>Download NCBI CDD Delta via:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># download the entire NCBI CDD Delta database</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;cdd_delta&quot;</span>, <span class="at">path =</span> <span class="st">&quot;cdd_delta&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="co"># download the entire NCBI CDD Delta database</span></span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>biomartr<span class="sc">::</span><span class="fu">download.database.all</span>(<span class="at">db =</span> <span class="st">&quot;cdd_delta&quot;</span>, <span class="at">path =</span> <span class="st">&quot;cdd_delta&quot;</span>)</span></code></pre></div>
 <p>For each data package, <code>biomartr</code> checks the
 <code>md5checksum</code> of the downloaded file and the file stored
 online to make sure that internet connection losses didn’t currupt the

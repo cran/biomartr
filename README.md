@@ -92,7 +92,7 @@ BiocManager::install("biomaRt")
 Now users can install `biomartr` from CRAN:
 
 ```r
-# install biomartr 1.0.2
+# install biomartr 1.0.4
 install.packages("biomartr", dependencies = TRUE)
 ```
 
