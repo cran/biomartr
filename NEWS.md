@@ -1,10 +1,43 @@
-# biomartr 1.0.4
+# [biomartr 1.0.5](https://github.com/ropensci/biomartr/releases/tag/v1.0.5)
+
+### Package generalization
+
+Over 5000 lines have been edited, most of them removed (#100), to generalize the package to make it more safe for future
+development. This progress is still ongoing.
+
+### New features
+
+- Ensembl genomes is no longer a different database compared to ensembl in biomaRt, since this split is artifical.
+It is adviced to use only "ensembl" as db from now on, but "ensemblgenomes" will still work.
+- Annotation did mean gff, but it should be both gff and gtf getter, with format specification, this is now fixed and generalized.
+- Added in new kingdom for ensembl: protists supportwith correct collection getters
+- The retrieval from the `UniProt` database is now updated to the new API/FTP path system. Now users
+can retrieve proteomes using the functions `getProteome(db = "uniprot", ...)` and `getProteomeSet(db = "uniprot", ...)` (see #82)
+- new function `getBioSet`: Generic Bio data set extractor
+- new function `getBio`: A wrapper to all bio getters, selected with 'type' argument
+- a new function `getUniProtSTATS()`: Retrieve UniProt Database Information File (STATS)
+
+
+
+### Power user cache
+
+The package now supports caching of back end files which used to be saved to /tmp folder (i.e. lost on computer restart).
+This make it easy for power users who want higher speed. For more info, see the function ?cachedir_set
+
+### Bug fixes
+
+- Fixed many wrong urls and non working functions, more tests are added to make sure they work. 
+- Fixed fungi collection accessor for ensembl
+
+# [biomartr 1.0.4](https://github.com/ropensci/biomartr/releases/tag/v1.0.4)
 
 ### New Features
-- in `getSummaryFile()` all columns of the `assembly_summary.txt` are now specified with names and correct data types (#92) 
+- in `getSummaryFile()` all columns of the `assembly_summary.txt` are now specified with names and correct data types (#92)
+- all `get*()` functions, the `getKingdomAssemblySummary()`, and `is.genome.available.refseq.genbank()` all receive a new argument `skip_bacteria` which is set to `TRUE` by default. This ensures that the huge dataset file for `bacteria` is not downloaded by default when retrieving summary files from `GenBank`. Users who wish to retrieved data from particular bacteria can actively set `skip_bacteria = TRUE` in all `get*()` functions. 
 
 ### Bug Fixes
 - whenever the low-level function `getKingdomAssemblySummary()` was called by all get*() functions, due to an error in the `assembly_summary.txt` file for viruses where the total gene count was stored as character and not as integer (as is the case for all other `assembly_summary.txt` files), an error occurred stating that `dplyr::bind_rows()` cannot join column $X35 due to differences in data types. This has now been resolved by parsing the correct data types with `readr`. Many thanks to ... for pointing this out to me. (#92)
+- fixing md5checks in all `get*()` functions
 
 # [biomartr 1.0.3](https://github.com/ropensci/biomartr/releases/tag/v1.0.3)
 

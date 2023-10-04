@@ -5,10 +5,10 @@
 #' @author Hajk-Georg Drost
 #' @noRd
 read_md5file <- function(md5path) {
-    
+
     if (!file.exists(md5path))
         stop("The file path you specified does not seem to exist: '", md5path,"'.", call. = FALSE)
-    
+
     file <-
         readr::read_delim(
             md5path,
@@ -19,6 +19,6 @@ read_md5file <- function(md5path) {
                 file_name = readr::col_character()
             )
         )
-    
+
     return(file)
 }

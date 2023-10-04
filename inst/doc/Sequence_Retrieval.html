@@ -11,7 +11,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
-<meta name="date" content="2023-06-19" />
+<meta name="date" content="2023-10-04" />
 
 <title>Sequence Retrieval</title>
 
@@ -338,7 +338,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 <h1 class="title toc-ignore">Sequence Retrieval</h1>
-<h4 class="date">2023-06-19</h4>
+<h4 class="date">2023-10-04</h4>
 
 
 
@@ -471,9 +471,9 @@ stored in NCBI RefSeq.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># checking whether or not the Homo sapiens </span></span>
 <span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="co"># genome is avaialable for download</span></span>
 <span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">is.genome.available</span>(<span class="at">db =</span> <span class="st">&quot;refseq&quot;</span>, <span class="at">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>, <span class="at">details =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code>  assembly_accessi… bioproject biosample wgs_master refseq_category taxid
+<pre><code>  assembly_accessi bioproject biosample wgs_master refseq_category taxid
   &lt;chr&gt;             &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;      &lt;chr&gt;           &lt;int&gt;
-1 GCF_000001405.38  PRJNA168   NA        NA         reference geno…  9606
+1 GCF_000001405.38  PRJNA168   NA        NA         reference geno  9606
 # ... with 15 more variables: species_taxid &lt;int&gt;, organism_name &lt;chr&gt;,
 #   infraspecific_name &lt;chr&gt;, isolate &lt;chr&gt;, version_status &lt;chr&gt;,
 #   assembly_level &lt;chr&gt;, release_type &lt;chr&gt;, genome_rep &lt;chr&gt;,
@@ -510,19 +510,19 @@ types of sub-species are available in the respective databases.</p>
 hits.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">is.genome.available</span>(<span class="at">organism =</span> <span class="st">&quot;Mycobacterium tuberculosis&quot;</span>, <span class="at">db =</span> <span class="st">&quot;refseq&quot;</span>, <span class="at">details =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>A tibble: 6,744 x 21
-   assembly_accessi… bioproject  biosample  wgs_master  refseq_category
+   assembly_accessi bioproject  biosample  wgs_master  refseq_category
    &lt;chr&gt;             &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;       &lt;chr&gt;          
- 1 GCF_000729745.1   PRJNA224116 SAMN02899… JPFP000000… na             
- 2 GCF_000729755.1   PRJNA224116 SAMN02899… JPFQ000000… na             
- 3 GCF_000729765.1   PRJNA224116 SAMN02899… JPFR000000… na             
- 4 GCF_000749605.1   PRJNA224116 SAMN02902… JQES000000… na             
- 5 GCF_000749615.1   PRJNA224116 SAMN02902… JQER000000… na             
- 6 GCF_000749625.1   PRJNA224116 SAMN02902… JQEQ000000… na             
- 7 GCF_000749665.1   PRJNA224116 SAMN02902… JQEV000000… na             
- 8 GCF_000749675.1   PRJNA224116 SAMN02902… JQET000000… na             
- 9 GCF_000749685.1   PRJNA224116 SAMN02902… JQEN000000… na             
-10 GCF_000749725.1   PRJNA224116 SAMN02902… JQEM000000… na             
- … with 6,734 more rows, and 16 more variables: taxid &lt;int&gt;,
+ 1 GCF_000729745.1   PRJNA224116 SAMN02899 JPFP000000 na             
+ 2 GCF_000729755.1   PRJNA224116 SAMN02899 JPFQ000000 na             
+ 3 GCF_000729765.1   PRJNA224116 SAMN02899 JPFR000000 na             
+ 4 GCF_000749605.1   PRJNA224116 SAMN02902 JQES000000 na             
+ 5 GCF_000749615.1   PRJNA224116 SAMN02902 JQER000000 na             
+ 6 GCF_000749625.1   PRJNA224116 SAMN02902 JQEQ000000 na             
+ 7 GCF_000749665.1   PRJNA224116 SAMN02902 JQEV000000 na             
+ 8 GCF_000749675.1   PRJNA224116 SAMN02902 JQET000000 na             
+ 9 GCF_000749685.1   PRJNA224116 SAMN02902 JQEN000000 na             
+10 GCF_000749725.1   PRJNA224116 SAMN02902 JQEM000000 na             
+  with 6,734 more rows, and 16 more variables: taxid &lt;int&gt;,
    species_taxid &lt;int&gt;, organism_name &lt;chr&gt;,
    infraspecific_name &lt;chr&gt;, isolate &lt;chr&gt;, version_status &lt;chr&gt;,
    assembly_level &lt;chr&gt;, release_type &lt;chr&gt;, genome_rep &lt;chr&gt;,
@@ -639,20 +639,20 @@ More than one entry was found for &#39;Homo sapiens&#39;. Please consider to run
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="co"># checking whether or not the Homo sapiens </span></span>
 <span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a><span class="co"># genome is avaialable for download</span></span>
 <span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a><span class="fu">is.genome.available</span>(<span class="at">db =</span> <span class="st">&quot;genbank&quot;</span>, <span class="at">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>, <span class="at">details =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code> A tibble: 1,041 × 23                                                                                   
+<pre><code> A tibble: 1,041 x 23                                                                                   
    assembly_accession bioproject biosample  wgs_master refseq_category
    &lt;chr&gt;              &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;          
- 1 GCA_000001405.28   PRJNA31257 NA         NA         reference geno…
- 2 GCA_000002115.2    PRJNA1431  SAMN02981… AADD00000… na             
- 3 GCA_000002125.2    PRJNA19621 SAMN02981… ABBA00000… na             
+ 1 GCA_000001405.28   PRJNA31257 NA         NA         reference geno
+ 2 GCA_000002115.2    PRJNA1431  SAMN02981 AADD00000 na             
+ 3 GCA_000002125.2    PRJNA19621 SAMN02981 ABBA00000 na             
  4 GCA_000002135.3    PRJNA10793 NA         NA         na             
- 5 GCA_000004845.2    PRJNA42199 SAMN00003… ADDF00000… na             
- 6 GCA_000005465.1    PRJNA42201 NA         DAAB00000… na             
- 7 GCA_000181135.1    PRJNA28335 SAMN00001… ABKV00000… na             
- 8 GCA_000185165.1    PRJNA59877 SAMN02981… AEKP00000… na             
- 9 GCA_000212995.1    PRJNA19621 SAMN02981… ABSL00000… na             
-10 GCA_000252825.1    PRJNA19621 SAMN02981… ABBA00000… na             
-# … with 1,031 more rows, and 18 more variables: taxid &lt;int&gt;,
+ 5 GCA_000004845.2    PRJNA42199 SAMN00003 ADDF00000 na             
+ 6 GCA_000005465.1    PRJNA42201 NA         DAAB00000 na             
+ 7 GCA_000181135.1    PRJNA28335 SAMN00001 ABKV00000 na             
+ 8 GCA_000185165.1    PRJNA59877 SAMN02981 AEKP00000 na             
+ 9 GCA_000212995.1    PRJNA19621 SAMN02981 ABSL00000 na             
+10 GCA_000252825.1    PRJNA19621 SAMN02981 ABBA00000 na             
+#  with 1,031 more rows, and 18 more variables: taxid &lt;int&gt;,
 #   species_taxid &lt;int&gt;, organism_name &lt;chr&gt;,
 #   infraspecific_name &lt;chr&gt;, isolate &lt;chr&gt;, version_status &lt;chr&gt;,
 #   assembly_level &lt;chr&gt;, release_type &lt;chr&gt;, genome_rep &lt;chr&gt;,
@@ -684,8 +684,8 @@ following runs. The corresponding information files are stored at
 <span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a><span class="fu">is.genome.available</span>(<span class="at">db =</span> <span class="st">&quot;ensembl&quot;</span>, <span class="at">organism =</span> <span class="st">&quot;Homo sapiens&quot;</span>, <span class="at">details =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>  division           assembly accession  release name  taxon_id strain
   &lt;chr&gt;              &lt;chr&gt;    &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt; 
-1 EnsemblVertebrates GRCh38   GCA_00000…     104 homo…     9606 NA    
-# … with 3 more variables: display_name &lt;chr&gt;, common_name &lt;chr&gt;,
+1 EnsemblVertebrates GRCh38   GCA_00000     104 homo     9606 NA    
+#  with 3 more variables: display_name &lt;chr&gt;, common_name &lt;chr&gt;,
 #   strain_collection &lt;chr&gt;</code></pre>
 <p>Again, users can either specify the <code>taxid</code> or
 <code>accession id</code> when searching for organism entries.</p>
@@ -693,15 +693,15 @@ following runs. The corresponding information files are stored at
 <span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a><span class="fu">is.genome.available</span>(<span class="at">db =</span> <span class="st">&quot;ensembl&quot;</span>, <span class="at">organism =</span> <span class="st">&quot;9606&quot;</span>, <span class="at">details =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>division           assembly accession  release name  taxon_id strain
   &lt;chr&gt;              &lt;chr&gt;    &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt; 
-1 EnsemblVertebrates GRCh38   GCA_00000…     104 homo…     9606 NA    
-# … with 3 more variables: display_name &lt;chr&gt;, common_name &lt;chr&gt;,
+1 EnsemblVertebrates GRCh38   GCA_00000     104 homo     9606 NA    
+#  with 3 more variables: display_name &lt;chr&gt;, common_name &lt;chr&gt;,
 #   strain_collection &lt;chr&gt;</code></pre>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="co"># retrieve details for Homo sapiens using accession id</span></span>
 <span id="cb32-2"><a href="#cb32-2" tabindex="-1"></a><span class="fu">is.genome.available</span>(<span class="at">organism =</span> <span class="st">&quot;GCA_000001405.28&quot;</span>, <span class="at">db =</span> <span class="st">&quot;ensembl&quot;</span>, <span class="at">details =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code> division           assembly accession  release name  taxon_id strain
   &lt;chr&gt;              &lt;chr&gt;    &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt; 
-1 EnsemblVertebrates GRCh38   GCA_00000…     104 homo…     9606 NA    
-# … with 3 more variables: display_name &lt;chr&gt;, common_name &lt;chr&gt;,
+1 EnsemblVertebrates GRCh38   GCA_00000     104 homo     9606 NA    
+#  with 3 more variables: display_name &lt;chr&gt;, common_name &lt;chr&gt;,
 #   strain_collection &lt;chr&gt;</code></pre>
 <p><strong>Please note that the <code>accession</code> id can change
 internally at ENSEMBL. E.g. in a recent case the <code>accession</code>
@@ -721,20 +721,20 @@ More than one entry was found for &#39;Homo sapiens&#39;. Please consider to run
 <p>or with details:</p>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="co"># retrieve information from UniProt</span></span>
 <span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a><span class="fu">is.genome.available</span>(<span class="at">db =</span> <span class="st">&quot;uniprot&quot;</span>, <span class="st">&quot;Homo sapiens&quot;</span>, <span class="at">details =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code> A tibble: 29 × 16
-   name          description        isReferenceProte… isRepresentativ…
+<pre><code> A tibble: 29 x 16
+   name          description        isReferenceProte isRepresentativ
    &lt;chr&gt;         &lt;chr&gt;              &lt;lgl&gt;             &lt;lgl&gt;           
- 1 Homo sapiens… Homo sapiens (Hom… TRUE              TRUE            
- 2 Human associ… NA                 FALSE             TRUE            
- 3 Human respir… NA                 FALSE             FALSE           
- 4 Human respir… NA                 FALSE             FALSE           
- 5 Human respir… NA                 FALSE             FALSE           
- 6 Human respir… NA                 FALSE             FALSE           
- 7 Human respir… NA                 FALSE             FALSE           
- 8 Human respir… NA                 FALSE             FALSE           
- 9 Human respir… NA                 FALSE             FALSE           
-10 Human respir… NA                 FALSE             FALSE           
-# … with 19 more rows, and 12 more variables:
+ 1 Homo sapiens Homo sapiens (Hom TRUE              TRUE            
+ 2 Human associ NA                 FALSE             TRUE            
+ 3 Human respir NA                 FALSE             FALSE           
+ 4 Human respir NA                 FALSE             FALSE           
+ 5 Human respir NA                 FALSE             FALSE           
+ 6 Human respir NA                 FALSE             FALSE           
+ 7 Human respir NA                 FALSE             FALSE           
+ 8 Human respir NA                 FALSE             FALSE           
+ 9 Human respir NA                 FALSE             FALSE           
+10 Human respir NA                 FALSE             FALSE           
+#  with 19 more rows, and 12 more variables:
 #   genomeAssembly &lt;df[,4]&gt;, dbReference &lt;list&gt;, component &lt;list&gt;,
 #   reference &lt;list&gt;, annotationScore &lt;df[,1]&gt;, scores &lt;list&gt;,
 #   upid &lt;chr&gt;, modified &lt;dbl&gt;, taxonomy &lt;int&gt;, source &lt;chr&gt;,
@@ -745,13 +745,13 @@ More than one entry was found for &#39;Homo sapiens&#39;. Please consider to run
 <code>Homo sapiens</code>.</p>
 <div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" tabindex="-1"></a><span class="co"># retrieve information from UniProt</span></span>
 <span id="cb38-2"><a href="#cb38-2" tabindex="-1"></a><span class="fu">is.genome.available</span>(<span class="at">db =</span> <span class="st">&quot;uniprot&quot;</span>, <span class="st">&quot;9606&quot;</span>, <span class="at">details =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code> A tibble: 3 × 15
-  name  description isReferenceProt… isRepresentativ… genomeAssembly$…
+<pre><code> A tibble: 3 x 15
+  name  description isReferenceProt isRepresentativ genomeAssembly$
   &lt;chr&gt; &lt;chr&gt;       &lt;lgl&gt;            &lt;lgl&gt;            &lt;chr&gt;           
-1 Homo… Homo sapie… TRUE             TRUE             Ensembl         
-2 Homo… NA          FALSE            FALSE            ENA/EMBL        
-3 Homo… NA          FALSE            FALSE            ENA/EMBL        
-# … with 10 more variables: dbReference &lt;list&gt;, component &lt;list&gt;,
+1 Homo Homo sapie TRUE             TRUE             Ensembl         
+2 Homo NA          FALSE            FALSE            ENA/EMBL        
+3 Homo NA          FALSE            FALSE            ENA/EMBL        
+#  with 10 more variables: dbReference &lt;list&gt;, component &lt;list&gt;,
 #   reference &lt;list&gt;, annotationScore &lt;df[,1]&gt;, scores &lt;list&gt;,
 #   upid &lt;chr&gt;, modified &lt;dbl&gt;, taxonomy &lt;int&gt;, source &lt;chr&gt;,
 #   superregnum &lt;chr&gt;</code></pre>
@@ -759,10 +759,10 @@ More than one entry was found for &#39;Homo sapiens&#39;. Please consider to run
 <code>Homo sapiens</code>.</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" tabindex="-1"></a><span class="co"># retrieve information from UniProt</span></span>
 <span id="cb40-2"><a href="#cb40-2" tabindex="-1"></a><span class="fu">is.genome.available</span>(<span class="at">db =</span> <span class="st">&quot;uniprot&quot;</span>, <span class="st">&quot;UP000005640&quot;</span>, <span class="at">details =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<pre><code> name  description isReferenceProt… isRepresentativ… genomeAssembly$…
+<pre><code> name  description isReferenceProt isRepresentativ genomeAssembly$
   &lt;chr&gt; &lt;chr&gt;       &lt;lgl&gt;            &lt;lgl&gt;            &lt;chr&gt;           
-1 Homo… Homo sapie… TRUE             TRUE             Ensembl         
-# … with 10 more variables: dbReference &lt;list&gt;, component &lt;list&gt;,
+1 Homo Homo sapie TRUE             TRUE             Ensembl         
+#  with 10 more variables: dbReference &lt;list&gt;, component &lt;list&gt;,
 #   reference &lt;list&gt;, annotationScore &lt;df[,1]&gt;, scores &lt;list&gt;,
 #   upid &lt;chr&gt;, modified &lt;dbl&gt;, taxonomy &lt;int&gt;, source &lt;chr&gt;,
 #   superregnum &lt;chr&gt;</code></pre>
@@ -803,17 +803,25 @@ for each kingdom of life:</p>
 <div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="co"># the number of genomes available for each kingdom</span></span>
 <span id="cb48-2"><a href="#cb48-2" tabindex="-1"></a><span class="fu">listKingdoms</span>(<span class="at">db =</span> <span class="st">&quot;refseq&quot;</span>)</span></code></pre></div>
 <pre><code>    Archaea  Bacteria Eukaryota   Viruses 
-      330     11797      1002     10637 </code></pre>
+      479     16255      1383     12916</code></pre>
 <p>Example <code>genbank</code>:</p>
 <div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a><span class="co"># the number of genomes available for each kingdom</span></span>
 <span id="cb50-2"><a href="#cb50-2" tabindex="-1"></a><span class="fu">listKingdoms</span>(<span class="at">db =</span> <span class="st">&quot;genbank&quot;</span>)</span></code></pre></div>
 <pre><code>  Archaea  Bacteria Eukaryota 
-     1651     25904      7742</code></pre>
+     1902     32532     12404 </code></pre>
 <p>Example <code>ENSEMBL</code>:</p>
 <div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" tabindex="-1"></a><span class="co"># the number of genomes available for each kingdom</span></span>
 <span id="cb52-2"><a href="#cb52-2" tabindex="-1"></a><span class="fu">listKingdoms</span>(<span class="at">db =</span> <span class="st">&quot;ensembl&quot;</span>)</span></code></pre></div>
-<pre><code>EnsemblVertebrates 
-               310</code></pre>
+<pre><code>Starting information retrieval for: EnsemblVertebrates
+Starting information retrieval for: EnsemblPlants                 
+Starting information retrieval for: EnsemblFungi                  
+Starting information retrieval for: EnsemblMetazoa                
+Starting information retrieval for: EnsemblBacteria               
+                                                                  
+   EnsemblBacteria       EnsemblFungi     EnsemblMetazoa 
+             31332               1504                251 
+     EnsemblPlants EnsemblVertebrates 
+               150                317 </code></pre>
 </div>
 <div id="analogous-computations-can-be-performed-for-groups-and-subgroups" class="section level3">
 <h3>Analogous computations can be performed for <code>groups</code> and

@@ -4,11 +4,33 @@
 \alias{getENSEMBLInfo}
 \title{Retrieve ENSEMBL info file}
 \usage{
-getENSEMBLInfo()
+getENSEMBLInfo(update = TRUE)
+}
+\arguments{
+\item{update}{logical, default TRUE. Update cached list, if FALSE use existing
+(if it exists)}
+}
+\value{
+a tibble table storing info for all available ENSEMBL divisions.
 }
 \description{
-Retrieve species and genome information from 
+Retrieve species and genome information from
 http://rest.ensembl.org/info/species?content-type=application/json/.
+}
+\examples{
+\dontrun{
+# look at available divisions
+ensembl_divisions()
+# retrieve information for all ENSEMBL divisions at once
+test <- getENSEMBLInfo()
+test
+# retrieve information for a particular ENSEMBL division (e.g. EnsemblVertebrates)
+test_vertebrates <- get.ensembl.info(update = TRUE, division = "EnsemblVertebrates")
+test_vertebrates
+}
+}
+\seealso{
+\code{\link{ensembl_divisions}}, \code{\link{get.ensembl.info}}, \code{\link{getKingdomAssemblySummary}}
 }
 \author{
 Hajk-Georg Drost

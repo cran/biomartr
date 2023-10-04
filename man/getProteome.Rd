@@ -8,22 +8,25 @@ getProteome(
   db = "refseq",
   organism,
   reference = TRUE,
+  skip_bacteria = TRUE,
   release = NULL,
   gunzip = FALSE,
-  path = file.path("_ncbi_downloads", "proteomes")
+  update = TRUE,
+  path = file.path("_ncbi_downloads", "proteomes"),
+  mute_citation = FALSE
 )
 }
 \arguments{
-\item{db}{a character string specifying the database from which the genome 
+\item{db}{a character string specifying the database from which the genome
 shall be retrieved:
 \itemize{
 \item \code{db = "refseq"}
 \item \code{db = "genbank"}
 \item \code{db = "ensembl"}
-\item \code{db = "uniprot"}
 }}
 
-\item{organism}{there are three options to characterize an organism: 
+\item{organism}{Organism selector id,
+there are three options to characterize an organism:
 \itemize{
 \item by \code{scientific name}: e.g. \code{organism = "Homo sapiens"}
 \item by \code{database specific accession identifier}: e.g. \code{organism = "GCF_000001405.37"} (= NCBI RefSeq identifier for \code{Homo sapiens})
@@ -32,30 +35,44 @@ shall be retrieved:
 
 \item{reference}{a logical value indicating whether or not a genome shall be downloaded if it isn't marked in the database as either a reference genome or a representative genome.}
 
-\item{release}{the database release version of ENSEMBL (\code{db = "ensembl"}). Default is \code{release = NULL} meaning
-that the most recent database version is used.}
+\item{skip_bacteria}{Due to its enormous dataset size (> 700MB as of July 2023),
+the bacterial summary file will not be loaded by default anymore. If users
+wish to gain insights for the bacterial kingdom they needs to actively specify \code{skip_bacteria = FALSE}. When \code{skip_bacteria = FALSE} is set then the
+bacterial summary file will be downloaded.}
 
-\item{gunzip}{a logical value indicating whether or not files should be unzipped.}
+\item{release}{a numeric, the database release version of ENSEMBL (\code{db = "ensembl"}). Default is \code{release = NULL} meaning
+that the most recent database version is used. \code{release = 75} would for human would give the stable
+GRCh37 release in ensembl. Value must be > 46, since ensembl did not structure their data
+if the standard format before that.}
 
-\item{path}{a character string specifying the location (a folder) in which 
-the corresponding proteome shall be stored. Default is 
+\item{gunzip}{a logical, indicating whether or not files should be unzipped.}
+
+\item{update}{logical, default TRUE. (Uniprot only for now!)
+If species info file exists already,
+do not re download, makes it faster but the file can be old, i.e. no longer
+as complete as it could be.}
+
+\item{path}{a character string specifying the location (a folder) in which
+the corresponding proteome shall be stored. Default is
 \code{path} = \code{file.path("_ncbi_downloads","proteomes")}.}
+
+\item{mute_citation}{logical, default FALSE, indicating whether citation message should be muted.}
 }
 \value{
 File path to downloaded proteome.
 }
 \description{
 Main proteome retrieval function for an organism of interest.
-By specifying the scientific name of an organism of interest the 
+By specifying the scientific name of an organism of interest the
 corresponding fasta-file storing the proteome of the organism of interest
-can be downloaded and stored locally. Proteome files can be retrieved from 
+can be downloaded and stored locally. Proteome files can be retrieved from
 several databases.
 }
 \details{
 Internally this function loads the the overview.txt file from NCBI:
 
  refseq: ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/
- 
+
  genbank: ftp://ftp.ncbi.nlm.nih.gov/genomes/genbank/
 
 and creates a directory '_ncbi_downloads/proteomes' to store
@@ -63,30 +80,53 @@ the proteome of interest as fasta file for future processing.
 }
 \examples{
 \dontrun{
-
-# download the proteome of Arabidopsis thaliana from refseq
-# and store the corresponding proteome file in '_ncbi_downloads/proteomes'
-file_path <- getProteome( db       = "refseq", 
-             organism = "Arabidopsis thaliana", 
-             path     = file.path("_ncbi_downloads","proteomes") )
-
+# download the proteome of Arabidopsis thaliana from NCBI RefSeq
+# and store the corresponding proteome file in '_ncbi_downloads/refseq/proteomes'
+file_path <- getProteome( db       = "refseq",
+             organism = "Arabidopsis thaliana",
+             path     = file.path("_ncbi_downloads","refseq","proteomes") )
+# import proteome into R session
 Ath_proteome <- read_proteome(file_path, format = "fasta")
 
-# download the proteome of Arabidopsis thaliana from genbank
-# and store the corresponding proteome file in '_ncbi_downloads/proteomes'
-file_path <- getProteome( db       = "genbank", 
-             organism = "Arabidopsis thaliana", 
-             path     = file.path("_ncbi_downloads","proteomes") )
+# download the proteome of Arabidopsis thaliana from NCBI Genbank
+# and store the corresponding proteome file in '_ncbi_downloads/genbank/proteomes'
+file_path <- getProteome( db       = "genbank",
+             organism = "Arabidopsis thaliana",
+             path     = file.path("_ncbi_downloads","genbank","proteomes") )
+# import proteome into R session
+Ath_proteome <- read_proteome(file_path, format = "fasta")
 
+# and store the corresponding proteome file in '_downloads/uniprot/proteomes'
+file_path <- getProteome( db       = "uniprot",
+             organism = "Arabidopsis thaliana",
+             path     = file.path("_downloads","uniprot","proteomes") )
+# import proteome into R session
+Ath_proteome <- read_proteome(file_path, format = "fasta")
+
+# download the proteome of Arabidopsis thaliana from ENSEMBL
+# and store the corresponding proteome file in '_downloads/ensembl/proteomes'
+file_path <- getProteome( db       = "ensembl",
+             organism = "Arabidopsis thaliana",
+             path     = file.path("_downloads","ensembl","proteomes") )
+# import proteome into R session
 Ath_proteome <- read_proteome(file_path, format = "fasta")
 }
 }
 \seealso{
-\code{\link{getGenome}}, \code{\link{getCDS}}, \code{\link{getGFF}},
-\code{\link{getRNA}}, \code{\link{getRepeatMasker}}, 
-\code{\link{getAssemblyStats}}, \code{\link{meta.retrieval}}, 
-\code{\link{read_proteome}}
+Other getBio: 
+\code{\link{getBio}()},
+\code{\link{getCDS}()},
+\code{\link{getCollection}()},
+\code{\link{getGFF}()},
+\code{\link{getGenome}()},
+\code{\link{getRNA}()}
+
+Other proteome: 
+\code{\link{getProteomeSet}()},
+\code{\link{read_proteome}()}
 }
 \author{
 Hajk-Georg Drost
 }
+\concept{getBio}
+\concept{proteome}
