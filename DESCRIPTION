@@ -1,6 +1,6 @@
 Package: biomartr
 Title: Genomic Data Retrieval
-Version: 1.0.6
+Version: 1.0.7
 Authors@R: c(person("Hajk-Georg", "Drost",
                 role = c("aut", "cre"),
                 email = "hajk-georg.drost@tuebingen.mpg.de",
@@ -37,9 +37,9 @@ X-schema.org-keywords: BioMart, genomic-data-retrieval,
         biological-data-retrieval
 X-schema.org-applicationCategory: Data Access
 X-schema.org-isPartof: "ropensci.org"
-Packaged: 2023-10-24 15:48:08 UTC; hdrost
+Packaged: 2023-12-02 14:46:32 UTC; hdrost
 Author: Hajk-Georg Drost [aut, cre] (<https://orcid.org/0000-0002-1567-306X>),
   Haakon Tjeldnes [aut, ctb]
 Maintainer: Hajk-Georg Drost <hajk-georg.drost@tuebingen.mpg.de>
 Repository: CRAN
-Date/Publication: 2023-10-24 20:40:06 UTC
+Date/Publication: 2023-12-02 17:40:07 UTC

@@ -21,9 +21,9 @@
 #' @seealso \code{\link{ensembl_divisions}}, \code{\link{getKingdomAssemblySummary}}, \code{\link{getENSEMBLInfo}}
 #' @export
 get.ensembl.info <- function(update = FALSE, division) {
+  stopifnot(is.logical(update))
   tmp_file <- file.path(cachedir(), paste0(division, "_info.tsv"))
-  if (file.exists(tmp_file) &&
-        !update) {
+  if (file.exists(tmp_file) && !update) {
         suppressWarnings(
             ensembl.info <-
                 readr::read_tsv(
@@ -145,7 +145,7 @@ ensembl_ftp_server_url <- function(division = "EnsemblVertebrates") {
   if (division == "EnsemblVertebrates") {
     "https://ftp.ensembl.org"
   } else {
-    "http://ftp.ensemblgenomes.org"
+    "https://ftp.ensemblgenomes.ebi.ac.uk" # old: http://ftp.ensemblgenomes.org
   }
 }
 
@@ -169,8 +169,8 @@ ensembl_ftp_server_url_format <- function(division, release = NULL, format) {
 }
 
 ensembl_ftp_server_url_format_full <- function(division, release = NULL, format) {
-  file.path(ensembl_ftp_server_url(division),
-            ensembl_ftp_server_url_format(division, release, format))
+  paste0(ensembl_ftp_server_url(division), "/",
+         ensembl_ftp_server_url_format(division, release, format))
 }
 
 ensembl_ftp_server_url_release_style_fasta <- function(division, release = NULL) {
@@ -183,13 +183,13 @@ ensembl_ftp_server_url_release_style_gtf <- function(division, release = NULL, f
 
 
 ensembl_ftp_server_url_fasta <- function(division, release = NULL) {
-  file.path(ensembl_ftp_server_url(division),
-            ensembl_ftp_server_url_release_style_fasta(division, release))
+  paste0(ensembl_ftp_server_url(division), "/",
+         ensembl_ftp_server_url_release_style_fasta(division, release))
 }
 
 ensembl_ftp_server_url_gtf <- function(division = "EnsemblVertebrates",
                                        release = NULL, format = "gtf") {
-  file.path(ensembl_ftp_server_url(division),
-            ensembl_ftp_server_url_release_style_gtf(division, release, format))
+  paste0(ensembl_ftp_server_url(division), "/",
+         ensembl_ftp_server_url_release_style_gtf(division, release, format))
 }
 

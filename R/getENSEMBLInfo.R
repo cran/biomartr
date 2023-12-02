@@ -1,8 +1,11 @@
 #' @title Retrieve ENSEMBL info file
 #' @description Retrieve species and genome information from
 #' http://rest.ensembl.org/info/species?content-type=application/json/.
-#' @param update logical, default TRUE. Update cached list, if FALSE use existing
-#' (if it exists)
+#' @param update logical, default FALSE. If TRUE, update cached list,
+#' if FALSE use existing cache (if it exists). For cache location see
+#' \code{cachedir()}
+#' @param divisions character, name of divisions to check, default is all from
+#' \code{ensembl_divisions()}. If NULL, also all is used.
 #' @author Hajk-Georg Drost
 #' @return a tibble table storing info for all available ENSEMBL divisions.
 #' @examples
@@ -18,15 +21,19 @@
 #' }
 #' @seealso \code{\link{ensembl_divisions}}, \code{\link{get.ensembl.info}}, \code{\link{getKingdomAssemblySummary}}
 #' @export
-getENSEMBLInfo <- function(update = TRUE) {
+getENSEMBLInfo <- function(update = FALSE, divisions = ensembl_divisions()) {
   all_divisions <- ensembl_divisions()
-  ENSEMBLInfoTable <- vector("list", length(all_divisions))
+  if (is.null(divisions)) divisions <- all_divisions
+  if (!all(divisions %in% all_divisions))
+    stop("Specified Ensembl divisions must be subset of:\n",
+         paste(all_divisions, collapse = " "))
+  ENSEMBLInfoTable <- vector("list", length(divisions))
 
-  for (i in seq_len(length(all_divisions))) {
-    cat("Starting information retrieval for:", all_divisions[i])
+  for (i in seq_len(length(divisions))) {
+    cat("Starting information retrieval for:", divisions[i])
     cat("\n")
     ENSEMBLInfoTable[[i]] <-
-      get.ensembl.info(update, division = all_divisions[i])
+      get.ensembl.info(update, division = divisions[i])
   }
 
   return(dplyr::bind_rows(ENSEMBLInfoTable))
@@ -198,6 +205,10 @@ organism_no_hit_message_more_than_one <- function(organism, db) {
   )
 }
 
+#' Get ensembl collection info table
+#'
+#' @references https://ftp.ensemblgenomes.ebi.ac.uk/pub/README_metadata
+#' @noRd
 collection_table <- function(division = "EnsemblBacteria") {
   base_name_file <- paste0(division, ".txt")
   local_file <- file.path(tempdir(), base_name_file)
@@ -221,50 +232,16 @@ collection_table <- function(division = "EnsemblBacteria") {
       )
     })
   }
-  suppressWarnings(
-    collection <-
-      readr::read_delim(
-        local_file,
-        delim = "\t",
-        quote = "\"",
-        escape_backslash = FALSE,
-        col_names = c(
-          "name",
-          "species",
-          "division",
-          "taxonomy_id",
-          "assembly",
-          "assembly_accession",
-          "genebuild",
-          "variation",
-          "microarray",
-          "pan_compara",
-          "peptide_compara",
-          "genome_alignments",
-          "other_alignments",
-          "core_db",
-          "species_id"
-        ),
-        col_types = readr::cols(
-          name = readr::col_character(),
-          species = readr::col_character(),
-          division = readr::col_character(),
-          taxonomy_id = readr::col_integer(),
-          assembly = readr::col_character(),
-          assembly_accession = readr::col_character(),
-          genebuild = readr::col_character(),
-          variation = readr::col_character(),
-          microarray = readr::col_character(),
-          pan_compara = readr::col_character(),
-          peptide_compara = readr::col_character(),
-          genome_alignments = readr::col_character(),
-          other_alignments = readr::col_character(),
-          core_db = readr::col_character(),
-          species_id = readr::col_integer()
-        ),
-        comment = "#"
-      )
-  )
+  collection <- suppressWarnings(data.table::fread(local_file))
+  colnames <- colnames(collection)[-1] # Remove false column
+  colnames[1] <- "name"
+  collection$species_id <- NULL
+  colnames(collection) <- colnames
+
+  if (!("core_db" %in% colnames)) stop("Loaded ensembl summary file is invalid,",
+                                      "is there changes we have not propogated to biomartr?",
+                                      "Please post an issue on github with species information")
+  return(collection)
 }
 
 get_collection_id <- function(ensembl_summary) {
@@ -274,30 +251,36 @@ get_collection_id <- function(ensembl_summary) {
     return("") # Only these have collection folder structure
 
   get.org.info <- ensembl_summary[1,]
-  collection_info <- collection_table(division)
-  assembly <- NULL
+  collection_info_full <- collection_table(division)
+  assembly <- assembly_accession <- NULL
   collection_info <-
-    dplyr::filter(collection_info,
+    dplyr::filter(collection_info_full,
                   assembly == gsub("_$", "", get.org.info$assembly))
 
   if (nrow(collection_info) == 0) {
-    message(
-      "Unfortunately organism '",
-      ensembl_summary$display_name,
-      "' could not be found. Have you tried another database yet? ",
-      "E.g. db = 'ensembl'? Thus, download for this species is omitted."
-    )
-    return(FALSE)
+    # Special case for bacteria
+    collection_info <-
+      dplyr::filter(collection_info_full,
+                    assembly_accession == get.org.info$accession)
+    if (nrow(collection_info) == 0) {
+      message(
+        "Unfortunately organism '",
+        ensembl_summary$display_name,
+        "' could not be found. Have you tried another database yet? ",
+        "E.g. db = 'ensembl'? Thus, download for this species is omitted."
+      )
+      return(FALSE)
+    }
   }
-
-  if (is.na(collection_info$core_db[1]) || collection_info$core_db[1] == "N") {
-    # TODO make sure this is safe
+  collection <- collection_info$core_db[1]
+  split <- unlist(stringr::str_split(collection, "_"))[1:3]
+  is_not_collection <- (is.na(collection) || collection == "N") || split[3] != "collection"
+  if (is_not_collection) {
+    # TODO make sure this is safe (Currently that split[3] is collection might change!)
     # In theory this should mean that the file exist outside collection folders
     return("")
   }
-  collection <- paste0(paste0(unlist(
-    stringr::str_split(collection_info$core_db[1], "_")
-  )[1:3], collapse = "_"), "/")
+  collection <- paste0(paste0(split, collapse = "_"), "/")
 
   return(collection)
 }
@@ -382,7 +365,7 @@ ensembl_download_post_processing <- function(genome.path, organism, format,
                                              remove_annotation_outliers = FALSE,
                                              gunzip = FALSE, db = "ensembl",
                                              mute_citation = FALSE) {
-  if (is.logical(genome.path[1]) && !genome.path) {
+  if (genome.path[1] == "FALSE") {
     return(FALSE)
   } else {
     # Format specific behaviors
